@@ -7,6 +7,8 @@ class SplashScreen extends StatefulWidget {
   State<SplashScreen> createState() => _SplashScreenState();
 }
 
+//Testing the splash screen
+
 class _SplashScreenState extends State<SplashScreen> {
   @override
   Widget build(BuildContext context) {
@@ -18,7 +20,7 @@ class _SplashScreenState extends State<SplashScreen> {
           children: [
             Icon(Icons.pets, size: 80, color: Colors.orange),
             SizedBox(height: 20),
-            Text("Welcome to Kuveni App",
+            Text("Welcome to my kuveni app by PixelCoders",
                 style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
           ],
         ),
