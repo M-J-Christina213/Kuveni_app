@@ -7,6 +7,8 @@ class SplashScreen extends StatefulWidget {
   State<SplashScreen> createState() => _SplashScreenState();
 }
 
+//Testing the splash screen
+
 class _SplashScreenState extends State<SplashScreen> {
   @override
   Widget build(BuildContext context) {
