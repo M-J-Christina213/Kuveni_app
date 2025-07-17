@@ -2,7 +2,7 @@
 
 import 'package:flutter/material.dart';
 import 'setgoal.dart';
-import 'package:percent_indicator/percent_indicator.dart';
+//import 'package:percent_indicator/percent_indicator.dart';
 
 class GoalsPage extends StatelessWidget {
   const GoalsPage({super.key});
@@ -31,14 +31,14 @@ class GoalsPage extends StatelessWidget {
               style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
             ),
             SizedBox(height: 24),
-            _GoalCard("New Car", 2500000, 2000000, 0.5019),
-            _GoalCard("Student Loan", 2000000, 680000, 0.9663),
+         //   _GoalCard("New Car", 2500000, 2000000, 0.5019),
+          //  _GoalCard("Student Loan", 2000000, 680000, 0.9663),
           ],
         ),
       ),
     );
   }
-
+/*
   Widget _GoalCard(String title, int total, int saved, double percent) {
     return Card(
       elevation: 4,
@@ -55,5 +55,10 @@ class GoalsPage extends StatelessWidget {
         trailing: Icon(Icons.analytics),
       ),
     );
+
+    
+    
   }
+  */
 }
+

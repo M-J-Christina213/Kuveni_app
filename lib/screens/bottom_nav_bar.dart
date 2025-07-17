@@ -1,51 +1,44 @@
 import 'package:flutter/material.dart';
-import '../screens/finance.dart'; // Assuming this is your HomePage
-import '../screens/goals.dart'; // Adjust if filename is different
 
 class BottomNavBar extends StatelessWidget {
   final int currentIndex;
+  final Function(int) onTap;
 
-  const BottomNavBar({super.key, required this.currentIndex});
-
-  void _onTap(BuildContext context, int index) {
-    if (index == currentIndex) return;
-
-    Widget destination;
-    switch (index) {
-      case 0:
-        destination = HomePage(); // Home screen from finance.dart
-        break;
-      case 1:
-        destination = GoalsPage(); // Goals screen
-        break;
-      case 2:
-        destination = ProfilePage() as Widget; // Placeholder for now
-        break;
-      default:
-        return;
-    }
-
-    Navigator.pushReplacement(
-      context,
-      MaterialPageRoute(builder: (_) => destination),
-    );
-  }
+  const BottomNavBar({
+    super.key,
+    required this.currentIndex,
+    required this.onTap,
+  });
 
   @override
   Widget build(BuildContext context) {
-    return BottomNavigationBar(
-      currentIndex: currentIndex,
-      onTap: (index) => _onTap(context, index),
-      items: const [
-        BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
-        BottomNavigationBarItem(
-          icon: Icon(Icons.track_changes),
-          label: 'Goals',
+    return Container(
+      decoration: const BoxDecoration(
+        gradient: LinearGradient(
+          colors: [
+            Color(0xFF5902B1),
+            Color(0xFF700DB2),
+            Color(0xFFF54DB8),
+            Color(0xFFEBB41F),
+          ],
         ),
-        BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Profile'),
-      ],
+      ),
+      child: BottomNavigationBar(
+        currentIndex: currentIndex,
+        backgroundColor: Colors.transparent,
+        selectedItemColor: Colors.white,
+        unselectedItemColor: Colors.white70,
+        elevation: 0,
+        type: BottomNavigationBarType.fixed,
+        onTap: (index) => onTap(index),
+        items: const [
+          BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
+          BottomNavigationBarItem(icon: Icon(Icons.work), label: 'Jobs'),
+          BottomNavigationBarItem(icon: Icon(Icons.shield), label: 'safety'),
+          BottomNavigationBarItem(icon: Icon(Icons.account_balance_wallet), label: 'Finance'),
+          BottomNavigationBarItem(icon: Icon(Icons.groups), label: 'Community'),
+        ],
+      ),
     );
   }
 }
-
-class ProfilePage {}
