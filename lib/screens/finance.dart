@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'goals.dart';
 import 'income.dart';
 import 'expenses.dart';
-import './bottom_nav_bar.dart';
+//import './bottom_nav_bar.dart';
 
 class HomePage extends StatelessWidget {
   final String username;
@@ -15,7 +15,7 @@ class HomePage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      bottomNavigationBar: BottomNavBar(currentIndex: 3),
+     // bottomNavigationBar: BottomNavBar(currentIndex: 3),
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.all(16.0),
