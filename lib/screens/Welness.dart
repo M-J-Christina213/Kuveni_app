@@ -20,3 +20,4 @@ class WellnessScreen extends StatelessWidget {
     );
   }
 }
+
