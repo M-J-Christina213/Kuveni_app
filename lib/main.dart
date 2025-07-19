@@ -13,11 +13,12 @@ import 'package:kuveni_app/screens/jobs/main_job_dashboard.dart';
 import 'package:kuveni_app/screens/jobs/view_jobs_screen.dart';
 import 'package:kuveni_app/screens/jobs/premium_Service.dart';
 import 'package:kuveni_app/screens/jobs/view_provider.dart';
-import 'package:kuveni_app/screens/jobs/post_job.dart'; 
+import 'package:kuveni_app/screens/jobs/post_job.dart';
+import 'package:kuveni_app/screens/jobs/event_squad.dart'; // ✅ NEW: Import Event Squad Form
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp(); //  Initialize Firebase
+  await Firebase.initializeApp(); // Initialize Firebase
   runApp(const MyApp());
 }
 
@@ -38,7 +39,8 @@ class MyApp extends StatelessWidget {
         '/viewJobs': (context) => const ViewJobsScreen(),
         '/premiumServices': (context) => const PremiumServicesScreen(),
         '/viewProvider': (context) => const ViewProviderScreen(),
-        '/postJob': (context) => const PostJobScreen(), 
+        '/postJob': (context) => const PostJobScreen(),
+        '/eventSquadForm': (context) => const EventSquadForm(), // ✅ NEW Route
       },
     );
   }
