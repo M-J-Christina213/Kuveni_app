@@ -4,18 +4,18 @@ import 'package:flutter/material.dart';
 import 'goals.dart';
 import 'income.dart';
 import 'expenses.dart';
-import './bottom_nav_bar.dart';
+//import './bottom_nav_bar.dart';
 
-class HomePage extends StatelessWidget {
+class FinanceScreen extends StatelessWidget {
   final String username;
 
-  const HomePage({super.key, this.username = "Bhagya"});
+  const FinanceScreen({super.key, this.username = "Bhagya"});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      bottomNavigationBar: BottomNavBar(currentIndex: 3),
+     // bottomNavigationBar: BottomNavBar(currentIndex: 3),
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.all(16.0),
