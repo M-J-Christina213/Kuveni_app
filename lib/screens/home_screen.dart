@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'bottom_nav_bar.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -272,43 +273,3 @@ class HomeScreen extends StatelessWidget {
   }
 }
 
-class BottomNavBar extends StatelessWidget {
-  final int currentIndex;
-  const BottomNavBar({super.key, required this.currentIndex, required Null Function(dynamic index) onTap});
-
-  void _onTap(BuildContext context, int index) {
-    if (index == currentIndex) return;
-    // Navigation logic placeholder
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      decoration: const BoxDecoration(
-        gradient: LinearGradient(
-          colors: [
-            Color(0xFF5902B1),
-            Color(0xFF700DB2),
-            Color(0xFFF54DB8),
-            Color(0xFFEBB41F),
-          ],
-        ),
-      ),
-      child: BottomNavigationBar(
-        currentIndex: currentIndex,
-        backgroundColor: Colors.transparent,
-        selectedItemColor: Colors.white,
-        unselectedItemColor: Colors.white70,
-        elevation: 0,
-        onTap: (index) => _onTap(context, index),
-        items: const [
-          BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
-          BottomNavigationBarItem(icon: Icon(Icons.work), label: 'Jobs'),
-          BottomNavigationBarItem(icon: Icon(Icons.shield), label: ''), // safety big button will overlay
-          BottomNavigationBarItem(icon: Icon(Icons.account_balance_wallet), label: 'Finance'),
-          BottomNavigationBarItem(icon: Icon(Icons.groups), label: 'Community'),
-        ],
-      ),
-    );
-  }
-}
