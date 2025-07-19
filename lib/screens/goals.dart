@@ -2,6 +2,7 @@
 
 import 'package:flutter/material.dart';
 import 'setgoal.dart';
+import './bottom_nav_bar.dart';
 //import 'package:percent_indicator/percent_indicator.dart';
 
 class GoalsPage extends StatelessWidget {
@@ -11,6 +12,22 @@ class GoalsPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: Text("Goals")),
+      bottomNavigationBar: BottomNavBar(
+        currentIndex: 3,
+        onTap: (index) {
+          if (index == 0) {
+            Navigator.pushReplacementNamed(context, '/home');
+          } else if (index == 1) {
+            Navigator.pushReplacementNamed(context, '/jobs');
+          } else if (index == 2) {
+            Navigator.pushReplacementNamed(context, '/safety');
+          } else if (index == 3) {
+            // Already in Finance
+          } else if (index == 4) {
+            Navigator.pushReplacementNamed(context, '/community');
+          }
+        },
+      ),
 
       floatingActionButton: FloatingActionButton(
         onPressed: () {
