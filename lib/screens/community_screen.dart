@@ -2,31 +2,103 @@ import 'package:flutter/material.dart';
 import './bottom_nav_bar.dart';
 
 class CommunityScreen extends StatelessWidget {
-  const CommunityScreen({super.key});
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Community')),
-      body: const Center(child: Text('Community Screen')),
-      bottomNavigationBar: BottomNavBar(
-        currentIndex: 4,
-        onTap: (index) {
-          if (index == 0) {
-            Navigator.pushReplacementNamed(context, '/home');
-          } else if (index == 1) {
-            Navigator.pushReplacementNamed(context, '/jobs');
-          } else if (index == 2) {
-            Navigator.pushReplacementNamed(context, '/safety');
-          } else if (index == 3) {
-            Navigator.pushReplacementNamed(context, '/finance');
-          } else if (index == 4) {
-            // Already in Community
-          }
-        },
-      ),
+      body: Column(
+        children: <Widget>[
+          // Header Section
+          Container(
+            padding: EdgeInsets.all(16.0),
+            decoration: BoxDecoration(
+              image: DecorationImage(
+                image: AssetImage('assets/background_image.png'), // Placeholder for the background image
+                fit: BoxFit.cover,
+              ),
+            ),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.end,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Your Community Space !!',
+                  style: TextStyle(
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                  ),
+                ),
+                Text(
+                  '“Connect, share & grow together.”',
+                  style: TextStyle(
+                    fontSize: 16,
+                    color: Colors.white,
+                  ),
+                ),
+              ],
+            ),
+          ),
 
-      //start from here 
+          // Button Section
+          SizedBox(height: 20), // Spacing
+          
+          // Groups Button
+          _buildFeatureButton("GROUPS", Icons.group),
+
+          // Wellness Button
+          _buildFeatureButton("WELLNESS", Icons.health_and_safety),
+
+          // Helpers Button
+          _buildFeatureButton("HELPERS", Icons.support),
+        ],
+      ),
+      bottomNavigationBar: BottomNavigationBar(
+        items: [
+          BottomNavigationBarItem(
+            icon: Icon(Icons.home),
+            label: 'Home',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.business_center),
+            label: 'Jobs',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.monetization_on),
+            label: 'Finance',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.groups),
+            label: 'Community',
+          ),
+        ],
+      ),
+    );
+  }
+
+  // Method to build feature buttons
+  Widget _buildFeatureButton(String title, IconData icon) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+      child: ElevatedButton(
+        onPressed: () {
+          // Handle button press
+        },
+        style: ElevatedButton.styleFrom(
+          primary: Colors.purple, // Button color
+          padding: EdgeInsets.symmetric(vertical: 20),
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(icon, color: Colors.white),
+            SizedBox(width: 10),
+            Text(
+              title,
+              style: TextStyle(color: Colors.white, fontSize: 18),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }
