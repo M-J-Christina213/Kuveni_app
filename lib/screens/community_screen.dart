@@ -1,9 +1,9 @@
 // full code below
 import 'package:flutter/material.dart';
-import './bottom_nav_bar.dart'; // Make sure this exists and is properly configured
+// Make sure this exists and is properly configured
 
 class CommunityScreen extends StatefulWidget {
-  const CommunityScreen({Key? key}) : super(key: key);
+  const CommunityScreen({super.key});
 
   @override
   _CommunityScreenState createState() => _CommunityScreenState();

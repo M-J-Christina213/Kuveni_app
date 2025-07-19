@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 class PostJobScreen extends StatefulWidget {
-  const PostJobScreen({Key? key}) : super(key: key);
+  const PostJobScreen({super.key});
 
   @override
   State<PostJobScreen> createState() => _PostJobScreenState();
