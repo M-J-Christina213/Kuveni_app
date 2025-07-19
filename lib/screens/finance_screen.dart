@@ -6,10 +6,10 @@ import 'income.dart';
 import 'expenses.dart';
 //import './bottom_nav_bar.dart';
 
-class HomePage extends StatelessWidget {
+class FinanceScreen extends StatelessWidget {
   final String username;
 
-  const HomePage({super.key, this.username = "Bhagya"});
+  const FinanceScreen({super.key, this.username = "Bhagya"});
 
   @override
   Widget build(BuildContext context) {
