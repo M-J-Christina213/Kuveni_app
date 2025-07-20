@@ -34,7 +34,8 @@ class ExpensePage extends StatelessWidget {
             ClipRRect(
               borderRadius: BorderRadius.circular(16),
               child: Image.asset(
-                'assets/images/expenses1.png',
+                'assets/images/expenses1.jpeg',
+
                 height: 180,
                 width: double.infinity,
                 fit: BoxFit.cover,

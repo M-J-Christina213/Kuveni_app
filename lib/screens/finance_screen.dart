@@ -46,7 +46,7 @@ class FinanceScreen extends StatelessWidget {
             children: [
               const CircleAvatar(
                 radius: 50,
-                backgroundImage: AssetImage('assets/profilepic.png'),
+                backgroundImage: AssetImage('assets/images/profilepic.png'),
               ),
               const SizedBox(height: 12),
               Text(
@@ -72,9 +72,8 @@ class FinanceScreen extends StatelessWidget {
               // Row 1 - Goals button full width
               _ColorfulButton(
                 title: "Goals",
-                icon: Icons.flag,
+                imagePath: 'assets/images/goal.webp',
                 color: lavenderPurple,
-                width: double.infinity,
                 onTap: () {
                   Navigator.push(
                     context,
@@ -91,7 +90,7 @@ class FinanceScreen extends StatelessWidget {
                   Expanded(
                     child: _ColorfulButton(
                       title: "Expenses",
-                      icon: Icons.money_off,
+                      imagePath: 'assets/images/expenses.jpg',
                       color: lavenderPurple,
                       onTap: () {
                         Navigator.push(
@@ -105,7 +104,7 @@ class FinanceScreen extends StatelessWidget {
                   Expanded(
                     child: _ColorfulButton(
                       title: "Income",
-                      icon: Icons.attach_money,
+                      imagePath: 'assets/images/income.png',
                       color: lavenderPurple,
                       onTap: () {
                         Navigator.push(
@@ -126,7 +125,7 @@ class FinanceScreen extends StatelessWidget {
 
   Widget _ColorfulButton({
     required String title,
-    required IconData icon,
+    required String imagePath,
     required Color color,
     required VoidCallback onTap,
     double? width,
@@ -134,9 +133,10 @@ class FinanceScreen extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        width: width,
-        height: 130,
+        width: width ?? double.infinity, // full width if width not given
+        height: 120, // slightly smaller height for phones
         margin: const EdgeInsets.symmetric(vertical: 8),
+        padding: const EdgeInsets.symmetric(horizontal: 20),
         decoration: BoxDecoration(
           color: color,
           borderRadius: BorderRadius.circular(24),
@@ -144,19 +144,32 @@ class FinanceScreen extends StatelessWidget {
             BoxShadow(color: color, blurRadius: 10, offset: const Offset(0, 6)),
           ],
         ),
-        padding: const EdgeInsets.symmetric(horizontal: 20),
         child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            Icon(icon, size: 32, color: Color(0xFF6A1B9A)),
-            const SizedBox(width: 12),
-            Text(
-              title,
-              style: const TextStyle(
-                fontSize: 26,
-                fontFamily: 'Poppins',
-                fontWeight: FontWeight.bold,
-                color: Color(0xFF6A1B9A),
+            Expanded(
+              child: Text(
+                title,
+                style: const TextStyle(
+                  fontSize: 18,
+                  fontFamily: 'Poppins',
+                  fontWeight: FontWeight.bold,
+                  color: Color(0xFF6A1B9A),
+                ),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.only(
+                right: 8.0,
+              ), // space from right edge
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(16),
+                child: Image.asset(
+                  imagePath,
+                  height: 70,
+                  width: 70,
+                  fit: BoxFit.cover,
+                ),
               ),
             ),
           ],

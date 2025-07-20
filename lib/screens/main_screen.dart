@@ -18,22 +18,24 @@ class MainScreen extends StatefulWidget {
 }
 
 class _MainScreenState extends State<MainScreen> {
-  int _selectedIndex = 0; // State variable to keep track of the selected tab index
+  int _selectedIndex =
+      0; // State variable to keep track of the selected tab index
 
   // List of the main content widgets corresponding to each tab in the BottomNavBar.
   // The order here MUST match the order of items in your BottomNavBar (Home, Jobs, Safety, Finance, Community).
   final List<Widget> _screens = [
-    const HomeScreen(),        // Index 0: Home tab
-    const JobsMainDashboard(),  // Index 1: Jobs tab
-    const SafetyScreen(),       // Index 2: Safety tab
-    const FinanceScreen(),      // Index 3: Finance tab
-    const CommunityScreen(),    // Index 4: Community tab
+    const HomeScreen(), // Index 0: Home tab
+    const JobsMainDashboard(), // Index 1: Jobs tab
+    const SafetyScreen(), // Index 2: Safety tab
+    const FinanceScreen(), // Index 3: Finance tab
+    const CommunityScreen(), // Index 4: Community tab
   ];
 
   // Callback function for when a BottomNavBar item is tapped.
   void _onItemTapped(int index) {
     setState(() {
-      _selectedIndex = index; // Update the current index, which triggers a UI rebuild
+      _selectedIndex =
+          index; // Update the current index, which triggers a UI rebuild
     });
   }
 
@@ -43,10 +45,7 @@ class _MainScreenState extends State<MainScreen> {
       // The body of the Scaffold uses IndexedStack to display the selected page.
       // IndexedStack keeps all children alive but only shows the one at 'index'.
       // This is efficient for tab navigation as it preserves the state of other tabs.
-      body: IndexedStack(
-        index: _selectedIndex,
-        children: _screens,
-      ),
+      body: IndexedStack(index: _selectedIndex, children: _screens),
       // Your custom BottomNavBar is placed at the bottom.
       // We pass the current index and the onTap callback to it.
       bottomNavigationBar: BottomNavBar(
