@@ -14,9 +14,8 @@ import 'package:kuveni_app/screens/community_screen.dart';
 
 // Jobs Section Screens
 import 'package:kuveni_app/screens/jobs_main_dashboard.dart';
-import 'package:kuveni_app/screens/jobs_screen.dart';
 import 'package:kuveni_app/screens/post_job.dart';
-import 'package:kuveni_app/screens/event_squad.dart'; // Corrected name from EventSquadForm
+import 'package:kuveni_app/screens/event_squad.dart'; 
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -49,11 +48,11 @@ class MyApp extends StatelessWidget {
         '/login': (context) => const LoginScreen(),
         '/logout': (context) => const LogoutScreen(),
         '/home': (context) => const HomeScreen(),
-        '/jobs': (context) => const JobsScreen(),
+        '/jobs': (context) => const JobsMainDashboard(),
         '/safety': (context) => const SafetyScreen(),
         '/finance': (context) => const FinanceScreen(),
         '/community': (context) => const CommunityScreen(),
-        '/viewJobs': (context) => const JobsScreen(),
+        '/viewJobs': (context) => const JobsMainDashboard(),
         '/postJob': (context) => const PostJobScreen(),
         '/eventSquadForm': (context) => const EventSquadForm(),
 

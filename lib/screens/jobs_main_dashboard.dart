@@ -63,8 +63,7 @@ class _JobsMainDashboardState extends State<JobsMainDashboard> {
                     // Profile Icon
                     IconButton(
                       icon: const Icon(Icons.person, color: Colors.white, size: 30),
-                      onPressed: () {
-                       
+                      onPressed: () {                    
                         'Profile icon tapped';
                       },
                     ),
