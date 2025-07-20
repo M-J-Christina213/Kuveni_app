@@ -1,31 +1,35 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:kuveni_app/screens/bottom_nav_bar.dart';
-import 'firebase_options.dart';
+import 'firebase_options.dart'; // Correct: Generated Firebase options
 
-// Core Screens
-import 'package:kuveni_app/screens/home_screen.dart';
+// Import the main screen that manages the bottom navigation bar
+import 'package:kuveni_app/main_screen.dart'; // IMPORTANT: This is the correct MainScreen
+
+// Import authentication screens
 import 'package:kuveni_app/screens/login_screen.dart';
 import 'package:kuveni_app/screens/register_screen.dart';
-import 'package:kuveni_app/screens/safety_screen.dart';
-import 'package:kuveni_app/screens/finance_screen.dart';
-import 'package:kuveni_app/screens/community_screen.dart';
+import 'package:kuveni_app/screens/onboarding_screen.dart'; // Assuming you want to start with onboarding
 
-// Jobs Section Screens
-import 'package:kuveni_app/screens/jobs_main_dashboard.dart';
-import 'package:kuveni_app/screens/jobs_screen.dart';
-import 'package:kuveni_app/screens/premium_Service.dart';
-import 'package:kuveni_app/screens/view_provider.dart';
+// Import other sub-screens that might be navigated to directly (e.g., from deep links or specific actions)
+// Note: Most screens accessed via BottomNavBar tabs (HomeScreen, JobsMainDashboard, etc.)
+// do NOT need top-level named routes if MainScreen handles them.
+// Only add routes here if you need to jump directly to them from outside the main tab flow.
 import 'package:kuveni_app/screens/post_job.dart';
-import 'package:kuveni_app/screens/event_squad.dart';
-
-
+import 'package:kuveni_app/screens/event_squad.dart'; // Corrected name from EventSquadForm
+import 'package:kuveni_app/screens/premium_servicelist.dart'; // Corrected name from Premium_Service
+import 'package:kuveni_app/screens/view_premium_service.dart'; // Corrected name from View_Provider
+import 'package:kuveni_app/screens/checkout.dart'; // For direct access from JobsMainDashboard
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform,
-  ); // Initialize Firebase
+  try {
+    await Firebase.initializeApp(
+      options: DefaultFirebaseOptions.currentPlatform,
+    );
+    print("Firebase initialized successfully!");
+  } catch (e) {
+    print("Error initializing Firebase: $e");
+  }
 
   runApp(const MyApp());
 }
@@ -40,63 +44,43 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+        useMaterial3: true,
       ),
-      initialRoute: '/register',
+      // Set the initial route to your onboarding screen
+      // After onboarding, it should navigate to LoginScreen, then to MainScreen.
+      initialRoute: '/onboarding',
       routes: {
+        // Main application entry point after authentication
         '/': (context) => const MainScreen(),
+
+        // Authentication flow
+        '/onboarding': (context) => const OnboardingScreen(),
         '/register': (context) => const RegisterScreen(),
         '/login': (context) => const LoginScreen(),
-        '/home': (context) => const HomeScreen(),
-        '/jobs': (context) => const JobsScreen(),
-        '/safety': (context) => const SafetyScreen(),
-        '/finance': (context) => const FinanceScreen(),
-        '/community': (context) => const CommunityScreen(),
-        '/viewJobs': (context) => const JobsScreen(),
-        '/premiumServices': (context) => const PremiumServiceScreen(),
-        '/viewProvider': (context) => const ViewProviderScreen(),
+
+        // Direct navigation to specific forms/lists (if needed outside main tabs)
+        // These are typically navigated to using Navigator.push from within a tab.
+        // I'm keeping them here only if there's a specific reason to jump to them via named routes.
+        // Otherwise, it's cleaner to use MaterialPageRoute for sub-screen navigation.
         '/postJob': (context) => const PostJobScreen(),
-        '/eventSquadForm': (context) => const EventSquadForm(),
-
+        '/eventSquad': (context) => const EventSquadScreen(), // Corrected route name
+        '/premiumServiceList': (context) => const PremiumServiceListScreen(), // Corrected route name
+        '/viewPremiumService': (context) => const ViewPremiumServiceScreen(
+              // This route requires arguments. It's better to push with MaterialPageRoute.
+              // If you insist on a named route, you'd need to extract arguments here.
+              // For now, providing dummy values to make it compile, but direct push is better.
+              serviceName: 'Default Service',
+              description: 'Default Description',
+              providerName: 'Default Provider',
+              price: 'N/A',
+              rating: 'N/A',
+              contactInfo: 'N/A',
+              fullDetails: 'Default Full Details',
+            ),
+        '/checkout': (context) => const CheckoutScreen(), // For direct navigation from JobsMainDashboard
       },
-
+      // IMPORTANT: Removed the duplicate MainScreen class definition from here.
+      // It should only be in lib/main_screen.dart.
     );
   }
 }
-
-class MainScreen extends StatefulWidget {
-  const MainScreen({super.key});
-
-  @override
-  State<MainScreen> createState() => _MainScreenState();
-}
-
-class _MainScreenState extends State<MainScreen> {
-  int _selectedIndex = 0;
-
-  final List<Widget> _screens = [
-    HomeScreen(),
-    JobsMainDashboard(),
-    SafetyScreen(),
-    FinanceScreen(),
-    CommunityScreen(),
-  ];
-
-
-  void _onItemTapped(int index) {
-    setState(() {
-      _selectedIndex = index;
-    });
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      body: _screens[_selectedIndex],
-      bottomNavigationBar: BottomNavBar(
-        currentIndex: _selectedIndex,
-        onTap: _onItemTapped,
-      ),
-    );
-  }
-}
-
