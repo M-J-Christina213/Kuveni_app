@@ -55,17 +55,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
             child: Column(
               children: [
                 // Logo
-                Image.asset('assets/logo.png', height: 100), // Replace with your logo path
+                Image.asset('assets/images/logo.jpeg', height: 200), 
 
                 const SizedBox(height: 20),
-                const Text(
-                  "Kuveni",
-                  style: TextStyle(
-                    fontSize: 32,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white,
-                  ),
-                ),
+              
 
                 const SizedBox(height: 40),
 

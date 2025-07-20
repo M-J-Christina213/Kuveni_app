@@ -37,7 +37,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
       ),
-      initialRoute: '/',
+      initialRoute: '/register',
       routes: {
         '/': (context) => const MainScreen(),
         '/register': (context) => const RegisterScreen(),
