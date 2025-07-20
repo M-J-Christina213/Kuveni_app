@@ -8,18 +8,45 @@ class ExpensePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text("Expense Analysis")),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
+      backgroundColor: const Color(0xFFFAF9F6), // Soft Beige background
+      appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        title: const Text(
+          "Expense Analysis",
+          style: TextStyle(color: Colors.black),
+        ),
+        centerTitle: true,
+        iconTheme: const IconThemeData(color: Colors.black),
+      ),
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.all(16),
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              "Hello, Bhagya",
-              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+            const Text(
+              "Hello, Bhagya 👋",
+              style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
             ),
-            SizedBox(height: 16),
-            Placeholder(fallbackHeight: 180),
-            SizedBox(height: 16),
+            const SizedBox(height: 16),
+
+            // Expense image
+            ClipRRect(
+              borderRadius: BorderRadius.circular(16),
+              child: Image.asset(
+                'assets/images/expenses1.png',
+                height: 180,
+                width: double.infinity,
+                fit: BoxFit.cover,
+              ),
+            ),
+
+            const SizedBox(height: 24),
+            const Text(
+              "Recent Expenses",
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
+            ),
+            const SizedBox(height: 12),
             _AmountTile("1 Jan 2024", "20,000"),
             _AmountTile("12 May 2024", "12,000"),
             _AmountTile("16 May 2024", "6,000"),
@@ -31,11 +58,21 @@ class ExpensePage extends StatelessWidget {
   }
 
   Widget _AmountTile(String date, String amount) {
-    return ListTile(
-      title: Text(date),
-      trailing: Text(
-        "Rs. $amount",
-        style: TextStyle(fontWeight: FontWeight.bold),
+    return Card(
+      margin: const EdgeInsets.symmetric(vertical: 6),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      elevation: 1,
+      child: ListTile(
+        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        title: Text(date, style: const TextStyle(fontSize: 16)),
+        trailing: Text(
+          "Rs. $amount",
+          style: const TextStyle(
+            fontWeight: FontWeight.bold,
+            color: Colors.deepPurple,
+            fontSize: 16,
+          ),
+        ),
       ),
     );
   }

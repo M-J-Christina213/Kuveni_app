@@ -1,7 +1,9 @@
-// lib/screens/goals.dart
+// ignore_for_file: non_constant_identifier_names
+
 import 'package:flutter/material.dart';
-import 'package:kuveni_app/screens/setgoal.dart'; // Import the SetGoalPage
-// import 'package:percent_indicator/percent_indicator.dart'; // Keep if you uncomment _GoalCard later
+import 'package:percent_indicator/percent_indicator.dart';
+import 'setgoal.dart';
+import './bottom_nav_bar.dart';
 
 class GoalsPage extends StatelessWidget {
   const GoalsPage({super.key});
@@ -9,77 +11,116 @@ class GoalsPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text("Goals"),
-        // You might want to match the gradient app bar style here for consistency
-        // For example:
-        // flexibleSpace: Container(
-        //   decoration: const BoxDecoration(
-        //     gradient: LinearGradient(
-        //       colors: [
-        //         Color(0xFF5902B1), Color(0xFF700DB2), Color(0xFFF54DB8), Color(0xFFEBB41F),
-        //       ],
-        //       begin: Alignment.topLeft,
-        //       end: Alignment.bottomRight,
-        //     ),
-        //   ),
-        // ),
-        // backgroundColor: Colors.transparent, // Make sure this is set if using flexibleSpace
-        // elevation: 0,
+      appBar: AppBar(title: const Text("Goals")),
+      bottomNavigationBar: BottomNavBar(
+        currentIndex: 3,
+        onTap: (index) {
+          if (index == 0) {
+            Navigator.pushReplacementNamed(context, '/home');
+          } else if (index == 1) {
+            Navigator.pushReplacementNamed(context, '/jobs');
+          } else if (index == 2) {
+            Navigator.pushReplacementNamed(context, '/safety');
+          } else if (index == 3) {
+            // Already in Finance
+          } else if (index == 4) {
+            Navigator.pushReplacementNamed(context, '/community');
+          }
+        },
       ),
-      // IMPORTANT: Removed the BottomNavigationBar from here.
-      // The main BottomNavBar is controlled by MainScreen.
-
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           Navigator.push(
             context,
-            MaterialPageRoute(builder: (_) => const SetGoalPage()), // Ensure SetGoalPage is const
+            MaterialPageRoute(builder: (_) => SetGoalPage()),
           );
         },
-        child: const Icon(Icons.add), // Made const
+        child: const Icon(Icons.add),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+        child: ListView(
           children: [
-            const Text( // Made const
+            const Text(
               "Hey Bhagya,",
               style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
             ),
-            const SizedBox(height: 24), // Made const
-            // Uncomment and use _GoalCard when you have actual data and percent_indicator set up
-            /*
-            _GoalCard("New Car", 2500000, 2000000, 0.5019),
-            _GoalCard("Student Loan", 2000000, 680000, 0.9663),
-            */
+            const SizedBox(height: 24),
+            _GoalCard(
+              context,
+              "New Car",
+              2500000,
+              2000000,
+              0.50,
+              "assets/images/car.png",
+            ),
+            _GoalCard(
+              context,
+              "Student Loan",
+              2000000,
+              680000,
+              0.96,
+              "assets/images/loan.png",
+            ),
           ],
         ),
       ),
     );
   }
 
-  // Keep this helper method if you plan to use it later
-  /*
-  Widget _GoalCard(String title, int total, int saved, double percent) {
+  Widget _GoalCard(
+    BuildContext context,
+    String title,
+    int total,
+    int saved,
+    double percent,
+    String imagePath,
+  ) {
     return Card(
       elevation: 4,
-      child: ListTile(
-        leading: CircularPercentIndicator(
-          radius: 50,
-          lineWidth: 6,
-          percent: percent,
-          center: Text("${(percent * 100).toStringAsFixed(2)}%"),
-          progressColor: Colors.purple,
+      margin: const EdgeInsets.only(bottom: 16),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+        child: Row(
+          children: [
+            CircularPercentIndicator(
+              radius: 35,
+              lineWidth: 6,
+              percent: percent.clamp(0.0, 1.0),
+              center: Text("${(percent * 100).toStringAsFixed(0)}%"),
+              progressColor: Colors.purple,
+              backgroundColor: Colors.grey.shade300,
+              circularStrokeCap: CircularStrokeCap.round,
+            ),
+            const SizedBox(width: 16),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    title,
+                    style: const TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    "Saved: Rs.$saved",
+                    style: const TextStyle(fontSize: 14, color: Colors.black54),
+                  ),
+                  Text(
+                    "Goal: Rs.$total",
+                    style: const TextStyle(fontSize: 14, color: Colors.black54),
+                  ),
+                ],
+              ),
+            ),
+            Image.asset(imagePath, width: 40, height: 40, fit: BoxFit.cover),
+          ],
         ),
-        title: Text(title),
-        subtitle: Text("Saved: Rs.$saved\nGoal: Rs.$total"),
-        trailing: Icon(Icons.analytics),
       ),
     );
   }
-  */
 }
-
-

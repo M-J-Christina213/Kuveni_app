@@ -15,7 +15,7 @@ import 'package:kuveni_app/screens/community_screen.dart';
 // Jobs Section Screens
 import 'package:kuveni_app/screens/jobs_main_dashboard.dart';
 import 'package:kuveni_app/screens/post_job.dart';
-import 'package:kuveni_app/screens/event_squad.dart'; 
+import 'package:kuveni_app/screens/event_squad.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -55,9 +55,7 @@ class MyApp extends StatelessWidget {
         '/viewJobs': (context) => const JobsMainDashboard(),
         '/postJob': (context) => const PostJobScreen(),
         '/eventSquadForm': (context) => const EventSquadForm(),
-
       },
-
     );
   }
 }
@@ -80,7 +78,6 @@ class _MainScreenState extends State<MainScreen> {
     CommunityScreen(),
   ];
 
-
   void _onItemTapped(int index) {
     setState(() {
       _selectedIndex = index;
@@ -98,4 +95,3 @@ class _MainScreenState extends State<MainScreen> {
     );
   }
 }
-
