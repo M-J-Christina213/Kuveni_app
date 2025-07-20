@@ -12,7 +12,12 @@
           "package_name": "com.example.kuveni_app"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "601501456281-ps4nufu0rg2qruu7h6lfsdcasi3qdc2l.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyDvprL62Qc8u5W-AdBQ_4nIk47GmeHGqwc"
@@ -20,7 +25,19 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "601501456281-ps4nufu0rg2qruu7h6lfsdcasi3qdc2l.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "601501456281-m3h2tvu5qsvaofe2vprlg3rehvf9nie0.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.kuveniApp"
+              }
+            }
+          ]
         }
       }
     }

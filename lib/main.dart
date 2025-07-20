@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:kuveni_app/screens/bottom_nav_bar.dart';
+import 'firebase_options.dart';
 
 // Core Screens
 import 'package:kuveni_app/screens/home_screen.dart';
@@ -22,7 +23,10 @@ import 'package:kuveni_app/screens/event_squad.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp(); // Initialize Firebase
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  ); // Initialize Firebase
+
   runApp(const MyApp());
 }
 
@@ -42,6 +46,11 @@ class MyApp extends StatelessWidget {
         '/': (context) => const MainScreen(),
         '/register': (context) => const RegisterScreen(),
         '/login': (context) => const LoginScreen(),
+        '/home': (context) => const HomeScreen(),
+        '/jobs': (context) => const JobsScreen(),
+        '/safety': (context) => const SafetyScreen(),
+        '/finance': (context) => const FinanceScreen(),
+        '/community': (context) => const CommunityScreen(),
         '/viewJobs': (context) => const JobsScreen(),
         '/premiumServices': (context) => const PremiumServiceScreen(),
         '/viewProvider': (context) => const ViewProviderScreen(),

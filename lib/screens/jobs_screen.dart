@@ -18,27 +18,26 @@ class JobsScreen extends StatelessWidget {
         ),
       ),
       bottomNavigationBar: BottomNavBar(
-        currentIndex: 1, // Jobs tab index
-        onTap: (index) {
-          if (index == 1) return; // Already in Jobs, do nothing
+      currentIndex: 1, // Jobs tab selected
+      onTap: (index) {
+        if (index == 1) return;
+        switch (index) {
+          case 0:
+            Navigator.pushReplacementNamed(context, '/home');
+            break;
+          case 2:
+            Navigator.pushReplacementNamed(context, '/safety');
+            break;
+          case 3:
+            Navigator.pushReplacementNamed(context, '/finance');
+            break;
+          case 4:
+            Navigator.pushReplacementNamed(context, '/community');
+            break;
+        }
+      },
+    ),
 
-          // Navigate to other screens based on index
-          switch (index) {
-            case 0:
-              Navigator.pushReplacementNamed(context, '/home');
-              break;
-            case 2:
-              Navigator.pushReplacementNamed(context, '/safety');
-              break;
-            case 3:
-              Navigator.pushReplacementNamed(context, '/finance');
-              break;
-            case 4:
-              Navigator.pushReplacementNamed(context, '/community');
-              break;
-          }
-        },
-      ),
     );
   }
 }

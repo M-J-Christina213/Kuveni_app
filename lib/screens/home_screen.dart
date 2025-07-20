@@ -112,22 +112,25 @@ class HomeScreen extends StatelessWidget {
         ),
       ),
       bottomNavigationBar: BottomNavBar(
-    currentIndex: 0,
-    onTap: (index) {
-      // Add navigation logic here
-      if (index == 0) {
-        // Already in Home, do nothing or refresh if needed
-      } else if (index == 1) {
+  currentIndex: 0, // Home tab selected
+  onTap: (index) {
+    if (index == 0) return; // Already on Home
+    switch (index) {
+      case 1:
         Navigator.pushReplacementNamed(context, '/jobs');
-      } else if (index == 2) {
+        break;
+      case 2:
         Navigator.pushReplacementNamed(context, '/safety');
-      } else if (index == 3) {
+        break;
+      case 3:
         Navigator.pushReplacementNamed(context, '/finance');
-      } else if (index == 4) {
+        break;
+      case 4:
         Navigator.pushReplacementNamed(context, '/community');
-      }
-    },
-  ),
+        break;
+    }
+  },
+),
     );
   }
 
