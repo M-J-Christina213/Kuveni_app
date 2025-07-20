@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'bottom_nav_bar.dart';
+import 'package:kuveni_app/screens/bottom_nav_bar.dart';
 
 // Core Screens
 import 'package:kuveni_app/screens/home_screen.dart';
@@ -9,11 +9,14 @@ import 'package:kuveni_app/screens/finance_screen.dart';
 import 'package:kuveni_app/screens/community_screen.dart';
 
 // Jobs Section Screens
-import 'package:kuveni_app/screens/jobs/main_job_dashboard.dart';
-import 'package:kuveni_app/screens/jobs/view_jobs_screen.dart';
-import 'package:kuveni_app/screens/jobs/premium_Service.dart';
-import 'package:kuveni_app/screens/jobs/view_provider.dart';
-import 'package:kuveni_app/screens/jobs/post_job.dart'; 
+import 'package:kuveni_app/screens/jobs_main_dashboard.dart';
+import 'package:kuveni_app/screens/jobs_screen.dart';
+import 'package:kuveni_app/screens/premium_Service.dart';
+import 'package:kuveni_app/screens/view_provider.dart';
+import 'package:kuveni_app/screens/post_job.dart';
+import 'package:kuveni_app/screens/event_squad.dart';
+
+
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -35,11 +38,14 @@ class MyApp extends StatelessWidget {
       initialRoute: '/',
       routes: {
         '/': (context) => const MainScreen(),
-        '/viewJobs': (context) => const ViewJobsScreen(),
-        '/premiumServices': (context) => const PremiumServicesScreen(),
+        '/viewJobs': (context) => const JobsScreen(),
+        '/premiumServices': (context) => const PremiumServiceScreen(),
         '/viewProvider': (context) => const ViewProviderScreen(),
-        '/postJob': (context) => const PostJobScreen(), 
+        '/postJob': (context) => const PostJobScreen(),
+        '/eventSquadForm': (context) => const EventSquadForm(),
+
       },
+
     );
   }
 }
@@ -54,13 +60,14 @@ class MainScreen extends StatefulWidget {
 class _MainScreenState extends State<MainScreen> {
   int _selectedIndex = 0;
 
-  final List<Widget> _screens = const [
+  final List<Widget> _screens = [
     HomeScreen(),
-    MainJobDashboard(),
+    JobsMainDashboard(),
     SafetyScreen(),
     FinanceScreen(),
     CommunityScreen(),
   ];
+
 
   void _onItemTapped(int index) {
     setState(() {
@@ -79,9 +86,4 @@ class _MainScreenState extends State<MainScreen> {
     );
   }
 }
-<<<<<<< HEAD
 
-
-
-=======
->>>>>>> 1f4e59908d1c946c5b7ce4b825d7cfbb3d736be2

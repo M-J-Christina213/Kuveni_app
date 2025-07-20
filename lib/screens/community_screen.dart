@@ -84,7 +84,7 @@ class CommunityScreen extends StatelessWidget {
           // Handle button press
         },
         style: ElevatedButton.styleFrom(
-          primary: Colors.purple, // Button color
+          backgroundColor: Colors.purple, // Button color
           padding: EdgeInsets.symmetric(vertical: 20),
         ),
         child: Row(

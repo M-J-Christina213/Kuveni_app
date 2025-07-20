@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-class PremiumServicesScreen extends StatelessWidget {
-  const PremiumServicesScreen({super.key});
+class PremiumServiceScreen extends StatelessWidget {
+  const PremiumServiceScreen({super.key});
 
   final List<Map<String, dynamic>> sampleProviders = const [
     {

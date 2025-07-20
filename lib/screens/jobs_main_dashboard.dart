@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-class MainJobDashboard extends StatelessWidget {
-  const MainJobDashboard({super.key});
+class JobsMainDashboard extends StatelessWidget {
+  const JobsMainDashboard({super.key});
 
   @override
   Widget build(BuildContext context) {

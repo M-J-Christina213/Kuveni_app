@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "601501456281",
+    "project_id": "kuveni-app",
+    "storage_bucket": "kuveni-app.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:601501456281:android:7caa6b05891bed60d7e508",
+        "android_client_info": {
+          "package_name": "com.example.kuveni_app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDvprL62Qc8u5W-AdBQ_4nIk47GmeHGqwc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
