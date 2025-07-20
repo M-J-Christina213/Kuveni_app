@@ -1,5 +1,6 @@
+// lib/screens/home_screen.dart
 import 'package:flutter/material.dart';
-import 'bottom_nav_bar.dart';
+// import 'bottom_nav_bar.dart'; // No longer needed as MainScreen manages the global one
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -30,7 +31,7 @@ class HomeScreen extends StatelessWidget {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: const [
-                  CircleAvatar(radius: 24, backgroundImage: AssetImage('assets/profile.jpg')),
+                  CircleAvatar(radius: 24, backgroundImage: AssetImage('assets/profile.jpg')), // Ensure asset exists
                   Icon(Icons.notifications, color: Colors.white),
                 ],
               ),
@@ -56,9 +57,9 @@ class HomeScreen extends StatelessWidget {
               margin: const EdgeInsets.all(16),
               child: PageView(
                 children: [
-                  Image.asset('assets/banner1.jpg', fit: BoxFit.cover),
-                  Image.asset('assets/banner2.jpg', fit: BoxFit.cover),
-                  Image.asset('assets/banner3.jpg', fit: BoxFit.cover),
+                  Image.asset('assets/banner1.jpg', fit: BoxFit.cover), // Ensure asset exists
+                  Image.asset('assets/banner2.jpg', fit: BoxFit.cover), // Ensure asset exists
+                  Image.asset('assets/banner3.jpg', fit: BoxFit.cover), // Ensure asset exists
                 ],
               ),
             ),
@@ -82,7 +83,7 @@ class HomeScreen extends StatelessWidget {
                 children: [
                   const Text("Quick-Action", style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
                   const SizedBox(height: 12),
-                  Image.asset('assets/your_own_light.png'),
+                  Image.asset('assets/your_own_light.png'), // Ensure asset exists
                   const SizedBox(height: 12),
                   _journeyTodaySection(),
                 ],
@@ -92,7 +93,7 @@ class HomeScreen extends StatelessWidget {
             // Sri Lanka Map Image + Health Reminder
             Row(
               children: [
-                Expanded(child: Image.asset('assets/srilanka_map.png', height: 150)),
+                Expanded(child: Image.asset('assets/srilanka_map.png', height: 150)), // Ensure asset exists
                 Expanded(child: _healthReminders()),
               ],
             ),
@@ -111,26 +112,8 @@ class HomeScreen extends StatelessWidget {
           ],
         ),
       ),
-      bottomNavigationBar: BottomNavBar(
-  currentIndex: 0, // Home tab selected
-  onTap: (index) {
-    if (index == 0) return; // Already on Home
-    switch (index) {
-      case 1:
-        Navigator.pushReplacementNamed(context, '/jobs');
-        break;
-      case 2:
-        Navigator.pushReplacementNamed(context, '/safety');
-        break;
-      case 3:
-        Navigator.pushReplacementNamed(context, '/finance');
-        break;
-      case 4:
-        Navigator.pushReplacementNamed(context, '/community');
-        break;
-    }
-  },
-),
+      // IMPORTANT: Removed the BottomNavBar from here.
+      // The main BottomNavBar is controlled by MainScreen.
     );
   }
 
@@ -250,7 +233,7 @@ class HomeScreen extends StatelessWidget {
   Widget _storyCard(String name, String occupation, String tagline) {
     return Card(
       child: ListTile(
-        leading: CircleAvatar(child: Icon(Icons.person)),
+        leading: const CircleAvatar(child: Icon(Icons.person)),
         title: Text(name),
         subtitle: Text("$occupation\n$tagline"),
         trailing: IconButton(icon: const Icon(Icons.favorite_border), onPressed: () {}),
@@ -275,4 +258,3 @@ class HomeScreen extends StatelessWidget {
     );
   }
 }
-
