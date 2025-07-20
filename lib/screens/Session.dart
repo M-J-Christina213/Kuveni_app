@@ -1,3 +1,5 @@
+// ignore_for_file: file_names
+
 import 'package:flutter/material.dart';
 
 class SessionScreen extends StatelessWidget {
@@ -20,4 +22,3 @@ class SessionScreen extends StatelessWidget {
     );
   }
 }
-''
