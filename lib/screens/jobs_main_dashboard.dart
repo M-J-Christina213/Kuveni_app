@@ -86,7 +86,7 @@ class JobsMainDashboard extends StatelessWidget {
         child: ListTile(
           contentPadding: const EdgeInsets.all(16),
           leading: CircleAvatar(
-            backgroundColor: color.withOpacity(0.2),
+            backgroundColor: color,
             child: Icon(icon, color: color),
           ),
           title: Text(title, style: const TextStyle(fontWeight: FontWeight.bold)),
