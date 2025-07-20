@@ -4,6 +4,8 @@ import 'package:kuveni_app/screens/bottom_nav_bar.dart';
 
 // Core Screens
 import 'package:kuveni_app/screens/home_screen.dart';
+import 'package:kuveni_app/screens/login_screen.dart';
+import 'package:kuveni_app/screens/register_screen.dart';
 import 'package:kuveni_app/screens/safety_screen.dart';
 import 'package:kuveni_app/screens/finance_screen.dart';
 import 'package:kuveni_app/screens/community_screen.dart';
@@ -38,6 +40,8 @@ class MyApp extends StatelessWidget {
       initialRoute: '/',
       routes: {
         '/': (context) => const MainScreen(),
+        '/register': (context) => const RegisterScreen(),
+        '/login': (context) => const LoginScreen(),
         '/viewJobs': (context) => const JobsScreen(),
         '/premiumServices': (context) => const PremiumServiceScreen(),
         '/viewProvider': (context) => const ViewProviderScreen(),
