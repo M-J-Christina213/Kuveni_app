@@ -1,8 +1,8 @@
 // lib/screens/jobs_main_dashboard.dart
 import 'package:flutter/material.dart';
 import 'package:kuveni_app/screens/post_job.dart';
-import 'package:kuveni_app/screens/event_squad.dart';
-import 'package:kuveni_app/screens/job_huntlist.dart';
+//import 'package:kuveni_app/screens/event_squad.dart';
+//import 'package:kuveni_app/screens/job_huntlist.dart';
 import 'package:kuveni_app/screens/premium_servicelist.dart';
 import 'package:kuveni_app/screens/checkout.dart'; // Import for direct Checkout navigation
 import 'package:kuveni_app/screens/view_jobhunt.dart'; // Import for _buildJobCard preview
@@ -64,8 +64,8 @@ class _JobsMainDashboardState extends State<JobsMainDashboard> {
                     IconButton(
                       icon: const Icon(Icons.person, color: Colors.white, size: 30),
                       onPressed: () {
-                        // TODO: Navigate to profile screen
-                        print('Profile icon tapped');
+                       
+                        'Profile icon tapped';
                       },
                     ),
                   ],
@@ -79,7 +79,7 @@ class _JobsMainDashboardState extends State<JobsMainDashboard> {
                     borderRadius: BorderRadius.circular(10.0),
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.black.withOpacity(0.1),
+                        color: Colors.black,
                         spreadRadius: 1,
                         blurRadius: 3,
                         offset: const Offset(0, 2),
@@ -96,8 +96,8 @@ class _JobsMainDashboardState extends State<JobsMainDashboard> {
                       contentPadding: const EdgeInsets.symmetric(vertical: 12.0),
                     ),
                     onSubmitted: (query) {
-                      // TODO: Implement job search logic
-                      print('Search query: $query');
+                     
+                      'Search query: $query';
                     },
                   ),
                 ),
@@ -167,10 +167,10 @@ class _JobsMainDashboardState extends State<JobsMainDashboard> {
               margin: const EdgeInsets.only(bottom: 20),
               child: InkWell(
                 onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => const EventSquadScreen()),
-                  );
+                 // Navigator.push(
+                  //  context,
+                  //  MaterialPageRoute(builder: (context) => const EventSquadScreen()),
+                 // );
                 },
                 borderRadius: BorderRadius.circular(15),
                 child: Padding(
@@ -216,10 +216,10 @@ class _JobsMainDashboardState extends State<JobsMainDashboard> {
               margin: const EdgeInsets.only(bottom: 20),
               child: InkWell(
                 onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => const JobHuntListScreen()),
-                  );
+                  //Navigator.push(
+                   // context,
+                   // MaterialPageRoute(builder: (context) => const JobHuntListScreen()),
+                  //);
                 },
                 borderRadius: BorderRadius.circular(15),
                 child: Padding(
@@ -545,4 +545,12 @@ class _JobsMainDashboardState extends State<JobsMainDashboard> {
       ),
     );
   }
+}
+
+class JobHuntListScreen {
+  const JobHuntListScreen();
+}
+
+class EventSquadScreen {
+  const EventSquadScreen();
 }

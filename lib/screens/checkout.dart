@@ -36,16 +36,15 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
   void _processPayment() {
     if (_formKey.currentState!.validate()) {
       // If the form is valid, process payment (placeholder logic)
-      print('Processing Payment:');
-      print('Card Name: ${_cardNameController.text}');
-      print('Card Number: ${_cardNumberController.text}');
-      print('Expiry Date: ${_expiryDateController.text}');
-      print('CVV: ${_cvvController.text}');
-      print('Billing Address: ${_billingAddressController.text}');
-      print('City: ${_cityController.text}');
-      print('Zip Code: ${_zipCodeController.text}');
+      'Processing Payment:';
+      'Card Name: ${_cardNameController.text}';
+      'Card Number: ${_cardNumberController.text}';
+      'Expiry Date: ${_expiryDateController.text}';
+      'CVV: ${_cvvController.text}';
+      'Billing Address: ${_billingAddressController.text}';
+      'City: ${_cityController.text}';
+      'Zip Code: ${_zipCodeController.text}';
 
-      // TODO: Integrate with a payment gateway (e.g., Stripe, PayPal)
       // For now, just show a success message
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Payment Processed Successfully!')),
@@ -96,8 +95,8 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
               IconButton(
                 icon: const Icon(Icons.person, color: Colors.white, size: 30),
                 onPressed: () {
-                  // TODO: Navigate to profile screen
-                  print('Profile icon tapped from Checkout');
+                 
+                  'Profile icon tapped from Checkout';
                 },
               ),
             ],

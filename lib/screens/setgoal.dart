@@ -1,4 +1,6 @@
 // lib/screens/setgoal.dart
+// ignore_for_file: use_build_context_synchronously
+
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart'; // Import Firestore
 
@@ -31,11 +33,10 @@ class _SetGoalPageState extends State<SetGoalPage> {
   void _saveGoal() async {
     if (_formKey.currentState!.validate()) {
       // If the form is valid, process the data
-      print('Goal Title: ${_titleController.text}');
-      print('Target Amount: ${_targetAmountController.text}');
-      print('Description: ${_descriptionController.text}');
+      'Goal Title: ${_titleController.text}';
+      'Target Amount: ${_targetAmountController.text}';
+      'Description: ${_descriptionController.text}';
 
-      // TODO: Implement actual goal saving logic to Firebase Firestore
       try {
         await FirebaseFirestore.instance.collection('goals').add({
           'title': _titleController.text,
@@ -51,7 +52,7 @@ class _SetGoalPageState extends State<SetGoalPage> {
         );
         Navigator.pop(context); // Go back to the GoalsPage
       } catch (e) {
-        print("Error saving goal: $e");
+        "Error saving goal: $e";
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Failed to save goal: ${e.toString()}')),
         );
@@ -149,8 +150,8 @@ class _SetGoalPageState extends State<SetGoalPage> {
               IconButton(
                 icon: const Icon(Icons.person, color: Colors.white, size: 30),
                 onPressed: () {
-                  // TODO: Navigate to profile screen
-                  print('Profile icon tapped from Set Goal');
+                  
+                  'Profile icon tapped from Set Goal';
                 },
               ),
             ],

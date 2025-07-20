@@ -1,6 +1,6 @@
 // lib/main_screen.dart
 import 'package:flutter/material.dart';
-import 'package:kuveni_app/bottom_nav_bar.dart'; // Import your custom BottomNavBar
+import 'package:kuveni_app/screens/bottom_nav_bar.dart'; // Import your custom BottomNavBar
 
 // Import all the main content screens that will be displayed by the BottomNavBar.
 // Make sure these files exist in your 'lib/screens/' directory.

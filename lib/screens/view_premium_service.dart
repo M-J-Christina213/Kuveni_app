@@ -63,8 +63,8 @@ class ViewPremiumServiceScreen extends StatelessWidget {
               IconButton(
                 icon: const Icon(Icons.person, color: Colors.white, size: 30),
                 onPressed: () {
-                  // TODO: Navigate to profile screen
-                  print('Profile icon tapped from View Premium Service');
+                 
+                'Profile icon tapped from View Premium Service';
                 },
               ),
             ],

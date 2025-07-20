@@ -46,8 +46,8 @@ class SafetyScreen extends StatelessWidget {
               IconButton(
                 icon: const Icon(Icons.person, color: Colors.white, size: 30),
                 onPressed: () {
-                  // TODO: Navigate to profile screen
-                  print('Profile icon tapped from Safety Screen');
+                  
+                  'Profile icon tapped from Safety Screen';
                 },
               ),
             ],

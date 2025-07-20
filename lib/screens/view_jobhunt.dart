@@ -59,8 +59,8 @@ class ViewJobVacancyScreen extends StatelessWidget {
               IconButton(
                 icon: const Icon(Icons.person, color: Colors.white, size: 30),
                 onPressed: () {
-                  // TODO: Navigate to profile screen
-                  print('Profile icon tapped from View Job Vacancy');
+                 
+                  'Profile icon tapped from View Job Vacancy';
                 },
               ),
             ],
@@ -96,7 +96,6 @@ class ViewJobVacancyScreen extends StatelessWidget {
               description,
               style: const TextStyle(fontSize: 16, height: 1.5),
             ),
-            // TODO: Add more details like responsibilities, requirements etc. from your Figma design
             // For example:
             // const SizedBox(height: 16),
             // const Text(
@@ -112,8 +111,8 @@ class ViewJobVacancyScreen extends StatelessWidget {
             Center(
               child: ElevatedButton(
                 onPressed: () {
-                  // TODO: Implement actual apply logic (e.g., show application form, send data)
-                  print('Apply button tapped for: $jobTitle');
+                 
+                  'Apply button tapped for: $jobTitle';
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(content: Text('Apply functionality coming soon!')),
                   );

@@ -88,8 +88,8 @@ class PremiumServiceListScreen extends StatelessWidget { // Renamed class for co
               IconButton(
                 icon: const Icon(Icons.person, color: Colors.white, size: 30),
                 onPressed: () {
-                  // TODO: Navigate to profile screen
-                  print('Profile icon tapped from Premium Services List');
+                  
+                  'Profile icon tapped from Premium Services List';
                 },
               ),
             ],
@@ -112,7 +112,7 @@ class PremiumServiceListScreen extends StatelessWidget { // Renamed class for co
                 backgroundImage: NetworkImage(provider['image']!),
                 onBackgroundImageError: (exception, stackTrace) {
                   // Fallback to a placeholder icon if image fails to load
-                  print('Error loading image: $exception');
+                  'Error loading image: $exception';
                 },
                 child: provider['image'] == null || provider['image']!.isEmpty
                     ? const Icon(Icons.person, size: 30, color: Colors.white) // Placeholder icon

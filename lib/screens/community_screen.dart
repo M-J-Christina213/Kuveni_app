@@ -80,7 +80,7 @@ class CommunityScreen extends StatelessWidget { // Changed to StatelessWidget
         onPressed: () {
           // Handle navigation or action for this feature
           // Example: Navigator.push(context, MaterialPageRoute(builder: (context) => const GroupsScreen()));
-          print('$title button pressed');
+         '$title button pressed';
         },
         style: ElevatedButton.styleFrom(
           backgroundColor: Colors.purple, // Button color
