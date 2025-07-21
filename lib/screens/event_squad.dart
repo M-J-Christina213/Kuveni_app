@@ -1,6 +1,7 @@
 // lib/screens/jobs_main_dashboard.dart
 import 'package:flutter/material.dart';
 import 'package:kuveni_app/screens/post_job.dart';
+// ignore: unused_import
 import 'package:kuveni_app/screens/event_squad.dart'; // UNCOMMENTED: Import for EventSquadForm
 import 'package:kuveni_app/screens/job_huntlist.dart'; // Ensure this is uncommented if you fixed it previously
 import 'package:kuveni_app/screens/premium_servicelist.dart';
@@ -17,6 +18,8 @@ class JobsMainDashboard extends StatefulWidget {
 class _JobsMainDashboardState extends State<JobsMainDashboard> {
   // Controller for the search text field
   final TextEditingController _searchController = TextEditingController();
+  
+  get run => null;
 
   @override
   void dispose() {
@@ -547,4 +550,8 @@ class _JobsMainDashboardState extends State<JobsMainDashboard> {
       ),run 
     );
   }
+}
+
+class EventSquadForm {
+  const EventSquadForm();
 }
