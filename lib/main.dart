@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:kuveni_app/screens/bottom_nav_bar.dart';
 import 'package:kuveni_app/screens/logout_screen.dart';
+import 'package:kuveni_app/screens/splash_screen.dart';
+import 'package:kuveni_app/screens/walkthrough_screen.dart';
 import 'firebase_options.dart';
 
 // Core Screens
@@ -40,10 +42,12 @@ class MyApp extends StatelessWidget {
       ),
       // Set the initial route to your onboarding screen
       // After onboarding, it should navigate to LoginScreen, then to MainScreen.
-      initialRoute: '/onboarding',
+      initialRoute: '/splash',
       routes: {
         // Main application entry point after authentication
         '/': (context) => const MainScreen(),
+        '/splash':(context) => const SplashScreen(),
+        '/walkthrough': (context) => const WalkthroughScreen(),
         '/register': (context) => const RegisterScreen(),
         '/login': (context) => const LoginScreen(),
         '/logout': (context) => const LogoutScreen(),

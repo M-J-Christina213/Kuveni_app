@@ -112,7 +112,8 @@ class _WalkthroughScreenState extends State<WalkthroughScreen> {
                         curve: Curves.easeInOut,
                       );
                     } else {
-                      Navigator.pushReplacementNamed(context, '/home');
+                      Navigator.pushReplacementNamed(context, '/login');
+
                     }
                   },
                   style: ElevatedButton.styleFrom(
