@@ -13,9 +13,9 @@ import 'package:kuveni_app/screens/finance_screen.dart';
 import 'package:kuveni_app/screens/community_screen.dart';
 
 // Jobs Section Screens
-import 'package:kuveni_app/screens/jobs_main_dashboard.dart';
+//import 'package:kuveni_app/screens/jobs_main_dashboard.dart';
 import 'package:kuveni_app/screens/post_job.dart';
-import 'package:kuveni_app/screens/event_squad.dart';
+//import 'package:kuveni_app/screens/event_squad.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -48,13 +48,13 @@ class MyApp extends StatelessWidget {
         '/login': (context) => const LoginScreen(),
         '/logout': (context) => const LogoutScreen(),
         '/home': (context) => const HomeScreen(),
-        '/jobs': (context) => const JobsMainDashboard(),
+        //'/jobs': (context) => const JobsMainDashboard(),
         '/safety': (context) => const SafetyScreen(),
         '/finance': (context) => const FinanceScreen(),
         '/community': (context) => const CommunityScreen(),
-        '/viewJobs': (context) => const JobsMainDashboard(),
+        //'/viewJobs': (context) => const JobsMainDashboard(),
         '/postJob': (context) => const PostJobScreen(),
-        '/eventSquadForm': (context) => const EventSquadForm(),
+        //'/eventSquadForm': (context) => const EventSquadForm(),
       },
     );
   }
@@ -72,7 +72,7 @@ class _MainScreenState extends State<MainScreen> {
 
   final List<Widget> _screens = [
     HomeScreen(),
-    JobsMainDashboard(),
+    //JobsMainDashboard(),
     SafetyScreen(),
     FinanceScreen(),
     CommunityScreen(),
