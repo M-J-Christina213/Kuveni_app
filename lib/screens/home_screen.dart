@@ -2,7 +2,6 @@
 
 import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:kuveni_app/screens/bottom_nav_bar.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -79,26 +78,6 @@ class _HomeScreenState extends State<HomeScreen> {
           _buildQuoteOfTheDaySection(),
         ],
       ),
-    ),
-    bottomNavigationBar: BottomNavBar(
-      currentIndex: 0,
-      onTap: (index) {
-        if (index == 0) return;
-        switch (index) {
-          case 1:
-            Navigator.pushReplacementNamed(context, '/jobs');
-            break;
-          case 2:
-            Navigator.pushReplacementNamed(context, '/safety');
-            break;
-          case 3:
-            Navigator.pushReplacementNamed(context, '/finance');
-            break;
-          case 4:
-            Navigator.pushReplacementNamed(context, '/community');
-            break;
-        }
-      },
     ),
   );
 }
