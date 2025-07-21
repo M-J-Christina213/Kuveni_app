@@ -3,6 +3,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:kuveni_app/screens/notifications_screen.dart';
+import 'package:kuveni_app/screens/inspire_section.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -68,11 +69,11 @@ Widget build(BuildContext context) {
           const SizedBox(height: 12),
           buildResponsiveLayout(context),
           const SizedBox(height: 20),
-          _buildInspireStoriesSection(),
+          InspireStoriesSection(),
           const SizedBox(height: 20),
           _buildChallengeWallSection(),
           const SizedBox(height: 20),
-          _buildSpotlightStoriesSection(),
+          _buildSpotlightStoriesSection(context),
           const SizedBox(height: 20),
           _buildQuoteOfTheDaySection(),
         ],
@@ -183,7 +184,7 @@ Widget build(BuildContext context) {
     return Column(
       children: [
         SizedBox(
-          height: 200,
+          height: 220,
           child: PageView.builder(
             controller: _pageController,
             itemCount: imagePaths.length,
@@ -640,94 +641,7 @@ Widget _buildHealthAndMapSection() {
 }
 }
 // 8) Inspire Personal Stories Section (Redesigned)
-Widget _buildInspireStoriesSection() {
-  return Column(
-    crossAxisAlignment: CrossAxisAlignment.start,
-    children: [
-      Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16),
-        child: Align(
-          alignment: Alignment.centerRight,
-          child: Text(
-            "Inspire Personal Stories",
-            style: TextStyle(
-              fontSize: 24,
-              fontWeight: FontWeight.w600,
-              color: Colors.deepPurple[700],
-            ),
-          ),
-        ),
-      ),
-      const SizedBox(height: 16),
-      Container(
-        margin: const EdgeInsets.symmetric(horizontal: 16),
-        padding: const EdgeInsets.all(20),
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            colors: [Colors.purple.shade50, Colors.white],
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-          ),
-          borderRadius: BorderRadius.circular(20),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.purple.withAlpha(50),
-              blurRadius: 12,
-              offset: const Offset(0, 8),
-            ),
-          ],
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Icon(Icons.format_quote, color: Colors.deepPurple, size: 30),
-            const SizedBox(height: 8),
-            const Text(
-              '“I quit my toxic job last month after 3 years of stress. '
-              'Now I freelance as a content writer and feel free. The journey '
-              'wasn’t easy, but worth every step.”',
-              style: TextStyle(
-                fontStyle: FontStyle.italic,
-                fontSize: 16,
-                height: 1.5,
-                color: Colors.black87,
-              ),
-            ),
-            const SizedBox(height: 16),
-            Row(
-              children: const [
-                Icon(Icons.favorite, color: Colors.pinkAccent),
-                SizedBox(width: 6),
-                Text('24 likes · 5 comments',
-                    style: TextStyle(fontSize: 14, color: Colors.grey)),
-              ],
-            ),
-            const SizedBox(height: 16),
-            Align(
-              alignment: Alignment.centerRight,
-              child: ElevatedButton.icon(
-                onPressed: () {
-                  // New story logic here
-                },
-                icon: const Icon(Icons.add),
-                label: const Text("New Story"),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.deepPurpleAccent,
-                  foregroundColor: Colors.white,
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                ),
-              ),
-            ),
-          ],
-        ),
-      ),
-    ],
-  );
-}
+
 
 
  
@@ -832,7 +746,8 @@ Widget _buildChallengeSquare(String emoji, String label, double width,
 
 
   // 10) Spotlight of Success Stories Section
- Widget _buildSpotlightStoriesSection() {
+ // 10) Spotlight of Success Stories Section
+Widget _buildSpotlightStoriesSection(BuildContext context) {
   return Column(
     crossAxisAlignment: CrossAxisAlignment.start,
     children: [
@@ -847,26 +762,35 @@ Widget _buildChallengeSquare(String emoji, String label, double width,
       const SizedBox(height: 20),
 
       _buildSpotlightCard(
+        context,
         imagePath: 'assets/images/spotlight1.jpg',
         name: 'Miss Shanika Perera',
         occupation: 'English Teacher, Monaragala District',
         tagline: 'Creating opportunities beyond the classroom for girls in remote Sri Lanka.',
+        fullStory:
+            'Miss Shanika Perera has been dedicated to transforming education in remote areas. Through innovative teaching methods and community involvement, she creates opportunities for girls who would otherwise not have access to quality education.',
       ),
       const SizedBox(height: 20),
 
       _buildSpotlightCard(
+        context,
         imagePath: 'assets/images/spotlight2.jpg',
         name: 'Dr. Anjali Nandakumar',
         occupation: 'Pediatric Doctor, Jaffna General Hospital',
         tagline: 'Healing not just children, but generations of hope in the North.',
+        fullStory:
+            'Dr. Anjali Nandakumar works tirelessly at Jaffna General Hospital providing care and hope to children affected by conflict and hardship. Her dedication extends beyond medicine to building a healthier community.',
       ),
       const SizedBox(height: 20),
 
       _buildSpotlightCard(
+        context,
         imagePath: 'assets/images/spotlight3.jfif',
         name: 'Otara Gunewardene',
         occupation: 'Businesswoman, Philanthropist, Animal Rights Activist',
         tagline: 'Paving new paths where compassion meets commerce.',
+        fullStory:
+            'Otara Gunewardene is a trailblazer in business and philanthropy. Her work in animal rights and women empowerment has made a lasting impact in Sri Lanka and beyond.',
         isLast: true,
       ),
 
@@ -875,7 +799,7 @@ Widget _buildChallengeSquare(String emoji, String label, double width,
       Center(
         child: OutlinedButton.icon(
           onPressed: () {
-            // Load more stories
+            _showMoreStoriesDialog(context);
           },
           style: OutlinedButton.styleFrom(
             side: const BorderSide(color: Colors.purple),
@@ -893,11 +817,13 @@ Widget _buildChallengeSquare(String emoji, String label, double width,
   );
 }
 
-Widget _buildSpotlightCard({
+Widget _buildSpotlightCard(
+  BuildContext context, {
   required String imagePath,
   required String name,
   required String occupation,
   required String tagline,
+  required String fullStory,
   bool isLast = false,
 }) {
   return Container(
@@ -967,7 +893,7 @@ Widget _buildSpotlightCard({
               Expanded(
                 child: ElevatedButton(
                   onPressed: () {
-                    // Read story
+                    _showFullStoryDialog(context, name, fullStory);
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.purple,
@@ -985,7 +911,12 @@ Widget _buildSpotlightCard({
               Expanded(
                 child: OutlinedButton(
                   onPressed: () {
-                    // Connect
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text('You are now connected to $name.'),
+                        duration: const Duration(seconds: 2),
+                      ),
+                    );
                   },
                   style: OutlinedButton.styleFrom(
                     side: const BorderSide(color: Colors.purple),
@@ -1001,6 +932,77 @@ Widget _buildSpotlightCard({
           ),
         ],
       ),
+    ),
+  );
+}
+
+void _showFullStoryDialog(BuildContext context, String name, String fullStory) {
+  showDialog(
+    context: context,
+    builder: (context) => AlertDialog(
+      title: Text(name, style: const TextStyle(color: Colors.purple)),
+      content: SingleChildScrollView(
+        child: Text(fullStory),
+      ),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.pop(context),
+          child: const Text('Close'),
+        ),
+      ],
+    ),
+  );
+}
+
+void _showMoreStoriesDialog(BuildContext context) {
+  final List<Map<String, String>> moreStories = [
+    {
+      'name': 'Sunethra Senanayake',
+      'story':
+          'Founder of multiple community projects empowering women and children in Sri Lanka.',
+    },
+    {
+      'name': 'Ayesha Fernando',
+      'story':
+          'A mother and entrepreneur who started a business to support rural women.',
+    },
+    {
+      'name': 'Tharushi Jayasinghe',
+      'story':
+          'An activist focused on environmental sustainability and education.',
+    },
+    {
+      'name': 'Nimali Perera',
+      'story':
+          'A teacher dedicated to improving literacy in underserved communities.',
+    },
+  ];
+
+  showDialog(
+    context: context,
+    builder: (context) => AlertDialog(
+      title: const Text('More Inspiring Stories'),
+      content: SizedBox(
+        width: double.maxFinite,
+        child: ListView.separated(
+          shrinkWrap: true,
+          itemCount: moreStories.length,
+          separatorBuilder: (_, __) => const Divider(),
+          itemBuilder: (context, index) {
+            final story = moreStories[index];
+            return ListTile(
+              title: Text(story['name']!),
+              subtitle: Text(story['story']!),
+            );
+          },
+        ),
+      ),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.pop(context),
+          child: const Text('Close'),
+        ),
+      ],
     ),
   );
 }
