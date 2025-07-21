@@ -51,3 +51,7 @@ class ImageViewerScreen extends StatelessWidget {
     );
   }
 }
+
+extension on ImageChunkEvent {
+  get progress => null;
+}

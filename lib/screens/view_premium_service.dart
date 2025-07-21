@@ -1,8 +1,9 @@
 // lib/screens/view_premium_service.dart
 import 'package:flutter/material.dart';
 import 'package:kuveni_app/screens/checkout.dart';
+import 'package:kuveni_app/screens/image_view_screen.dart';
 import 'package:kuveni_app/screens/profile_screen.dart';
-import 'package:kuveni_app/screens/image_viewer_screen.dart'; // IMPORTANT: Import ImageViewerScreen
+import 'package:kuveni_app/screens/image_view_screen.dart'; // IMPORTANT: Import ImageViewerScreen
 
 class ViewPremiumServiceScreen extends StatelessWidget {
   final String serviceName;
