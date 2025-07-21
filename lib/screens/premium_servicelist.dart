@@ -86,7 +86,6 @@ class PremiumServiceListScreen extends StatelessWidget {
             ),
             centerTitle: true,
             actions: [
-              // Profile Icon - Now functional
               IconButton(
                 icon: const Icon(Icons.person, color: Colors.white, size: 30),
                 onPressed: () {
@@ -109,33 +108,7 @@ class PremiumServiceListScreen extends StatelessWidget {
             margin: const EdgeInsets.symmetric(vertical: 10),
             elevation: 4,
             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
-            child: ListTile(
-              contentPadding: const EdgeInsets.all(16),
-              leading: CircleAvatar(
-                radius: 30,
-                backgroundImage: NetworkImage(provider['image']!),
-                onBackgroundImageError: (exception, stackTrace) {
-                  'Error loading image: $exception';
-                },
-                child: provider['image'] == null || provider['image']!.isEmpty
-                    ? const Icon(Icons.person, size: 30, color: Colors.white)
-                    : null,
-              ),
-              title: Text(provider['name']!, style: const TextStyle(fontWeight: FontWeight.bold)),
-              subtitle: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(provider['service']!),
-                  Row(
-                    children: [
-                      const Icon(Icons.star, color: Colors.amber, size: 16),
-                      Text(" ${provider['rating']}  •  ${provider['location']!}"),
-                    ],
-                  ),
-                  Text(provider['price']!, style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.green)),
-                ],
-              ),
-              trailing: const Icon(Icons.arrow_forward_ios),
+            child: InkWell( // Ensure InkWell wraps the entire Card for full clickability
               onTap: () {
                 Navigator.push(
                   context,
@@ -148,12 +121,42 @@ class PremiumServiceListScreen extends StatelessWidget {
                       rating: provider['rating'].toString(),
                       contactInfo: provider['contact']!,
                       fullDetails: provider['fullDetails']!,
-                      location: provider['location']!, // Pass location
-                      image: provider['image']!, // Pass image
+                      location: provider['location']!,
+                      image: provider['image']!,
                     ),
                   ),
                 );
               },
+              borderRadius: BorderRadius.circular(15), // Match Card's border radius
+              child: ListTile(
+                contentPadding: const EdgeInsets.all(16),
+                leading: CircleAvatar(
+                  radius: 30,
+                  backgroundImage: NetworkImage(provider['image']!),
+                  onBackgroundImageError: (exception, stackTrace) {
+                    print('Error loading image: $exception');
+                  },
+                  child: provider['image'] == null || provider['image']!.isEmpty
+                      ? const Icon(Icons.person, size: 30, color: Colors.white)
+                      : null,
+                ),
+                title: Text(provider['name']!, style: const TextStyle(fontWeight: FontWeight.bold)),
+                subtitle: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(provider['service']!),
+                    Row(
+                      children: [
+                        const Icon(Icons.star, color: Colors.amber, size: 16),
+                        Text(" ${provider['rating']}  •  ${provider['location']!}"),
+                      ],
+                    ),
+                    Text(provider['price']!, style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.green)),
+                  ],
+                ),
+                trailing: const Icon(Icons.arrow_forward_ios),
+                // onTap: is handled by the InkWell wrapping the Card
+              ),
             ),
           );
         },
