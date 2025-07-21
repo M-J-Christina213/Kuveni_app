@@ -1,30 +1,51 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 
 class SplashScreen extends StatefulWidget {
-  const SplashScreen({super.key});
+const SplashScreen({super.key});
 
-  @override
-  State<SplashScreen> createState() => _SplashScreenState();
+@override
+State<SplashScreen> createState() => _SplashScreenState();
 }
 
-//Testing the splash screen
-
 class _SplashScreenState extends State<SplashScreen> {
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.orange[100],
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(Icons.pets, size: 80, color: Colors.orange),
-            SizedBox(height: 20),
-            Text("Welcome to my kuveni app by PixelCoders",
-                style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
-          ],
-        ),
-      ),
-    );
-  }
+ @override
+ void initState() {
+   super.initState();
+
+   // Delay for 3 seconds then navigate to Home
+   Timer(const Duration(seconds: 3), () {
+     Navigator.pushReplacementNamed(context, '/home');
+   });
+ }
+
+ @override
+ Widget build(BuildContext context) {
+   return Scaffold(
+     backgroundColor: const Color(0xFF5902B1),
+     body: Center(
+       child: Column(
+         mainAxisAlignment: MainAxisAlignment.center,
+         children: [
+           // Add your logo image here
+           Image.asset('assets/kuveni_logo.jpg', height: 150),
+           const SizedBox(height: 20),
+           const Text(
+             'Welcome to Kuveni',
+             style: TextStyle(
+               color: Colors.white,
+               fontSize: 28,
+               fontWeight: FontWeight.bold,
+               letterSpacing: 2,
+             ),
+           ),
+           const SizedBox(height: 12),
+           const CircularProgressIndicator(
+             valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+           ),
+         ],
+       ),
+     ),
+   );
+ }
 }
