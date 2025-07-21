@@ -1,6 +1,8 @@
 // lib/screens/view_premium_service.dart
 import 'package:flutter/material.dart';
-import 'package:kuveni_app/screens/checkout.dart'; // IMPORTANT: Import the CheckoutScreen
+import 'package:kuveni_app/screens/checkout.dart';
+import 'package:kuveni_app/screens/profile_screen.dart';
+import 'package:kuveni_app/screens/image_viewer_screen.dart'; // IMPORTANT: Import ImageViewerScreen
 
 class ViewPremiumServiceScreen extends StatelessWidget {
   final String serviceName;
@@ -10,6 +12,8 @@ class ViewPremiumServiceScreen extends StatelessWidget {
   final String rating;
   final String contactInfo;
   final String fullDetails;
+  final String location;
+  final String image; // Ensure 'image' is passed to the constructor
 
   const ViewPremiumServiceScreen({
     super.key,
@@ -19,13 +23,14 @@ class ViewPremiumServiceScreen extends StatelessWidget {
     required this.price,
     required this.rating,
     required this.contactInfo,
-    required this.fullDetails, required location, required image,
+    required this.fullDetails,
+    required this.location, // Added to constructor
+    required this.image, // Added to constructor
   });
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // Custom AppBar with gradient background
       appBar: PreferredSize(
         preferredSize: const Size.fromHeight(80.0),
         child: Container(
@@ -47,11 +52,11 @@ class ViewPremiumServiceScreen extends StatelessWidget {
             leading: IconButton(
               icon: const Icon(Icons.arrow_back, color: Colors.white, size: 30),
               onPressed: () {
-                Navigator.pop(context); // Navigate back to PremiumServiceListScreen
+                Navigator.pop(context);
               },
             ),
             title: Text(
-              serviceName, // Display the service name in the app bar
+              serviceName,
               style: const TextStyle(
                 color: Colors.white,
                 fontSize: 24,
@@ -63,8 +68,10 @@ class ViewPremiumServiceScreen extends StatelessWidget {
               IconButton(
                 icon: const Icon(Icons.person, color: Colors.white, size: 30),
                 onPressed: () {
-                 
-                'Profile icon tapped from View Premium Service';
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => const ProfileScreen()),
+                  );
                 },
               ),
             ],
@@ -76,17 +83,57 @@ class ViewPremiumServiceScreen extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              serviceName,
-              style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: Colors.deepPurple),
+            Center(
+              child: GestureDetector( // Added GestureDetector for image click
+                onTap: () {
+                  if (image.isNotEmpty) {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => ImageViewerScreen(
+                          imageUrl: image,
+                          title: providerName, // Use provider's name as image viewer title
+                        ),
+                      ),
+                    );
+                  } else {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text('No image available to view.')),
+                    );
+                  }
+                },
+                child: Hero( // Added Hero for smooth transition
+                  tag: image, // Use image URL as unique tag
+                  child: CircleAvatar(
+                    radius: 60,
+                    backgroundImage: image.isNotEmpty ? NetworkImage(image) : null,
+                    onBackgroundImageError: (exception, stackTrace) {
+                      print('Error loading image for $providerName: $exception');
+                    },
+                    child: image.isEmpty
+                        ? const Icon(Icons.person, size: 60, color: Colors.white)
+                        : null,
+                  ),
+                ),
+              ),
+            ),
+            const SizedBox(height: 20),
+            Center(
+              child: Text(
+                providerName,
+                style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.deepPurple),
+              ),
             ),
             const SizedBox(height: 8),
-            Text(
-              'Provided by: $providerName',
-              style: TextStyle(fontSize: 16, color: Colors.grey[700]),
+            Center(
+              child: Text(
+                serviceName,
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500, color: Colors.grey[700]),
+              ),
             ),
-            const SizedBox(height: 8),
+            const SizedBox(height: 10),
             Row(
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 const Icon(Icons.star, color: Colors.amber, size: 20),
                 const SizedBox(width: 4),
@@ -94,16 +141,25 @@ class ViewPremiumServiceScreen extends StatelessWidget {
                   '$rating out of 5',
                   style: TextStyle(fontSize: 16, color: Colors.grey[700]),
                 ),
+                const SizedBox(width: 16),
+                const Icon(Icons.location_on, color: Colors.blueGrey, size: 20),
+                const SizedBox(width: 4),
+                Text(
+                  location,
+                  style: TextStyle(fontSize: 16, color: Colors.grey[700]),
+                ),
               ],
             ),
-            const SizedBox(height: 8),
-            Text(
-              'Price: $price',
-              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w600, color: Colors.green),
-            ),
             const SizedBox(height: 16),
+            Center(
+              child: Text(
+                'Price: $price',
+                style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w600, color: Colors.green),
+              ),
+            ),
+            const SizedBox(height: 24),
             const Text(
-              'Service Description:',
+              'About This Service:',
               style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 8),
@@ -113,26 +169,25 @@ class ViewPremiumServiceScreen extends StatelessWidget {
             ),
             const SizedBox(height: 16),
             const Text(
-              'Contact:',
+              'Contact Information:',
               style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 8),
             Text(
               contactInfo,
-              style: const TextStyle(fontSize: 16, color: Colors.blue),
+              style: const TextStyle(fontSize: 16, color: Colors.blue, decoration: TextDecoration.underline),
             ),
             const SizedBox(height: 30),
             Center(
               child: ElevatedButton(
                 onPressed: () {
-                  // Navigate to the CheckoutScreen
                   Navigator.push(
                     context,
                     MaterialPageRoute(builder: (context) => const CheckoutScreen()),
                   );
                 },
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFFEBB41F), // Using an orange/yellow from your gradient
+                  backgroundColor: const Color(0xFFEBB41F),
                   foregroundColor: Colors.white,
                   padding: const EdgeInsets.symmetric(horizontal: 50, vertical: 15),
                   shape: RoundedRectangleBorder(
