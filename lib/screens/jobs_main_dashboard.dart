@@ -79,7 +79,7 @@ class _JobsMainDashboardState extends State<JobsMainDashboard> {
                     borderRadius: BorderRadius.circular(10.0),
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.black.withOpacity(0.1),
+                        color: Colors.black,
                         spreadRadius: 1,
                         blurRadius: 3,
                         offset: const Offset(0, 2),
@@ -96,7 +96,7 @@ class _JobsMainDashboardState extends State<JobsMainDashboard> {
                       contentPadding: const EdgeInsets.symmetric(vertical: 12.0),
                     ),
                     onSubmitted: (query) {
-                      print('Search query: $query');
+                      'Search query: $query';
                     },
                   ),
                 ),

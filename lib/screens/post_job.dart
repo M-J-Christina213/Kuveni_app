@@ -1,7 +1,9 @@
 // lib/screens/post_job.dart
+// ignore_for_file: use_build_context_synchronously
+
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:kuveni_app/models/job.dart';
+import 'package:kuveni_app/models/jobs.dart';
 import 'package:kuveni_app/screens/profile_screen.dart'; // IMPORTANT: Import ProfileScreen
 
 class PostJobScreen extends StatefulWidget {
@@ -54,7 +56,7 @@ class _PostJobScreenState extends State<PostJobScreen> {
         );
         Navigator.pop(context);
       } catch (e) {
-        print("Error posting job: $e");
+        "Error posting job: $e";
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Failed to post job: $e')),
         );

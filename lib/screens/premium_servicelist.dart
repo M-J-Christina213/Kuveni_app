@@ -115,7 +115,7 @@ class PremiumServiceListScreen extends StatelessWidget {
                 radius: 30,
                 backgroundImage: NetworkImage(provider['image']!),
                 onBackgroundImageError: (exception, stackTrace) {
-                  print('Error loading image: $exception');
+                  'Error loading image: $exception';
                 },
                 child: provider['image'] == null || provider['image']!.isEmpty
                     ? const Icon(Icons.person, size: 30, color: Colors.white)

@@ -151,7 +151,7 @@ class _EventSquadFormState extends State<EventSquadForm> {
                 controller: _helpersController,
                 labelText: 'Number of Helpers Required',
                 keyboardType: TextInputType.number,
-                validator: (value) => value!.isEmpty || int.tryParse(value!) == null ? 'Enter a valid number' : null,
+                validator: (value) => value!.isEmpty || int.tryParse(value) == null ? 'Enter a valid number' : null,
               ),
               const SizedBox(height: 10),
               _buildTextFormField(
