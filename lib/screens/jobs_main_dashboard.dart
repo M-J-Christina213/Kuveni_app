@@ -1,11 +1,12 @@
 // lib/screens/jobs_main_dashboard.dart
 import 'package:flutter/material.dart';
 import 'package:kuveni_app/screens/post_job.dart';
-//import 'package:kuveni_app/screens/event_squad.dart';
-//import 'package:kuveni_app/screens/job_huntlist.dart';
+import 'package:kuveni_app/screens/event_squad.dart';
+import 'package:kuveni_app/screens/job_huntlist.dart';
 import 'package:kuveni_app/screens/premium_servicelist.dart';
-import 'package:kuveni_app/screens/checkout.dart'; // Import for direct Checkout navigation
-import 'package:kuveni_app/screens/view_jobhunt.dart'; // Import for _buildJobCard preview
+import 'package:kuveni_app/screens/checkout.dart';
+import 'package:kuveni_app/screens/view_jobhunt.dart';
+import 'package:kuveni_app/screens/profile_screen.dart'; // IMPORTANT: Import the ProfileScreen
 
 class JobsMainDashboard extends StatefulWidget {
   const JobsMainDashboard({super.key});
@@ -15,29 +16,27 @@ class JobsMainDashboard extends StatefulWidget {
 }
 
 class _JobsMainDashboardState extends State<JobsMainDashboard> {
-  // Controller for the search text field
   final TextEditingController _searchController = TextEditingController();
 
   @override
   void dispose() {
-    _searchController.dispose(); // Dispose the controller when the widget is removed
+    _searchController.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // Custom AppBar with gradient background
       appBar: PreferredSize(
-        preferredSize: const Size.fromHeight(120.0), // Increased height for search bar
+        preferredSize: const Size.fromHeight(120.0),
         child: Container(
           decoration: const BoxDecoration(
             gradient: LinearGradient(
               colors: [
-                Color(0xFF5902B1), // Deep Purple
-                Color(0xFF700DB2), // Lighter Purple
-                Color(0xFFF54DB8), // Pink
-                Color(0xFFEBB41F), // Orange/Yellow
+                Color(0xFF5902B1),
+                Color(0xFF700DB2),
+                Color(0xFFF54DB8),
+                Color(0xFFEBB41F),
               ],
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
@@ -51,26 +50,28 @@ class _JobsMainDashboardState extends State<JobsMainDashboard> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    // Placeholder for back button or app logo/title if needed
                     const Text(
-                      'Job Dashboard', // Or your app's logo/name
+                      'Job Dashboard',
                       style: TextStyle(
                         color: Colors.white,
                         fontSize: 24,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
-                    // Profile Icon
+                    // Profile Icon - Now functional
                     IconButton(
                       icon: const Icon(Icons.person, color: Colors.white, size: 30),
-                      onPressed: () {                    
-                        'Profile icon tapped';
+                      onPressed: () {
+                        // Navigate to the ProfileScreen
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => const ProfileScreen()),
+                        );
                       },
                     ),
                   ],
                 ),
                 const SizedBox(height: 10),
-                // Search Bar
                 Container(
                   height: 45,
                   decoration: BoxDecoration(
@@ -78,7 +79,7 @@ class _JobsMainDashboardState extends State<JobsMainDashboard> {
                     borderRadius: BorderRadius.circular(10.0),
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.black,
+                        color: Colors.black.withOpacity(0.1),
                         spreadRadius: 1,
                         blurRadius: 3,
                         offset: const Offset(0, 2),
@@ -91,12 +92,11 @@ class _JobsMainDashboardState extends State<JobsMainDashboard> {
                       hintText: 'Search for jobs...',
                       hintStyle: TextStyle(color: Colors.grey[600]),
                       prefixIcon: Icon(Icons.search, color: Colors.grey[600]),
-                      border: InputBorder.none, // Remove default border
+                      border: InputBorder.none,
                       contentPadding: const EdgeInsets.symmetric(vertical: 12.0),
                     ),
                     onSubmitted: (query) {
-                     
-                      'Search query: $query';
+                      print('Search query: $query');
                     },
                   ),
                 ),
@@ -110,7 +110,6 @@ class _JobsMainDashboardState extends State<JobsMainDashboard> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // "Post a Job" Section
             Card(
               elevation: 4,
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
@@ -158,18 +157,16 @@ class _JobsMainDashboardState extends State<JobsMainDashboard> {
                 ),
               ),
             ),
-
-            // "Event Squad Form" Section
             Card(
               elevation: 4,
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
               margin: const EdgeInsets.only(bottom: 20),
               child: InkWell(
                 onTap: () {
-                 // Navigator.push(
-                  //  context,
-                  //  MaterialPageRoute(builder: (context) => const EventSquadScreen()),
-                 // );
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => const EventSquadForm()),
+                  );
                 },
                 borderRadius: BorderRadius.circular(15),
                 child: Padding(
@@ -207,18 +204,16 @@ class _JobsMainDashboardState extends State<JobsMainDashboard> {
                 ),
               ),
             ),
-
-            // "Job Hunt" Section (View All Jobs)
             Card(
               elevation: 4,
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
               margin: const EdgeInsets.only(bottom: 20),
               child: InkWell(
                 onTap: () {
-                  //Navigator.push(
-                   // context,
-                   // MaterialPageRoute(builder: (context) => const JobHuntListScreen()),
-                  //);
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => const JobHuntListScreen()),
+                  );
                 },
                 borderRadius: BorderRadius.circular(15),
                 child: Padding(
@@ -256,8 +251,6 @@ class _JobsMainDashboardState extends State<JobsMainDashboard> {
                 ),
               ),
             ),
-
-            // "Premium Services" Section (leads to list of services)
             Card(
               elevation: 4,
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
@@ -305,8 +298,6 @@ class _JobsMainDashboardState extends State<JobsMainDashboard> {
                 ),
               ),
             ),
-
-            // "Buy Premium Directly" Section (leads directly to checkout)
             Card(
               elevation: 4,
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
@@ -354,10 +345,7 @@ class _JobsMainDashboardState extends State<JobsMainDashboard> {
                 ),
               ),
             ),
-
             const SizedBox(height: 10),
-
-            // Job Categories/Sections (e.g., Recommended, Applied, Saved)
             const Text(
               'Job Categories',
               style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
@@ -376,17 +364,12 @@ class _JobsMainDashboardState extends State<JobsMainDashboard> {
                 ],
               ),
             ),
-
             const SizedBox(height: 20),
-
-            // Job Listings (Preview)
             const Text(
               'Recent Job Listings (Preview)',
               style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 15),
-            // These are placeholder job cards. The main Job Hunt list now fetches from Firebase.
-            // You might consider removing these if they are no longer needed as a preview.
             _buildJobCard(
               context,
               jobTitle: 'Event Helper Needed',
@@ -409,7 +392,6 @@ class _JobsMainDashboardState extends State<JobsMainDashboard> {
     );
   }
 
-  // Helper widget for category chips
   Widget _buildCategoryChip(String label, bool isSelected) {
     return Padding(
       padding: const EdgeInsets.only(right: 8.0),
@@ -432,7 +414,6 @@ class _JobsMainDashboardState extends State<JobsMainDashboard> {
     );
   }
 
-  // Helper widget for a single job card (used for previews or actual lists)
   Widget _buildJobCard(
     BuildContext context, {
     required String jobTitle,
@@ -441,21 +422,12 @@ class _JobsMainDashboardState extends State<JobsMainDashboard> {
     required String salary,
     required String description,
   }) {
-    // This _buildJobCard in JobsMainDashboard is now just for preview.
-    // The actual navigation to ViewJobVacancyScreen from here should pass the full Job object
-    // if you want to use the updated ViewJobVacancyScreen.
-    // For simplicity of this preview, it's still passing individual strings.
     return Card(
       elevation: 2,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
       margin: const EdgeInsets.only(bottom: 15),
       child: InkWell(
         onTap: () {
-          // Navigate to View Job Vacancy screen
-          // Note: This preview card does not have a full Job object.
-          // If you want to view full details from these preview cards,
-          // you'd need to fetch the job data or pass a dummy Job object.
-          // For now, it passes the hardcoded strings.
           Navigator.push(
             context,
             MaterialPageRoute(
@@ -465,8 +437,6 @@ class _JobsMainDashboardState extends State<JobsMainDashboard> {
                 location: location,
                 salary: salary,
                 description: description,
-                // You would typically pass a Job object here:
-                // job: Job(id: '', jobTitle: jobTitle, ...),
               ),
             ),
           );
@@ -511,7 +481,6 @@ class _JobsMainDashboardState extends State<JobsMainDashboard> {
                 alignment: Alignment.bottomRight,
                 child: TextButton(
                   onPressed: () {
-                    // Navigate to View Job Vacancy screen when "View Details" is tapped
                     Navigator.push(
                       context,
                       MaterialPageRoute(
@@ -521,8 +490,6 @@ class _JobsMainDashboardState extends State<JobsMainDashboard> {
                           location: location,
                           salary: salary,
                           description: description,
-                          // You would typically pass a Job object here:
-                          // job: Job(id: '', jobTitle: jobTitle, ...),
                         ),
                       ),
                     );
@@ -544,12 +511,4 @@ class _JobsMainDashboardState extends State<JobsMainDashboard> {
       ),
     );
   }
-}
-
-class JobHuntListScreen {
-  const JobHuntListScreen();
-}
-
-class EventSquadScreen {
-  const EventSquadScreen();
 }
