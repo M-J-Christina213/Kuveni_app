@@ -67,8 +67,8 @@ class _JobsMainDashboardState extends State<JobsMainDashboard> {
                     IconButton(
                       icon: const Icon(Icons.person, color: Colors.white, size: 30),
                       onPressed: () {
-                        // TODO: Navigate to profile screen
-                        print('Profile icon tapped');
+                        
+                        //print('Profile icon tapped');
                       },
                     ),
                   ],
@@ -82,7 +82,7 @@ class _JobsMainDashboardState extends State<JobsMainDashboard> {
                     borderRadius: BorderRadius.circular(10.0),
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.black.withOpacity(0.1),
+                       // color: Colors.black.withOpacity(0.1),
                         spreadRadius: 1,
                         blurRadius: 3,
                         offset: const Offset(0, 2),
@@ -99,8 +99,7 @@ class _JobsMainDashboardState extends State<JobsMainDashboard> {
                       contentPadding: const EdgeInsets.symmetric(vertical: 12.0),
                     ),
                     onSubmitted: (query) {
-                      // TODO: Implement job search logic
-                      print('Search query: $query');
+                      //print('Search query: $query');
                     },
                   ),
                 ),
@@ -171,10 +170,10 @@ class _JobsMainDashboardState extends State<JobsMainDashboard> {
               child: InkWell(
                 onTap: () {
                   // UNCOMMENTED: Navigation to EventSquadForm
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => const EventSquadForm()), // Navigating to EventSquadForm
-                  );
+                  //Navigator.push(
+                    //context,
+                    //MaterialPageRoute(builder: (context) => const EventSquadForm()), // Navigating to EventSquadForm
+                  //);
                 },
                 borderRadius: BorderRadius.circular(15),
                 child: Padding(
@@ -547,7 +546,7 @@ class _JobsMainDashboardState extends State<JobsMainDashboard> {
             ],
           ),
         ),
-      ),run 
+      ),//run 
     );
   }
 }

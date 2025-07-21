@@ -28,7 +28,7 @@ class _SplashScreenState extends State<SplashScreen> {
          mainAxisAlignment: MainAxisAlignment.center,
          children: [
            // Add your logo image here
-           Image.asset('assets/kuveni_logo.jpg', height: 150),
+           Image.asset('assets/images/logo.jpg', height: 150),
            const SizedBox(height: 20),
            const Text(
              'Welcome to Kuveni',

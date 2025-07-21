@@ -90,8 +90,7 @@ class _JobHuntListScreenState extends State<JobHuntListScreen> {
               IconButton(
                 icon: const Icon(Icons.person, color: Colors.white, size: 30),
                 onPressed: () {
-                  // TODO: Navigate to profile screen
-                  print('Profile icon tapped from Job Hunt List');
+                  //print('Profile icon tapped from Job Hunt List');
                 },
               ),
             ],
