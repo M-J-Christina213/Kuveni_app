@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'goals.dart';
 import 'income.dart';
 import 'expenses.dart';
-import './bottom_nav_bar.dart';
 
 class FinanceScreen extends StatelessWidget {
   final String username;
@@ -17,27 +16,6 @@ class FinanceScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFFFAF9F6),
-      bottomNavigationBar: BottomNavBar(
-        currentIndex: 3,
-        onTap: (index) {
-          if (index == 1) return;
-          switch (index) {
-            case 0:
-              Navigator.pushReplacementNamed(context, '/home');
-              break;
-            case 1:
-              Navigator.pushReplacementNamed(context, '/jobs');
-              break;
-            case 2:
-              Navigator.pushReplacementNamed(context, '/safety');
-              break;
-
-            case 3:
-              Navigator.pushReplacementNamed(context, '/community');
-              break;
-          }
-        },
-      ),
       body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 24),

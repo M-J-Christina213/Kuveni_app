@@ -19,7 +19,7 @@ class ViewPremiumServiceScreen extends StatelessWidget {
     required this.price,
     required this.rating,
     required this.contactInfo,
-    required this.fullDetails,
+    required this.fullDetails, required location, required image,
   });
 
   @override

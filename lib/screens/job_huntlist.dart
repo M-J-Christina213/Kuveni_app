@@ -1,6 +1,7 @@
 // lib/screens/job_huntlist.dart
 import 'package:flutter/material.dart';
-import 'package:kuveni_app/screens/view_jobhunt.dart'; // IMPORTANT: Import the ViewJobVacancyScreen
+import 'package:kuveni_app/screens/view_jobhunt.dart';
+import 'package:kuveni_app/screens/profile_screen.dart'; // IMPORTANT: Import ProfileScreen
 
 class JobHuntListScreen extends StatefulWidget {
   const JobHuntListScreen({super.key});
@@ -10,7 +11,6 @@ class JobHuntListScreen extends StatefulWidget {
 }
 
 class _JobHuntListScreenState extends State<JobHuntListScreen> {
-  // Placeholder list of job data (you'll fetch this from Firebase later)
   final List<Map<String, String>> _jobListings = [
     {
       'jobTitle': 'Event Coordinator Assistant',
@@ -52,29 +52,28 @@ class _JobHuntListScreenState extends State<JobHuntListScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // Custom AppBar with gradient background
       appBar: PreferredSize(
-        preferredSize: const Size.fromHeight(80.0), // Standard AppBar height
+        preferredSize: const Size.fromHeight(80.0),
         child: Container(
           decoration: const BoxDecoration(
             gradient: LinearGradient(
               colors: [
-                Color(0xFF5902B1), // Deep Purple
-                Color(0xFF700DB2), // Lighter Purple
-                Color(0xFFF54DB8), // Pink
-                Color(0xFFEBB41F), // Orange/Yellow
+                Color(0xFF5902B1),
+                Color(0xFF700DB2),
+                Color(0xFFF54DB8),
+                Color(0xFFEBB41F),
               ],
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
             ),
           ),
           child: AppBar(
-            backgroundColor: Colors.transparent, // Make AppBar background transparent
-            elevation: 0, // Remove shadow
+            backgroundColor: Colors.transparent,
+            elevation: 0,
             leading: IconButton(
               icon: const Icon(Icons.arrow_back, color: Colors.white, size: 30),
               onPressed: () {
-                Navigator.pop(context); // Navigate back to JobsMainDashboard
+                Navigator.pop(context);
               },
             ),
             title: const Text(
@@ -85,12 +84,16 @@ class _JobHuntListScreenState extends State<JobHuntListScreen> {
                 fontWeight: FontWeight.bold,
               ),
             ),
-            centerTitle: true, // Center the title
+            centerTitle: true,
             actions: [
+              // Profile Icon - Now functional
               IconButton(
                 icon: const Icon(Icons.person, color: Colors.white, size: 30),
                 onPressed: () {
-                  //print('Profile icon tapped from Job Hunt List');
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => const ProfileScreen()),
+                  );
                 },
               ),
             ],
@@ -122,7 +125,6 @@ class _JobHuntListScreenState extends State<JobHuntListScreen> {
     );
   }
 
-  // Helper widget for a single job card (reused from JobsMainDashboard)
   Widget _buildJobCard(
     BuildContext context, {
     required String jobTitle,
@@ -137,7 +139,6 @@ class _JobHuntListScreenState extends State<JobHuntListScreen> {
       margin: const EdgeInsets.only(bottom: 15),
       child: InkWell(
         onTap: () {
-          // Navigate to ViewJobVacancyScreen, passing job details
           Navigator.push(
             context,
             MaterialPageRoute(
@@ -147,7 +148,6 @@ class _JobHuntListScreenState extends State<JobHuntListScreen> {
                 location: location,
                 salary: salary,
                 description: description,
-                // You can pass more details here if your ViewJobVacancyScreen needs them
               ),
             ),
           );
@@ -192,7 +192,6 @@ class _JobHuntListScreenState extends State<JobHuntListScreen> {
                 alignment: Alignment.bottomRight,
                 child: TextButton(
                   onPressed: () {
-                    // Navigate to ViewJobVacancyScreen when "View Details" is tapped
                     Navigator.push(
                       context,
                       MaterialPageRoute(

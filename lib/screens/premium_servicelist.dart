@@ -1,8 +1,9 @@
 // lib/screens/premium_servicelist.dart
 import 'package:flutter/material.dart';
-import 'package:kuveni_app/screens/view_premium_service.dart'; // Ensure this import is correct
+import 'package:kuveni_app/screens/view_premium_service.dart';
+import 'package:kuveni_app/screens/profile_screen.dart'; // IMPORTANT: Import ProfileScreen
 
-class PremiumServiceListScreen extends StatelessWidget { // Renamed class for consistency
+class PremiumServiceListScreen extends StatelessWidget {
   const PremiumServiceListScreen({super.key});
 
   final List<Map<String, dynamic>> sampleProviders = const [
@@ -11,10 +12,10 @@ class PremiumServiceListScreen extends StatelessWidget { // Renamed class for co
       'service': 'Nanny (Upper Class)',
       'rating': 4.9,
       'location': 'Colombo 07',
-      'image': 'https://i.imgur.com/N8DqKfT.png', // Ensure these image URLs are valid or use local assets
-      'price': 'LKR 75,000/month', // Added price for consistency with ViewPremiumServiceScreen
-      'contact': 'tharushi@example.com', // Added contact for consistency
-      'fullDetails': 'Experienced and certified nanny providing premium care for children in Colombo 07. Specializes in early childhood development and personalized attention.', // Added fullDetails
+      'image': 'https://i.imgur.com/N8DqKfT.png',
+      'price': 'LKR 75,000/month',
+      'contact': 'tharushi@example.com',
+      'fullDetails': 'Experienced and certified nanny providing premium care for children in Colombo 07. Specializes in early childhood development and personalized attention.',
     },
     {
       'name': 'Nisansala De Silva',
@@ -41,7 +42,7 @@ class PremiumServiceListScreen extends StatelessWidget { // Renamed class for co
       'service': 'Yoga Instructor',
       'rating': 4.9,
       'location': 'Online/Colombo',
-      'image': 'https://placehold.co/60x60/FFD700/000000?text=PS', // Placeholder if no image
+      'image': 'https://placehold.co/60x60/FFD700/000000?text=PS',
       'price': 'LKR 3,000/session',
       'contact': 'priya@example.com',
       'fullDetails': 'Certified yoga instructor offering private and group sessions. Focus on mindfulness, flexibility, and strength. Suitable for all levels.',
@@ -52,27 +53,27 @@ class PremiumServiceListScreen extends StatelessWidget { // Renamed class for co
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: PreferredSize(
-        preferredSize: const Size.fromHeight(80.0), // Standard AppBar height
+        preferredSize: const Size.fromHeight(80.0),
         child: Container(
           decoration: const BoxDecoration(
             gradient: LinearGradient(
               colors: [
-                Color(0xFF5902B1), // Deep Purple
-                Color(0xFF700DB2), // Lighter Purple
-                Color(0xFFF54DB8), // Pink
-                Color(0xFFEBB41F), // Orange/Yellow
+                Color(0xFF5902B1),
+                Color(0xFF700DB2),
+                Color(0xFFF54DB8),
+                Color(0xFFEBB41F),
               ],
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
             ),
           ),
           child: AppBar(
-            backgroundColor: Colors.transparent, // Make AppBar background transparent
-            elevation: 0, // Remove shadow
+            backgroundColor: Colors.transparent,
+            elevation: 0,
             leading: IconButton(
               icon: const Icon(Icons.arrow_back, color: Colors.white, size: 30),
               onPressed: () {
-                Navigator.pop(context); // Navigate back
+                Navigator.pop(context);
               },
             ),
             title: const Text(
@@ -83,13 +84,16 @@ class PremiumServiceListScreen extends StatelessWidget { // Renamed class for co
                 fontWeight: FontWeight.bold,
               ),
             ),
-            centerTitle: true, // Center the title
+            centerTitle: true,
             actions: [
+              // Profile Icon - Now functional
               IconButton(
                 icon: const Icon(Icons.person, color: Colors.white, size: 30),
                 onPressed: () {
-                  
-                  'Profile icon tapped from Premium Services List';
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => const ProfileScreen()),
+                  );
                 },
               ),
             ],
@@ -111,11 +115,10 @@ class PremiumServiceListScreen extends StatelessWidget { // Renamed class for co
                 radius: 30,
                 backgroundImage: NetworkImage(provider['image']!),
                 onBackgroundImageError: (exception, stackTrace) {
-                  // Fallback to a placeholder icon if image fails to load
                   'Error loading image: $exception';
                 },
                 child: provider['image'] == null || provider['image']!.isEmpty
-                    ? const Icon(Icons.person, size: 30, color: Colors.white) // Placeholder icon
+                    ? const Icon(Icons.person, size: 30, color: Colors.white)
                     : null,
               ),
               title: Text(provider['name']!, style: const TextStyle(fontWeight: FontWeight.bold)),
@@ -134,18 +137,19 @@ class PremiumServiceListScreen extends StatelessWidget { // Renamed class for co
               ),
               trailing: const Icon(Icons.arrow_forward_ios),
               onTap: () {
-                // Navigate to ViewPremiumServiceScreen, passing all provider details
                 Navigator.push(
                   context,
                   MaterialPageRoute(
                     builder: (context) => ViewPremiumServiceScreen(
                       serviceName: provider['service']!,
-                      description: provider['description']!, // Using 'description' for fullDetails
+                      description: provider['description']!,
                       providerName: provider['name']!,
                       price: provider['price']!,
-                      rating: provider['rating'].toString(), // Convert double to String
+                      rating: provider['rating'].toString(),
                       contactInfo: provider['contact']!,
                       fullDetails: provider['fullDetails']!,
+                      location: provider['location']!, // Pass location
+                      image: provider['image']!, // Pass image
                     ),
                   ),
                 );
