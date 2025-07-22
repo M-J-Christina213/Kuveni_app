@@ -1,4 +1,5 @@
-// lib/screens/session.dart
+// ignore_for_file: file_names
+
 import 'package:flutter/material.dart';
 import 'package:kuveni_app/screens/profile_screen.dart'; // IMPORTANT: Import ProfileScreen
 

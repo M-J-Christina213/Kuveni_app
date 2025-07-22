@@ -156,7 +156,7 @@ class _HelpersListScreenState extends State<HelpersListScreen> {
                     borderRadius: BorderRadius.circular(10.0),
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.black.withOpacity(0.1),
+                        color: Colors.black,
                         spreadRadius: 1,
                         blurRadius: 3,
                         offset: const Offset(0, 2),
@@ -231,7 +231,7 @@ class _HelpersListScreenState extends State<HelpersListScreen> {
                                 radius: 28,
                                 backgroundImage: NetworkImage(helper['image']!),
                                 onBackgroundImageError: (exception, stackTrace) {
-                                  print('Error loading helper image: $exception');
+                                  ('Error loading helper image: $exception');
                                 },
                                 child: helper['image'] == null || helper['image']!.isEmpty
                                     ? const Icon(Icons.person, size: 30, color: Colors.white)
