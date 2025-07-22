@@ -33,7 +33,7 @@ class _LoginScreenState extends State<LoginScreen> {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Logged in Successfully!')),
         );
-        Navigator.pushReplacementNamed(context, '/home');
+        Navigator.pushReplacementNamed(context, '/');
       }
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(

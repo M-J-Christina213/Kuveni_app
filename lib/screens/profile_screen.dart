@@ -56,18 +56,18 @@ class ProfileScreen extends StatelessWidget {
             ),
             SizedBox(height: 20),
             Text(
-              'User Name', // Replace with actual user name from authentication
+              'Christina', // Replace with actual user name from authentication
               style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
             ),
             SizedBox(height: 10),
             Text(
-              'user.email@example.com', // Replace with actual user email
+              'christina@gmail.com', // Replace with actual user email
               style: TextStyle(fontSize: 16, color: Colors.grey),
             ),
             SizedBox(height: 30),
             // Add more profile details or options here
             Text(
-              'This is your profile page!',
+              'My profile',
               style: TextStyle(fontSize: 18, fontStyle: FontStyle.italic),
             ),
             Text(

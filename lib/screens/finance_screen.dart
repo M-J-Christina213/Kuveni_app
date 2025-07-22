@@ -8,7 +8,7 @@ import 'expenses.dart';
 class FinanceScreen extends StatelessWidget {
   final String username;
 
-  const FinanceScreen({super.key, this.username = "Bhagya"});
+  const FinanceScreen({super.key, this.username = "Christina"});
 
   static const Color lavenderPurple = Color(0xFFD6C9F8);
 
@@ -24,7 +24,7 @@ class FinanceScreen extends StatelessWidget {
             children: [
               const CircleAvatar(
                 radius: 50,
-                backgroundImage: AssetImage('assets/images/profilepic.png'),
+                backgroundImage: AssetImage('assets/images/profile_pic.jfif'),
               ),
               const SizedBox(height: 12),
               Text(

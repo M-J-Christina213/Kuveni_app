@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-class CommunityScreen extends StatelessWidget {
-  const CommunityScreen({super.key});
+class GroupDetailScreen extends StatelessWidget {
+  const GroupDetailScreen({super.key});
 
   final List<Map<String, dynamic>> groups = const [
     {
