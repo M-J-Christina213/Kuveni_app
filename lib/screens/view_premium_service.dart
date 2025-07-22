@@ -1,7 +1,11 @@
 // lib/screens/view_premium_service.dart
 import 'package:flutter/material.dart';
 import 'package:kuveni_app/screens/checkout.dart';
+<<<<<<< HEAD
 import 'package:kuveni_app/screens/image_view_screen.dart';
+=======
+import 'package:kuveni_app/screens/image_viewer_screen.dart';
+>>>>>>> 77c335455b89c2384c395bde4a377fdd2a5da44f
 import 'package:kuveni_app/screens/profile_screen.dart';
 
 class ViewPremiumServiceScreen extends StatelessWidget {
@@ -108,7 +112,11 @@ class ViewPremiumServiceScreen extends StatelessWidget {
                     radius: 60,
                     backgroundImage: image.isNotEmpty ? NetworkImage(image) : null,
                     onBackgroundImageError: (exception, stackTrace) {
+<<<<<<< HEAD
                       ('Error loading image for $providerName: $exception'); // Corrected print statement
+=======
+                      ('Error loading image for $providerName: $exception');
+>>>>>>> 77c335455b89c2384c395bde4a377fdd2a5da44f
                     },
                     child: image.isEmpty
                         ? const Icon(Icons.person, size: 60, color: Colors.white)

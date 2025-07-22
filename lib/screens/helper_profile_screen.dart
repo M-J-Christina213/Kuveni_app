@@ -3,7 +3,11 @@
 
 import 'package:flutter/material.dart';
 import 'package:kuveni_app/screens/profile_screen.dart'; // For the main profile icon
+<<<<<<< HEAD
 import 'package:kuveni_app/screens/image_view_screen.dart'; 
+=======
+import 'package:kuveni_app/screens/image_viewer_screen.dart'; // For full-screen image view
+>>>>>>> 77c335455b89c2384c395bde4a377fdd2a5da44f
 
 class HelperProfileScreen extends StatelessWidget {
   final String name;
@@ -106,7 +110,11 @@ class HelperProfileScreen extends StatelessWidget {
                   radius: 80,
                   backgroundImage: image.isNotEmpty ? NetworkImage(image) : null,
                   onBackgroundImageError: (exception, stackTrace) {
+<<<<<<< HEAD
                   ('Error loading helper profile image: $exception');
+=======
+                    ('Error loading helper profile image: $exception');
+>>>>>>> 77c335455b89c2384c395bde4a377fdd2a5da44f
                   },
                   child: image.isEmpty
                       ? const Icon(Icons.person, size: 80, color: Colors.white)
@@ -183,7 +191,11 @@ class HelperProfileScreen extends StatelessWidget {
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(content: Text('Requesting service from ${name} (Coming Soon!)')),
                 );
+<<<<<<< HEAD
                 
+=======
+               
+>>>>>>> 77c335455b89c2384c395bde4a377fdd2a5da44f
               },
               style: ElevatedButton.styleFrom(
                 backgroundColor: const Color(0xFFEBB41F), // Orange/Yellow
@@ -204,4 +216,8 @@ class HelperProfileScreen extends StatelessWidget {
       ),
     );
   }
+<<<<<<< HEAD
 }
+=======
+}
+>>>>>>> 77c335455b89c2384c395bde4a377fdd2a5da44f
