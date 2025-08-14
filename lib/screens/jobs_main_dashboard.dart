@@ -5,7 +5,6 @@ import 'package:kuveni_app/screens/event_squad.dart';
 import 'package:kuveni_app/screens/job_huntlist.dart';
 import 'package:kuveni_app/screens/premium_servicelist.dart';
 import 'package:kuveni_app/screens/checkout.dart';
-import 'package:kuveni_app/screens/view_jobhunt.dart';
 import 'package:kuveni_app/screens/profile_screen.dart'; // IMPORTANT: Import the ProfileScreen
 
 class JobsMainDashboard extends StatefulWidget {
@@ -96,7 +95,7 @@ class _JobsMainDashboardState extends State<JobsMainDashboard> {
                       contentPadding: const EdgeInsets.symmetric(vertical: 12.0),
                     ),
                     onSubmitted: (query) {
-                      'Search query: $query';
+                      // This will be implemented when we connect to the backend
                     },
                   ),
                 ),
@@ -345,168 +344,7 @@ class _JobsMainDashboardState extends State<JobsMainDashboard> {
                 ),
               ),
             ),
-            const SizedBox(height: 10),
-            const Text(
-              'Job Categories',
-              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 10),
-            SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-              child: Row(
-                children: [
-                  _buildCategoryChip('All Jobs', true),
-                  _buildCategoryChip('Recommended', false),
-                  _buildCategoryChip('Applied', false),
-                  _buildCategoryChip('Saved', false),
-                  _buildCategoryChip('Full-time', false),
-                  _buildCategoryChip('Part-time', false),
-                ],
-              ),
-            ),
-            const SizedBox(height: 20),
-            const Text(
-              'Recent Job Listings (Preview)',
-              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 15),
-            _buildJobCard(
-              context,
-              jobTitle: 'Event Helper Needed',
-              company: 'City Events Co.',
-              location: 'Colombo',
-              salary: 'LKR 5000/day',
-              description: 'Seeking energetic individuals for event setup and guest assistance.',
-            ),
-            _buildJobCard(
-              context,
-              jobTitle: 'Home Cleaner',
-              company: 'Individual Client',
-              location: 'Kandy',
-              salary: 'LKR 3000/task',
-              description: 'Looking for a reliable cleaner for weekly home maintenance.',
-            ),
           ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildCategoryChip(String label, bool isSelected) {
-    return Padding(
-      padding: const EdgeInsets.only(right: 8.0),
-      child: Chip(
-        label: Text(label),
-        backgroundColor: isSelected ? Colors.deepPurple[100] : Colors.grey[200],
-        labelStyle: TextStyle(
-          color: isSelected ? Colors.deepPurple : Colors.black87,
-          fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
-        ),
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(20),
-          side: BorderSide(
-            color: isSelected ? Colors.deepPurple : Colors.grey[300]!,
-            width: 1,
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildJobCard(
-    BuildContext context, {
-    required String jobTitle,
-    required String company,
-    required String location,
-    required String salary,
-    required String description,
-  }) {
-    return Card(
-      elevation: 2,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-      margin: const EdgeInsets.only(bottom: 15),
-      child: InkWell(
-        onTap: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => ViewJobVacancyScreen(
-                jobTitle: jobTitle,
-                company: company,
-                location: location,
-                salary: salary,
-                description: description,
-              ),
-            ),
-          );
-        },
-        borderRadius: BorderRadius.circular(10),
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                jobTitle,
-                style: const TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.deepPurple,
-                ),
-              ),
-              const SizedBox(height: 5),
-              Text(
-                '$company - $location',
-                style: TextStyle(fontSize: 14, color: Colors.grey[700]),
-              ),
-              const SizedBox(height: 5),
-              Text(
-                salary,
-                style: const TextStyle(
-                  fontSize: 15,
-                  fontWeight: FontWeight.w600,
-                  color: Colors.green,
-                ),
-              ),
-              const SizedBox(height: 10),
-              Text(
-                description,
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
-                style: TextStyle(fontSize: 14, color: Colors.grey[800]),
-              ),
-              const SizedBox(height: 10),
-              Align(
-                alignment: Alignment.bottomRight,
-                child: TextButton(
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => ViewJobVacancyScreen(
-                          jobTitle: jobTitle,
-                          company: company,
-                          location: location,
-                          salary: salary,
-                          description: description,
-                        ),
-                      ),
-                    );
-                  },
-                  style: TextButton.styleFrom(
-                    foregroundColor: Colors.deepPurple,
-                    padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 8),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8),
-                      side: const BorderSide(color: Colors.deepPurple),
-                    ),
-                  ),
-                  child: const Text('View Details'),
-                ),
-              ),
-            ],
-          ),
         ),
       ),
     );
