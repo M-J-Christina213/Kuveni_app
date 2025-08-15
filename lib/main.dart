@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:firebase_core/firebase_core.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:kuveni_app/screens/bottom_nav_bar.dart';
 import 'package:kuveni_app/screens/event_squad.dart';
 import 'package:kuveni_app/screens/jobs_main_dashboard.dart';
 import 'package:kuveni_app/screens/logout_screen.dart';
 import 'package:kuveni_app/screens/splash_screen.dart';
 import 'package:kuveni_app/screens/walkthrough_screen.dart';
-import 'firebase_options.dart';
 
 // Core Screens
 import 'package:kuveni_app/screens/home_screen.dart';
@@ -17,15 +17,19 @@ import 'package:kuveni_app/screens/finance_screen.dart';
 import 'package:kuveni_app/screens/community_screen.dart';
 
 // Jobs Section Screens
-//import 'package:kuveni_app/screens/jobs_main_dashboard.dart';
 import 'package:kuveni_app/screens/post_job.dart';
-//import 'package:kuveni_app/screens/event_squad.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform,
-  ); // Initialize Firebase
+
+  // Load environment variables from .env file
+  await dotenv.load(fileName: ".env");
+
+  // Supabase initialization with URL and anon key from .env
+  await Supabase.initialize(
+    url: dotenv.env['SUPABASE_URL']!,
+    anonKey: dotenv.env['SUPABASE_ANON_KEY']!,
+  );
 
   runApp(const MyApp());
 }
@@ -43,12 +47,11 @@ class MyApp extends StatelessWidget {
         useMaterial3: true,
       ),
       // Set the initial route to your onboarding screen
-      // After onboarding, it should navigate to LoginScreen, then to MainScreen.
       initialRoute: '/splash',
       routes: {
         // Main application entry point after authentication
         '/': (context) => const MainScreen(),
-        '/splash':(context) => const SplashScreen(),
+        '/splash': (context) => const SplashScreen(),
         '/walkthrough': (context) => const WalkthroughScreen(),
         '/register': (context) => const RegisterScreen(),
         '/login': (context) => const LoginScreen(),
@@ -60,7 +63,8 @@ class MyApp extends StatelessWidget {
         '/community': (context) => const CommunityScreen(),
         '/viewJobs': (context) => const JobsMainDashboard(),
         '/postJob': (context) => const PostJobScreen(),
-        '/eventSquadForm': (context) => const EventSquadForm(),
+        // This is the updated route to the Supabase-enabled EventSquadScreen
+        '/eventSquadForm': (context) => const EventSquadScreen(),
       },
     );
   }
@@ -77,11 +81,11 @@ class _MainScreenState extends State<MainScreen> {
   int _selectedIndex = 0;
 
   final List<Widget> _screens = [
-    HomeScreen(),
-    JobsMainDashboard(),
-    SafetyScreen(),
-    FinanceScreen(),
-    CommunityScreen(),
+    const HomeScreen(),
+    const JobsMainDashboard(),
+    const SafetyScreen(),
+    const FinanceScreen(),
+    const CommunityScreen(),
   ];
 
   void _onItemTapped(int index) {

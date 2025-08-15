@@ -1,11 +1,11 @@
-// lib/screens/jobs_main_dashboard.dart
 import 'package:flutter/material.dart';
 import 'package:kuveni_app/screens/post_job.dart';
 import 'package:kuveni_app/screens/event_squad.dart';
 import 'package:kuveni_app/screens/job_huntlist.dart';
 import 'package:kuveni_app/screens/premium_servicelist.dart';
 import 'package:kuveni_app/screens/checkout.dart';
-import 'package:kuveni_app/screens/profile_screen.dart'; // IMPORTANT: Import the ProfileScreen
+import 'package:kuveni_app/screens/profile_screen.dart';
+import 'package:kuveni_app/screens/dashboard_card.dart'; // Import the new reusable card widget
 
 class JobsMainDashboard extends StatefulWidget {
   const JobsMainDashboard({super.key});
@@ -57,11 +57,9 @@ class _JobsMainDashboardState extends State<JobsMainDashboard> {
                         fontWeight: FontWeight.bold,
                       ),
                     ),
-                    // Profile Icon - Now functional
                     IconButton(
                       icon: const Icon(Icons.person, color: Colors.white, size: 30),
                       onPressed: () {
-                        // Navigate to the ProfileScreen
                         Navigator.push(
                           context,
                           MaterialPageRoute(builder: (context) => const ProfileScreen()),
@@ -109,240 +107,41 @@ class _JobsMainDashboardState extends State<JobsMainDashboard> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Card(
-              elevation: 4,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
-              margin: const EdgeInsets.only(bottom: 20),
-              child: InkWell(
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => const PostJobScreen()),
-                  );
-                },
-                borderRadius: BorderRadius.circular(15),
-                child: Padding(
-                  padding: const EdgeInsets.all(20.0),
-                  child: Row(
-                    children: [
-                      Icon(Icons.add_circle_outline, size: 40, color: Colors.deepPurple[400]),
-                      const SizedBox(width: 15),
-                      const Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              'Post a Job',
-                              style: TextStyle(
-                                fontSize: 20,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.black87,
-                              ),
-                            ),
-                            SizedBox(height: 5),
-                            Text(
-                              'Reach out to thousands of helpers!',
-                              style: TextStyle(
-                                fontSize: 14,
-                                color: Colors.grey,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      const Icon(Icons.arrow_forward_ios, color: Colors.grey),
-                    ],
-                  ),
-                ),
-              ),
+            // Use the new DashboardCard widget
+            DashboardCard(
+              title: 'Post a Job',
+              subtitle: 'Reach out to thousands of helpers!',
+              icon: Icons.add_circle_outline,
+              iconColor: Colors.deepPurple[400]!,
+              destinationScreen: const PostJobScreen(),
             ),
-            Card(
-              elevation: 4,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
-              margin: const EdgeInsets.only(bottom: 20),
-              child: InkWell(
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => const EventSquadForm()),
-                  );
-                },
-                borderRadius: BorderRadius.circular(15),
-                child: Padding(
-                  padding: const EdgeInsets.all(20.0),
-                  child: Row(
-                    children: [
-                      Icon(Icons.event_note, size: 40, color: Colors.orange[400]),
-                      const SizedBox(width: 15),
-                      const Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              'Event Squad Form',
-                              style: TextStyle(
-                                fontSize: 20,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.black87,
-                              ),
-                            ),
-                            SizedBox(height: 5),
-                            Text(
-                              'Request helpers for your events!',
-                              style: TextStyle(
-                                fontSize: 14,
-                                color: Colors.grey,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      const Icon(Icons.arrow_forward_ios, color: Colors.grey),
-                    ],
-                  ),
-                ),
-              ),
+            DashboardCard(
+              title: 'Event Squad Form',
+              subtitle: 'Request helpers for your events!',
+              icon: Icons.event_note,
+              iconColor: Colors.orange[400]!,
+              destinationScreen: const EventSquadForm(),
             ),
-            Card(
-              elevation: 4,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
-              margin: const EdgeInsets.only(bottom: 20),
-              child: InkWell(
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => const JobHuntListScreen()),
-                  );
-                },
-                borderRadius: BorderRadius.circular(15),
-                child: Padding(
-                  padding: const EdgeInsets.all(20.0),
-                  child: Row(
-                    children: [
-                      Icon(Icons.search_rounded, size: 40, color: Colors.blue[400]),
-                      const SizedBox(width: 15),
-                      const Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              'Job Hunt',
-                              style: TextStyle(
-                                fontSize: 20,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.black87,
-                              ),
-                            ),
-                            SizedBox(height: 5),
-                            Text(
-                              'Explore available job vacancies!',
-                              style: TextStyle(
-                                fontSize: 14,
-                                color: Colors.grey,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      const Icon(Icons.arrow_forward_ios, color: Colors.grey),
-                    ],
-                  ),
-                ),
-              ),
+            DashboardCard(
+              title: 'Job Hunt',
+              subtitle: 'Explore available job vacancies!',
+              icon: Icons.search_rounded,
+              iconColor: Colors.blue[400]!,
+              destinationScreen: const JobHuntListScreen(),
             ),
-            Card(
-              elevation: 4,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
-              margin: const EdgeInsets.only(bottom: 20),
-              child: InkWell(
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => const PremiumServiceListScreen()),
-                  );
-                },
-                borderRadius: BorderRadius.circular(15),
-                child: Padding(
-                  padding: const EdgeInsets.all(20.0),
-                  child: Row(
-                    children: [
-                      Icon(Icons.workspace_premium, size: 40, color: Colors.amber[700]),
-                      const SizedBox(width: 15),
-                      const Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              'Premium Services',
-                              style: TextStyle(
-                                fontSize: 20,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.black87,
-                              ),
-                            ),
-                            SizedBox(height: 5),
-                            Text(
-                              'Discover exclusive helper services!',
-                              style: TextStyle(
-                                fontSize: 14,
-                                color: Colors.grey,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      const Icon(Icons.arrow_forward_ios, color: Colors.grey),
-                    ],
-                  ),
-                ),
-              ),
+            DashboardCard(
+              title: 'Premium Services',
+              subtitle: 'Discover exclusive helper services!',
+              icon: Icons.workspace_premium,
+              iconColor: Colors.amber[700]!,
+              destinationScreen: const PremiumServiceListScreen(),
             ),
-            Card(
-              elevation: 4,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
-              margin: const EdgeInsets.only(bottom: 20),
-              child: InkWell(
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => const CheckoutScreen()),
-                  );
-                },
-                borderRadius: BorderRadius.circular(15),
-                child: Padding(
-                  padding: const EdgeInsets.all(20.0),
-                  child: Row(
-                    children: [
-                      Icon(Icons.shopping_cart, size: 40, color: Colors.pink[400]),
-                      const SizedBox(width: 15),
-                      const Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              'Buy Premium Now',
-                              style: TextStyle(
-                                fontSize: 20,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.black87,
-                              ),
-                            ),
-                            SizedBox(height: 5),
-                            Text(
-                              'Access all premium features instantly!',
-                              style: TextStyle(
-                                fontSize: 14,
-                                color: Colors.grey,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      const Icon(Icons.arrow_forward_ios, color: Colors.grey),
-                    ],
-                  ),
-                ),
-              ),
+            DashboardCard(
+              title: 'Buy Premium Now',
+              subtitle: 'Access all premium features instantly!',
+              icon: Icons.shopping_cart,
+              iconColor: Colors.pink[400]!,
+              destinationScreen: const CheckoutScreen(),
             ),
           ],
         ),

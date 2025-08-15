@@ -1,66 +1,96 @@
-// ignore_for_file: depend_on_referenced_packages, use_build_context_synchronously
-
 import 'package:flutter/material.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:intl/intl.dart';
-import 'package:kuveni_app/screens/profile_screen.dart'; // IMPORTANT: Import ProfileScreen
+import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:fluttertoast/fluttertoast.dart'; // Make sure you've added this dependency
 
-class EventSquadForm extends StatefulWidget {
-  const EventSquadForm({super.key});
+class EventSquadScreen extends StatefulWidget {
+  const EventSquadScreen({super.key});
 
   @override
-  State<EventSquadForm> createState() => _EventSquadFormState();
+  State<EventSquadScreen> createState() => _EventSquadScreenState();
 }
 
-class _EventSquadFormState extends State<EventSquadForm> {
+class _EventSquadScreenState extends State<EventSquadScreen> {
+  // Supabase client instance
+  final supabase = Supabase.instance.client;
+
+  // Form key for validation
   final _formKey = GlobalKey<FormState>();
-  final _eventNameController = TextEditingController();
+
+  // Text controllers for form fields
+  final _titleController = TextEditingController();
+  final _descriptionController = TextEditingController();
+  final _budgetController = TextEditingController();
   final _locationController = TextEditingController();
-  final _helpersController = TextEditingController();
-  final _helpTypeController = TextEditingController();
   final _contactController = TextEditingController();
 
-  DateTime? _selectedDate;
+  // Loading state
+  bool _isLoading = false;
 
-  Future<void> _submitForm() async {
-    if (_formKey.currentState!.validate() && _selectedDate != null) {
-      try {
-        await FirebaseFirestore.instance.collection('event_squad_requests').add({
-          'event_name': _eventNameController.text,
-          'event_date': _selectedDate!.toIso8601String(),
-          'location': _locationController.text,
-          'helpers_required': int.parse(_helpersController.text),
-          'type_of_help': _helpTypeController.text,
-          'contact': _contactController.text,
-          'timestamp': FieldValue.serverTimestamp(),
-        });
-
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Form submitted successfully!')),
-        );
-
-        _formKey.currentState!.reset();
-        setState(() {
-          _selectedDate = null;
-        });
-      } catch (e) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error: $e')),
-        );
-      }
-    }
+  @override
+  void dispose() {
+    _titleController.dispose();
+    _descriptionController.dispose();
+    _budgetController.dispose();
+    _locationController.dispose();
+    _contactController.dispose();
+    super.dispose();
   }
 
-  Future<void> _pickDate(BuildContext context) async {
-    final DateTime? picked = await showDatePicker(
-      context: context,
-      initialDate: DateTime.now(),
-      firstDate: DateTime.now(),
-      lastDate: DateTime(2100),
-    );
-    if (picked != null) {
+  Future<void> _postJob() async {
+    if (!_formKey.currentState!.validate()) {
+      return;
+    }
+
+    setState(() {
+      _isLoading = true;
+    });
+
+    try {
+      final jobData = {
+        'title': _titleController.text,
+        'description': _descriptionController.text,
+        'budget': double.parse(_budgetController.text),
+        'location': _locationController.text,
+        'contact_info': _contactController.text,
+        'created_at': DateTime.now().toIso8601String(),
+      };
+
+      await supabase.from('event_squads').insert(jobData);
+
+      Fluttertoast.showToast(
+        msg: "Job posted successfully!",
+        toastLength: Toast.LENGTH_SHORT,
+        gravity: ToastGravity.BOTTOM,
+        backgroundColor: Colors.green,
+        textColor: Colors.white,
+      );
+
+      // Clear the form after a successful post
+      _titleController.clear();
+      _descriptionController.clear();
+      _budgetController.clear();
+      _locationController.clear();
+      _contactController.clear();
+
+    } on PostgrestException catch (e) {
+      Fluttertoast.showToast(
+        msg: "Error: ${e.message}",
+        toastLength: Toast.LENGTH_LONG,
+        gravity: ToastGravity.BOTTOM,
+        backgroundColor: Colors.red,
+        textColor: Colors.white,
+      );
+    } catch (e) {
+      Fluttertoast.showToast(
+        msg: "An unexpected error occurred.",
+        toastLength: Toast.LENGTH_LONG,
+        gravity: ToastGravity.BOTTOM,
+        backgroundColor: Colors.red,
+        textColor: Colors.white,
+      );
+    } finally {
       setState(() {
-        _selectedDate = picked;
+        _isLoading = false;
       });
     }
   }
@@ -68,153 +98,124 @@ class _EventSquadFormState extends State<EventSquadForm> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: PreferredSize(
-        preferredSize: const Size.fromHeight(80.0),
-        child: Container(
-          decoration: const BoxDecoration(
-            gradient: LinearGradient(
-              colors: [
-                Color(0xFF5902B1),
-                Color(0xFF700DB2),
-                Color(0xFFF54DB8),
-                Color(0xFFEBB41F),
-              ],
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-            ),
-          ),
-          child: AppBar(
-            backgroundColor: Colors.transparent,
-            elevation: 0,
-            leading: IconButton(
-              icon: const Icon(Icons.arrow_back, color: Colors.white, size: 30),
-              onPressed: () {
-                Navigator.pop(context);
-              },
-            ),
-            title: const Text(
-              'Event Squad Form',
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            centerTitle: true,
-            actions: [
-              // Profile Icon - Now functional
-              IconButton(
-                icon: const Icon(Icons.person, color: Colors.white, size: 30),
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => const ProfileScreen()),
-                  );
-                },
-              ),
-            ],
-          ),
-        ),
+      appBar: AppBar(
+        title: const Text('Post an Event Squad Job'),
+        backgroundColor: Theme.of(context).primaryColor,
       ),
-      body: Padding(
+      body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
         child: Form(
           key: _formKey,
-          child: ListView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              _buildTextFormField(
-                controller: _eventNameController,
-                labelText: 'Event Name',
-                validator: (value) => value!.isEmpty ? 'Required' : null,
-              ),
-              const SizedBox(height: 10),
-              InkWell(
-                onTap: () => _pickDate(context),
-                child: InputDecorator(
-                  decoration: _inputDecoration('Date of Event'),
-                  child: Text(
-                    _selectedDate != null
-                        ? DateFormat('yyyy-MM-dd').format(_selectedDate!)
-                        : 'Select Date',
-                    style: const TextStyle(fontSize: 16),
-                  ),
+              TextFormField(
+                controller: _titleController,
+                decoration: const InputDecoration(
+                  labelText: 'Job Title',
+                  border: OutlineInputBorder(),
+                  prefixIcon: Icon(Icons.work),
                 ),
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Please enter a job title';
+                  }
+                  return null;
+                },
               ),
-              const SizedBox(height: 10),
-              _buildTextFormField(
-                controller: _locationController,
-                labelText: 'Location',
-                validator: (value) => value!.isEmpty ? 'Required' : null,
+              const SizedBox(height: 16),
+              TextFormField(
+                controller: _descriptionController,
+                maxLines: 5,
+                decoration: const InputDecoration(
+                  labelText: 'Job Description',
+                  border: OutlineInputBorder(),
+                  prefixIcon: Icon(Icons.description),
+                ),
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Please enter a job description';
+                  }
+                  return null;
+                },
               ),
-              const SizedBox(height: 10),
-              _buildTextFormField(
-                controller: _helpersController,
-                labelText: 'Number of Helpers Required',
+              const SizedBox(height: 16),
+              TextFormField(
+                controller: _budgetController,
                 keyboardType: TextInputType.number,
-                validator: (value) => value!.isEmpty || int.tryParse(value) == null ? 'Enter a valid number' : null,
+                decoration: const InputDecoration(
+                  labelText: 'Budget (LKR)',
+                  border: OutlineInputBorder(),
+                  prefixIcon: Icon(Icons.attach_money),
+                ),
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Please enter a budget';
+                  }
+                  if (double.tryParse(value) == null) {
+                    return 'Please enter a valid number';
+                  }
+                  return null;
+                },
               ),
-              const SizedBox(height: 10),
-              _buildTextFormField(
-                controller: _helpTypeController,
-                labelText: 'Type of Help Needed',
-                validator: (value) => value!.isEmpty ? 'Required' : null,
+              const SizedBox(height: 16),
+              TextFormField(
+                controller: _locationController,
+                decoration: const InputDecoration(
+                  labelText: 'Location',
+                  border: OutlineInputBorder(),
+                  prefixIcon: Icon(Icons.location_on),
+                ),
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Please enter a job location';
+                  }
+                  return null;
+                },
               ),
-              const SizedBox(height: 10),
-              _buildTextFormField(
+              const SizedBox(height: 16),
+              TextFormField(
                 controller: _contactController,
-                labelText: 'Contact of Person in Charge',
                 keyboardType: TextInputType.phone,
-                validator: (value) => value!.isEmpty || value.length < 10 ? 'Enter a valid contact number' : null,
+                decoration: const InputDecoration(
+                  labelText: 'Contact Info',
+                  border: OutlineInputBorder(),
+                  prefixIcon: Icon(Icons.phone),
+                ),
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Please enter contact information';
+                  }
+                  return null;
+                },
               ),
-              const SizedBox(height: 20),
-              ElevatedButton(
-                onPressed: _submitForm,
+              const SizedBox(height: 24),
+              ElevatedButton.icon(
+                onPressed: _isLoading ? null : _postJob,
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFFEBB41F),
+                  backgroundColor: Theme.of(context).primaryColor,
                   foregroundColor: Colors.white,
-                  padding: const EdgeInsets.symmetric(vertical: 15),
+                  padding: const EdgeInsets.symmetric(vertical: 16),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(10),
                   ),
-                  textStyle: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                 ),
-                child: const Text('Submit Request'),
+                icon: _isLoading
+                    ? const SizedBox(
+                        height: 20,
+                        width: 20,
+                        child: CircularProgressIndicator(color: Colors.white),
+                      )
+                    : const Icon(Icons.add_task),
+                label: Text(
+                  _isLoading ? 'Posting...' : 'Post Job',
+                  style: const TextStyle(fontSize: 18),
+                ),
               ),
             ],
           ),
         ),
       ),
-    );
-  }
-
-  InputDecoration _inputDecoration(String labelText) {
-    return InputDecoration(
-      labelText: labelText,
-      border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
-      focusedBorder: OutlineInputBorder(
-        borderSide: const BorderSide(color: Color(0xFF700DB2), width: 2),
-        borderRadius: BorderRadius.circular(10),
-      ),
-      enabledBorder: OutlineInputBorder(
-        borderSide: BorderSide(color: Colors.grey[400]!, width: 1),
-        borderRadius: BorderRadius.circular(10),
-      ),
-    );
-  }
-
-  Widget _buildTextFormField({
-    required TextEditingController controller,
-    required String labelText,
-    String? Function(String?)? validator,
-    TextInputType keyboardType = TextInputType.text,
-    int maxLines = 1,
-  }) {
-    return TextFormField(
-      controller: controller,
-      decoration: _inputDecoration(labelText),
-      validator: validator,
-      keyboardType: keyboardType,
-      maxLines: maxLines,
     );
   }
 }
