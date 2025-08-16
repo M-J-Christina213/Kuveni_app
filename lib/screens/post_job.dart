@@ -1,14 +1,10 @@
 // lib/screens/post_job.dart
 import 'package:flutter/material.dart';
 import 'package:kuveni_app/screens/profile_screen.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 // Initialize the Supabase client.
 final supabase = Supabase.instance.client;
-
-class Supabase {
-  // ignore: prefer_typing_uninitialized_variables
-  static var instance;
-}
 
 class PostJobScreen extends StatefulWidget {
   const PostJobScreen({super.key});
