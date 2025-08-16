@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:kuveni_app/screens/bottom_nav_bar.dart';
-import 'package:kuveni_app/screens/event_squad_screen.dart';
 import 'package:kuveni_app/screens/jobs_main_dashboard.dart';
 import 'package:kuveni_app/screens/logout_screen.dart';
 import 'package:kuveni_app/screens/splash_screen.dart';

@@ -1,6 +1,5 @@
 // lib/screens/post_job.dart
 import 'package:flutter/material.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:kuveni_app/screens/profile_screen.dart';
 
 // Initialize the Supabase client.

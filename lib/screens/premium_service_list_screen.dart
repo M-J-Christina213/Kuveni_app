@@ -1,6 +1,5 @@
 // lib/screens/premium_service_list_screen.dart
 import 'package:flutter/material.dart';
-import 'package:kuveni_app/screens/post_job.dart';
 import 'package:kuveni_app/screens/submit_premium_service_screen.dart';
 import 'package:kuveni_app/screens/view_premium_service.dart';
 import 'package:supabase_flutter/supabase_flutter.dart' as supa;
