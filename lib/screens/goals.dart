@@ -1,49 +1,76 @@
-// ignore_for_file: non_constant_identifier_names
+// lib/screens/goals.dart
+// ignore_for_file: non_constant_identifier_names, use_build_context_synchronously
 
 import 'package:flutter/material.dart';
+import 'package:kuveni_app/screens/setgoal.dart';
 import 'package:percent_indicator/percent_indicator.dart';
-import 'setgoal.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import './bottom_nav_bar.dart';
 
-// ----------------- Backend helpers -----------------
-List<Map<String, dynamic>> incomes = [
-  {"date": DateTime(2024, 6, 12), "amount": 50000},
-  {"date": DateTime(2024, 6, 10), "amount": 25000},
-  {"date": DateTime(2024, 6, 8), "amount": 36000},
-  {"date": DateTime(2024, 6, 5), "amount": 180000},
-];
-
-List<Map<String, dynamic>> expenses = [
-  {"date": DateTime(2024, 6, 1), "amount": 20000},
-  {"date": DateTime(2024, 6, 5), "amount": 15000},
-  {"date": DateTime(2024, 6, 8), "amount": 10000},
-];
-
-int totalIncome() {
-  return incomes.fold(0, (sum, item) => sum + (item['amount'] as int));
-}
-
-int totalExpense() {
-  return expenses.fold(0, (sum, item) => sum + (item['amount'] as int));
-}
-
-int availableSavings() {
-  return totalIncome() - totalExpense();
-}
-
-// ----------------- GoalsPage widget -----------------
-class GoalsPage extends StatelessWidget {
+class GoalsPage extends StatefulWidget {
   const GoalsPage({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    // Example goals
-    final goals = [
-      {"title": "New Car", "total": 2500000, "image": "assets/images/car.png"},
-      {"title": "Student Loan", "total": 2000000, "image": "assets/images/loan.png"},
+  State<GoalsPage> createState() => _GoalsPageState();
+}
+
+class _GoalsPageState extends State<GoalsPage> {
+  final supabase = Supabase.instance.client;
+  List<Map<String, dynamic>> goals = [];
+  int totalIncome = 0;
+  int totalExpense = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchGoals();
+    _calculateSavings();
+  }
+
+  Future<void> _fetchGoals() async {
+    try {
+      final userId = supabase.auth.currentUser?.id;
+      if (userId == null) return;
+
+      final response = await supabase
+          .from('Goals Table')
+          .select()
+          .eq('user_id', userId)
+          .order('created_at', ascending: false);
+
+      setState(() {
+        goals = List<Map<String, dynamic>>.from(response);
+      });
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Failed to fetch goals: $e")),
+      );
+    }
+  }
+
+  void _calculateSavings() {
+    // Replace with your actual incomes/expenses
+    final incomes = [
+      {"date": DateTime(2024, 6, 12), "amount": 50000},
+      {"date": DateTime(2024, 6, 10), "amount": 25000},
+      {"date": DateTime(2024, 6, 8), "amount": 36000},
+      {"date": DateTime(2024, 6, 5), "amount": 180000},
     ];
 
-    final savings = availableSavings(); // total available savings
+    final expenses = [
+      {"date": DateTime(2024, 6, 1), "amount": 20000},
+      {"date": DateTime(2024, 6, 5), "amount": 15000},
+      {"date": DateTime(2024, 6, 8), "amount": 10000},
+    ];
+
+    totalIncome = incomes.fold(0, (sum, item) => sum + (item['amount'] as int));
+    totalExpense = expenses.fold(0, (sum, item) => sum + (item['amount'] as int));
+  }
+
+  int get availableSavings => totalIncome - totalExpense;
+
+  @override
+  Widget build(BuildContext context) {
 
     return Scaffold(
       appBar: AppBar(title: const Text("Goals")),
@@ -56,8 +83,6 @@ class GoalsPage extends StatelessWidget {
             Navigator.pushReplacementNamed(context, '/jobs');
           } else if (index == 2) {
             Navigator.pushReplacementNamed(context, '/safety');
-          } else if (index == 3) {
-            // Already in Goals
           } else if (index == 4) {
             Navigator.pushReplacementNamed(context, '/community');
           }
@@ -65,10 +90,13 @@ class GoalsPage extends StatelessWidget {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (_) => SetGoalPage()),
-          );
+          final userId = supabase.auth.currentUser?.id;
+          if (userId != null) {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (_) => SetGoalScreen(userId: userId)),
+            ).then((_) => _fetchGoals()); // Refresh after adding a goal
+          }
         },
         child: const Icon(Icons.add),
       ),
@@ -82,23 +110,20 @@ class GoalsPage extends StatelessWidget {
             ),
             const SizedBox(height: 24),
             ...goals.map((goal) {
-              // Split savings proportionally to goal amount
-              int savedAmount = (savings *
-                      (goal['total'] as int) /
-                      goals.fold<int>(0, (sum, g) => sum + (g['total'] as int)))
-                  .toInt();
-              double percent = savedAmount / (goal['total'] as int);
+              final goalAmount = goal['target_amount'] as double? ?? 0.0;
+              final savedAmount = goal['saved_amount'] as double? ?? 0.0;
+
+              final percent = (savedAmount / goalAmount).clamp(0.0, 1.0);
 
               return _GoalCard(
                 context,
-                goal['title'] as String,
-                goal['total'] as int,
-                savedAmount,
+                goal['goal'] ?? "Unnamed Goal",
+                goalAmount.toInt(),
+                savedAmount.toInt(),
                 percent,
-                goal['image'] as String,
+                "assets/images/loan.png", // You can customize images per goal
               );
-            // ignore: unnecessary_to_list_in_spreads
-            }).toList(),
+            }),
           ],
         ),
       ),
@@ -124,7 +149,7 @@ class GoalsPage extends StatelessWidget {
             CircularPercentIndicator(
               radius: 35,
               lineWidth: 6,
-              percent: percent.clamp(0.0, 1.0),
+              percent: percent,
               center: Text("${(percent * 100).toStringAsFixed(0)}%"),
               progressColor: Colors.purple,
               backgroundColor: Colors.grey.shade300,

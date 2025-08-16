@@ -1,226 +1,111 @@
-// lib/screens/setgoal.dart
+// lib/screens/set_goal.dart
 // ignore_for_file: use_build_context_synchronously
 
 import 'package:flutter/material.dart';
-import 'package:cloud_firestore/cloud_firestore.dart'; // Import Firestore
+import 'package:supabase_flutter/supabase_flutter.dart';
 
-class SetGoalPage extends StatefulWidget {
-  const SetGoalPage({super.key});
+class SetGoalScreen extends StatefulWidget {
+  final String userId;
+
+  const SetGoalScreen({super.key, required this.userId}); 
 
   @override
-  State<SetGoalPage> createState() => _SetGoalPageState();
+  State<SetGoalScreen> createState() => _SetGoalScreenState();
 }
 
-class _SetGoalPageState extends State<SetGoalPage> {
-  // Controllers for input fields
-  final TextEditingController _titleController = TextEditingController();
+class _SetGoalScreenState extends State<SetGoalScreen> {
+  final TextEditingController _goalController = TextEditingController();
   final TextEditingController _targetAmountController = TextEditingController();
-  final TextEditingController _descriptionController = TextEditingController();
+  final TextEditingController _deadlineController = TextEditingController();
 
-  // Form key for validation
-  final _formKey = GlobalKey<FormState>();
+  bool _isLoading = false;
 
-  @override
-  void dispose() {
-    // Dispose all controllers to free up resources
-    _titleController.dispose();
-    _targetAmountController.dispose();
-    _descriptionController.dispose();
-    super.dispose();
-  }
+  Future<void> _saveGoal() async {
+    final goal = _goalController.text.trim();
+    final targetAmount = double.tryParse(_targetAmountController.text.trim());
+    final deadline = _deadlineController.text.trim();
 
-  // Function to handle form submission and save to Firebase (placeholder)
-  void _saveGoal() async {
-    if (_formKey.currentState!.validate()) {
-      // If the form is valid, process the data
-      'Goal Title: ${_titleController.text}';
-      'Target Amount: ${_targetAmountController.text}';
-      'Description: ${_descriptionController.text}';
-
-      try {
-        await FirebaseFirestore.instance.collection('goals').add({
-          'title': _titleController.text,
-          'targetAmount': double.parse(_targetAmountController.text), // Convert to double
-          'description': _descriptionController.text,
-          'savedAmount': 0.0, // Initialize saved amount to 0
-          'createdAt': FieldValue.serverTimestamp(), // Timestamp for when the goal was created
-          // You might add a userId here if you have authentication
-        });
-
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Goal Saved Successfully!')),
-        );
-        Navigator.pop(context); // Go back to the GoalsPage
-      } catch (e) {
-        "Error saving goal: $e";
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed to save goal: ${e.toString()}')),
-        );
-      }
+    if (goal.isEmpty || targetAmount == null || deadline.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Please fill all fields correctly")),
+      );
+      return;
     }
-  }
 
-  // Reusable input field helper
-  Widget _buildInputField({
-    required TextEditingController controller,
-    required String labelText,
-    String? hintText,
-    int maxLines = 1,
-    TextInputType keyboardType = TextInputType.text,
-    String? Function(String?)? validator,
-  }) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 20.0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            labelText,
-            style: const TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.w600,
-              color: Colors.black87,
-            ),
-          ),
-          const SizedBox(height: 8),
-          TextFormField(
-            controller: controller,
-            maxLines: maxLines,
-            keyboardType: keyboardType,
-            decoration: InputDecoration(
-              hintText: hintText,
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(10.0),
-                borderSide: const BorderSide(color: Colors.grey),
-              ),
-              focusedBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(10.0),
-                borderSide: const BorderSide(color: Color(0xFF5902B1), width: 2.0),
-              ),
-              enabledBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(10.0),
-                borderSide: BorderSide(color: Colors.grey[400]!, width: 1.0),
-              ),
-              contentPadding: const EdgeInsets.symmetric(horizontal: 15, vertical: 12),
-            ),
-            validator: validator,
-          ),
-        ],
-      ),
-    );
+    setState(() {
+      _isLoading = true;
+    });
+
+    try {
+      final response = await Supabase.instance.client.from('Goals Table').insert({
+        'user_id': widget.userId,
+        'goal': goal,
+        'target_amount': targetAmount,
+        'deadline': deadline,
+        'created_at': DateTime.now().toIso8601String(),
+      });
+
+      if (response.error != null) {
+        throw response.error!;
+      }
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Goal saved successfully!")),
+      );
+
+      _goalController.clear();
+      _targetAmountController.clear();
+      _deadlineController.clear();
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Error saving goal: $e")),
+      );
+    } finally {
+      setState(() {
+        _isLoading = false;
+      });
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: PreferredSize(
-        preferredSize: const Size.fromHeight(80.0),
-        child: Container(
-          decoration: const BoxDecoration(
-            gradient: LinearGradient(
-              colors: [
-                Color(0xFF5902B1),
-                Color(0xFF700DB2),
-                Color(0xFFF54DB8),
-                Color(0xFFEBB41F),
-              ],
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-            ),
-          ),
-          child: AppBar(
-            backgroundColor: Colors.transparent,
-            elevation: 0,
-            leading: IconButton(
-              icon: const Icon(Icons.arrow_back, color: Colors.white, size: 30),
-              onPressed: () {
-                Navigator.pop(context);
-              },
-            ),
-            title: const Text(
-              'Set New Goal', // Changed title to be more specific
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            centerTitle: true,
-            actions: [
-              IconButton(
-                icon: const Icon(Icons.person, color: Colors.white, size: 30),
-                onPressed: () {
-                  
-                  'Profile icon tapped from Set Goal';
-                },
-              ),
-            ],
-          ),
-        ),
+      appBar: AppBar(
+        title: const Text("Set Goal"),
       ),
-      body: Form(
-        key: _formKey,
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const Text(
-                "Hello, Bhagya",
-                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.deepPurple),
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          children: [
+            TextField(
+              controller: _goalController,
+              decoration: const InputDecoration(
+                labelText: "Goal Name",
               ),
-              const Text(
-                "Set your new financial goal",
-                style: TextStyle(fontSize: 16, color: Colors.grey),
+            ),
+            const SizedBox(height: 16),
+            TextField(
+              controller: _targetAmountController,
+              keyboardType: TextInputType.number,
+              decoration: const InputDecoration(
+                labelText: "Target Amount",
               ),
-              const SizedBox(height: 24),
-              _buildInputField(
-                controller: _titleController,
-                labelText: 'Goal Title',
-                hintText: 'e.g., New Car, House Down Payment',
-                validator: (value) {
-                  if (value == null || value.isEmpty) return 'Please enter a goal title';
-                  return null;
-                },
+            ),
+            const SizedBox(height: 16),
+            TextField(
+              controller: _deadlineController,
+              decoration: const InputDecoration(
+                labelText: "Deadline (YYYY-MM-DD)",
               ),
-              _buildInputField(
-                controller: _targetAmountController,
-                labelText: 'Target Amount (LKR)',
-                hintText: 'e.g., 2500000',
-                keyboardType: TextInputType.number,
-                validator: (value) {
-                  if (value == null || value.isEmpty) return 'Please enter a target amount';
-                  if (double.tryParse(value) == null) return 'Please enter a valid number';
-                  return null;
-                },
-              ),
-              _buildInputField(
-                controller: _descriptionController,
-                labelText: 'More Info (Optional)',
-                hintText: 'Add any additional details about your goal...',
-                maxLines: 3,
-              ),
-              const SizedBox(height: 30),
-              Center(
-                child: ElevatedButton(
-                  onPressed: _saveGoal,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFFEBB41F), // Orange/Yellow from your gradient
-                    foregroundColor: Colors.white,
-                    padding: const EdgeInsets.symmetric(horizontal: 50, vertical: 15),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    textStyle: const TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  child: const Text('SAVE GOAL'),
-                ),
-              ),
-            ],
-          ),
+            ),
+            const SizedBox(height: 24),
+            ElevatedButton(
+              onPressed: _isLoading ? null : _saveGoal,
+              child: _isLoading
+                  ? const CircularProgressIndicator(color: Colors.white)
+                  : const Text("Save Goal"),
+            ),
+          ],
         ),
       ),
     );

@@ -1,4 +1,3 @@
-// lib/screens/community_screen.dart
 import 'package:flutter/material.dart';
 import 'package:kuveni_app/screens/groups.dart';
 import 'package:kuveni_app/screens/wellness.dart';
@@ -15,7 +14,8 @@ class CommunityScreen extends StatelessWidget {
         centerTitle: true,
         backgroundColor: Colors.purple[300],
       ),
-      body: Center(
+      body: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 24),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
@@ -29,7 +29,7 @@ class CommunityScreen extends StatelessWidget {
                 );
               },
             ),
-            const SizedBox(height: 20),
+            const SizedBox(height: 25),
             CommunityButton(
               title: 'Wellness',
               icon: Icons.favorite,
@@ -40,7 +40,7 @@ class CommunityScreen extends StatelessWidget {
                 );
               },
             ),
-            const SizedBox(height: 20),
+            const SizedBox(height: 25),
             CommunityButton(
               title: 'Helpers',
               icon: Icons.people_alt,
@@ -74,20 +74,39 @@ class CommunityButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return InkWell(
       onTap: onTap,
-      child: Card(
-        elevation: 5,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
-        child: SizedBox(
-          width: 200,
-          height: 150,
-          child: Column(
+      borderRadius: BorderRadius.circular(15),
+      child: Container(
+        width: double.infinity,
+        height: 120,
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            colors: [Colors.purple.shade200, Colors.purple.shade400],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+          ),
+          borderRadius: BorderRadius.circular(15),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.purple.withAlpha(50),
+              blurRadius: 10,
+              offset: const Offset(0, 6),
+            ),
+          ],
+        ),
+        child: Center(
+          child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Icon(icon, size: 50, color: Colors.purple[300]),
-              const SizedBox(height: 10),
+              Icon(icon, size: 40, color: Colors.white),
+              const SizedBox(width: 15),
               Text(
                 title,
-                style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                style: const TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.w600,
+                  color: Colors.white,
+                  letterSpacing: 1.2,
+                ),
               ),
             ],
           ),
