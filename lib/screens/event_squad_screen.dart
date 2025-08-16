@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:kuveni_app/screens/post_job.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:intl/intl.dart';
 
 // Initialize the Supabase client instance.
+// This is done once per app.
 final supabase = Supabase.instance.client;
 
 class EventSquadForm extends StatefulWidget {
@@ -95,14 +96,15 @@ class _EventSquadFormState extends State<EventSquadForm> {
       );
 
       // Insert the data into the 'event_squad_requests' table.
-      // Use .select() to get the inserted row back, which is good practice.
       await supabase.from('event_squad_requests').insert({
         'event_name': _eventNameController.text,
-        'event_date': eventDateTime.toIso8601String(), // Correct format for Supabase timestamp
+        'event_date': eventDateTime.toIso8601String(),
         'location': _locationController.text,
         'helpers_required': int.tryParse(_helpersRequiredController.text),
         'type_of_help': _typeOfHelpController.text,
         'contact': _contactController.text,
+        'created_at': DateTime.now().toIso8601String(),
+        'status': 'pending',
       });
 
       // Show success toast.
@@ -154,8 +156,20 @@ class _EventSquadFormState extends State<EventSquadForm> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Event Squad Form'),
-        backgroundColor: Theme.of(context).primaryColor,
-        elevation: 0,
+        flexibleSpace: Container(
+          decoration: const BoxDecoration(
+            gradient: LinearGradient(
+              colors: [
+                Color(0xFF5902B1),
+                Color(0xFF700DB2),
+                Color(0xFFF54DB8),
+                Color(0xFFEBB41F),
+              ],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+            ),
+          ),
+        ),
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
@@ -179,7 +193,6 @@ class _EventSquadFormState extends State<EventSquadForm> {
                 },
               ),
               const SizedBox(height: 16.0),
-              // Date picker field
               InkWell(
                 onTap: () => _selectDate(context),
                 child: InputDecorator(
@@ -191,12 +204,11 @@ class _EventSquadFormState extends State<EventSquadForm> {
                   child: Text(
                     _selectedDate == null
                         ? 'Select Date'
-                        : '${_selectedDate!.toLocal()}'.split(' ')[0],
+                        : DateFormat('MMM d, yyyy').format(_selectedDate!),
                   ),
                 ),
               ),
               const SizedBox(height: 16.0),
-              // Time picker field
               InkWell(
                 onTap: () => _selectTime(context),
                 child: InputDecorator(
@@ -293,5 +305,3 @@ class _EventSquadFormState extends State<EventSquadForm> {
     );
   }
 }
-
-

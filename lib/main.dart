@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:kuveni_app/screens/bottom_nav_bar.dart';
-import 'package:kuveni_app/screens/event_squad.dart';
+import 'package:kuveni_app/screens/event_squad_screen.dart';
 import 'package:kuveni_app/screens/jobs_main_dashboard.dart';
 import 'package:kuveni_app/screens/logout_screen.dart';
 import 'package:kuveni_app/screens/splash_screen.dart';
@@ -20,12 +20,16 @@ import 'package:kuveni_app/screens/community_screen.dart';
 import 'package:kuveni_app/screens/post_job.dart';
 
 void main() async {
+  // Ensure that Flutter's widget binding is initialized before
+  // any plugins are used, which is required for Supabase.
   WidgetsFlutterBinding.ensureInitialized();
 
-  // Load environment variables from .env file
+  // Load environment variables from the .env file.
+  // This must be done before Supabase.initialize.
   await dotenv.load(fileName: ".env");
 
-  // Supabase initialization with URL and anon key from .env
+  // Supabase initialization with URL and anon key from .env.
+  // This is the correct place to initialize the Supabase client.
   await Supabase.initialize(
     url: dotenv.env['SUPABASE_URL']!,
     anonKey: dotenv.env['SUPABASE_ANON_KEY']!,
