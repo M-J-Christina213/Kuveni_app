@@ -1,25 +1,50 @@
 import 'package:flutter/material.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:kuveni_app/screens/group_detail_screen.dart';
 
-class GroupDetailScreen extends StatelessWidget {
-  const GroupDetailScreen({super.key});
+class GroupsScreen extends StatefulWidget {
+  const GroupsScreen({super.key});
 
-  final List<Map<String, dynamic>> groups = const [
-    {
-      'name': 'Self-Defense Girls',
-      'description': 'Empower yourself with confidence and skills.',
-      'members': 42,
-    },
-    {
-      'name': 'Single Moms',
-      'description': 'A space for support and strength.',
-      'members': 68,
-    },
-    {
-      'name': 'Women in Tech',
-      'description': 'Connect, share and grow in tech.',
-      'members': 35,
-    },
-  ];
+  @override
+  _GroupsScreenState createState() => _GroupsScreenState();
+}
+
+class _GroupsScreenState extends State<GroupsScreen> {
+  final _supabase = Supabase.instance.client;
+  List<Map<String, dynamic>> _groups = [];
+  bool _isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchGroups();
+  }
+
+  Future<void> _fetchGroups() async {
+    try {
+      final response = await _supabase
+          .from('groups')
+          .select('*')
+          .order('name', ascending: true)
+          .execute();
+      
+      if (response.error == null) {
+        setState(() {
+          _groups = (response.data as List).cast<Map<String, dynamic>>();
+        });
+      } else {
+        debugPrint('Error fetching groups: ${response.error!.message}');
+        // Handle error
+      }
+    } catch (e) {
+      debugPrint('An unexpected error occurred: $e');
+      // Handle error
+    } finally {
+      setState(() {
+        _isLoading = false;
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -29,26 +54,31 @@ class GroupDetailScreen extends StatelessWidget {
         centerTitle: true,
         backgroundColor: Colors.purple[300],
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: ListView.separated(
-          itemCount: groups.length,
-          separatorBuilder: (_, __) => const SizedBox(height: 12),
-          itemBuilder: (context, index) {
-            final group = groups[index];
-            return GroupCard(
-              name: group['name'],
-              description: group['description'],
-              members: group['members'],
-              onJoin: () {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text('Joined "${group['name']}"')),
-                );
-              },
-            );
-          },
-        ),
-      ),
+      body: _isLoading
+          ? const Center(child: CircularProgressIndicator())
+          : _groups.isEmpty
+              ? const Center(child: Text('No groups available.'))
+              : Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: ListView.separated(
+                    itemCount: _groups.length,
+                    separatorBuilder: (_, __) => const SizedBox(height: 12),
+                    itemBuilder: (context, index) {
+                      final group = _groups[index];
+                      return GroupCard(
+                        name: group['name'] ?? 'Unknown Group',
+                        description: group['description'] ?? 'No description provided.',
+                        members: group['member_count'] ?? 0,
+                        onJoin: () {
+                          // TODO: Implement join group logic (e.g., adding a user to a join table)
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(content: Text('Joined "${group['name']}"')),
+                          );
+                        },
+                      );
+                    },
+                  ),
+                ),
     );
   }
 }
@@ -78,8 +108,7 @@ class GroupCard extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(name,
-                style: const TextStyle(
-                    fontSize: 20, fontWeight: FontWeight.bold)),
+                style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
             const SizedBox(height: 8),
             Text(description,
                 style: TextStyle(color: Colors.grey[700], fontSize: 14)),
@@ -88,8 +117,7 @@ class GroupCard extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text('$members Members',
-                    style: const TextStyle(
-                        fontSize: 14, fontWeight: FontWeight.w500)),
+                    style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w500)),
                 ElevatedButton(
                   onPressed: onJoin,
                   style: ElevatedButton.styleFrom(
