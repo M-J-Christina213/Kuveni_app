@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import 'package:kuveni_app/screens/group_detail_screen.dart';
 
 class GroupsScreen extends StatefulWidget {
   const GroupsScreen({super.key});
 
   @override
-  _GroupsScreenState createState() => _GroupsScreenState();
+  State<GroupsScreen> createState() => _GroupsScreenState();
 }
 
 class _GroupsScreenState extends State<GroupsScreen> {
@@ -21,24 +20,21 @@ class _GroupsScreenState extends State<GroupsScreen> {
   }
 
   Future<void> _fetchGroups() async {
+    setState(() {
+      _isLoading = true;
+    });
+
     try {
-      final response = await _supabase
+      final data = await _supabase
           .from('groups')
-          .select('*')
-          .order('name', ascending: true)
-          .execute();
-      
-      if (response.error == null) {
-        setState(() {
-          _groups = (response.data as List).cast<Map<String, dynamic>>();
-        });
-      } else {
-        debugPrint('Error fetching groups: ${response.error!.message}');
-        // Handle error
-      }
+          .select()
+          .order('name', ascending: true);
+
+      _groups = (data as List<dynamic>)
+          .map((item) => item as Map<String, dynamic>)
+          .toList();
     } catch (e) {
       debugPrint('An unexpected error occurred: $e');
-      // Handle error
     } finally {
       setState(() {
         _isLoading = false;
@@ -67,10 +63,10 @@ class _GroupsScreenState extends State<GroupsScreen> {
                       final group = _groups[index];
                       return GroupCard(
                         name: group['name'] ?? 'Unknown Group',
-                        description: group['description'] ?? 'No description provided.',
+                        description:
+                            group['description'] ?? 'No description provided.',
                         members: group['member_count'] ?? 0,
                         onJoin: () {
-                          // TODO: Implement join group logic (e.g., adding a user to a join table)
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(content: Text('Joined "${group['name']}"')),
                           );
@@ -108,7 +104,8 @@ class GroupCard extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(name,
-                style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+                style:
+                    const TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
             const SizedBox(height: 8),
             Text(description,
                 style: TextStyle(color: Colors.grey[700], fontSize: 14)),
@@ -117,7 +114,8 @@ class GroupCard extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text('$members Members',
-                    style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w500)),
+                    style: const TextStyle(
+                        fontSize: 14, fontWeight: FontWeight.w500)),
                 ElevatedButton(
                   onPressed: onJoin,
                   style: ElevatedButton.styleFrom(

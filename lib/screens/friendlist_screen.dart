@@ -7,10 +7,10 @@ class FriendlistScreen extends StatefulWidget {
   const FriendlistScreen({super.key});
 
   @override
-  _FriendlistScreenState createState() => _FriendlistScreenState();
+  FriendlistScreenState createState() => FriendlistScreenState();
 }
 
-class _FriendlistScreenState extends State<FriendlistScreen> {
+class FriendlistScreenState extends State<FriendlistScreen> {
   final _supabase = Supabase.instance.client;
   List<Map<String, dynamic>> _friends = [];
   bool _isLoading = true;
@@ -26,22 +26,16 @@ class _FriendlistScreenState extends State<FriendlistScreen> {
     try {
       final response = await _supabase
           .from('friends')
-          .select('friend_id, profiles!friend_id(id, name, username, image_url)')
-          .eq('user_id', _currentUserId)
-          .execute();
-      
-      if (response.error == null) {
-        setState(() {
-          // The data is nested, so we need to extract the profile information
-          _friends = (response.data as List)
-              .map((e) => e['profiles'] as Map<String, dynamic>)
-              .toList();
-        });
-      } else {
-        debugPrint('Error fetching friends: ${response.error!.message}');
-      }
+          .select('friend_id, profiles!friend_id(id, name, username, image_url, status, bio)')
+          .eq('user_id', _currentUserId);
+
+      setState(() {
+        _friends = (response as List)
+            .map((e) => e['profiles'] as Map<String, dynamic>)
+            .toList();
+      });
     } catch (e) {
-      debugPrint('An unexpected error occurred: $e');
+      debugPrint('Error fetching friends: $e');
     } finally {
       setState(() {
         _isLoading = false;
@@ -72,7 +66,6 @@ class _FriendlistScreenState extends State<FriendlistScreen> {
                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                       child: InkWell(
                         onTap: () {
-                          // Navigate to friend's profile screen and pass their data
                           Navigator.push(
                             context,
                             MaterialPageRoute(
@@ -92,11 +85,15 @@ class _FriendlistScreenState extends State<FriendlistScreen> {
                             children: [
                               CircleAvatar(
                                 radius: 28,
-                                backgroundImage: NetworkImage(friend['image_url'] ?? ''),
+                                backgroundImage: friend['image_url'] != null &&
+                                        friend['image_url'].isNotEmpty
+                                    ? NetworkImage(friend['image_url'])
+                                    : null,
                                 onBackgroundImageError: (exception, stackTrace) {
                                   debugPrint('Error loading friend image: $exception');
                                 },
-                                child: friend['image_url'] == null || friend['image_url'].isEmpty
+                                child: friend['image_url'] == null ||
+                                        friend['image_url'].isEmpty
                                     ? const Icon(Icons.person, size: 30, color: Colors.white)
                                     : null,
                               ),
@@ -107,11 +104,13 @@ class _FriendlistScreenState extends State<FriendlistScreen> {
                                   children: [
                                     Text(
                                       friend['name'] ?? 'Unknown',
-                                      style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                                      style: const TextStyle(
+                                          fontSize: 18, fontWeight: FontWeight.bold),
                                     ),
                                     Text(
                                       '@${friend['username'] ?? 'unknown'}',
-                                      style: TextStyle(fontSize: 14, color: Colors.grey[600]),
+                                      style:
+                                          TextStyle(fontSize: 14, color: Colors.grey[600]),
                                     ),
                                   ],
                                 ),

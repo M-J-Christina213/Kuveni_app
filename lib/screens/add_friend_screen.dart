@@ -1,4 +1,3 @@
-// lib/screens/add_friend_screen.dart
 import 'package:flutter/material.dart';
 import 'package:kuveni_app/screens/profile_screen.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -23,7 +22,7 @@ class _AddFriendScreenState extends State<AddFriendScreen> {
       });
       return;
     }
-    
+
     setState(() {
       _isLoading = true;
     });
@@ -32,21 +31,13 @@ class _AddFriendScreenState extends State<AddFriendScreen> {
       final response = await _supabase
           .from('profiles')
           .select('*')
-          .ilike('username', '%$query%')
-          .execute();
+          .filter('username', 'ilike', '%$query%');
 
-      if (response.error == null) {
-        setState(() {
-          _searchResults = (response.data as List).cast<Map<String, dynamic>>();
-        });
-      } else {
-        print('Error searching users: ${response.error!.message}');
-        setState(() {
-          _searchResults = [];
-        });
-      }
+      setState(() {
+        _searchResults = (response as List).cast<Map<String, dynamic>>();
+      });
     } catch (e) {
-      print('An unexpected error occurred: $e');
+      ('Error during search: $e');
       setState(() {
         _searchResults = [];
       });
@@ -177,7 +168,9 @@ class _AddFriendScreenState extends State<AddFriendScreen> {
                               children: [
                                 CircleAvatar(
                                   radius: 28,
-                                  backgroundImage: NetworkImage(user['image_url'] ?? ''),
+                                  backgroundImage: user['image_url'] != null && user['image_url'].isNotEmpty
+                                      ? NetworkImage(user['image_url'])
+                                      : null,
                                   onBackgroundImageError: (exception, stackTrace) {
                                     debugPrint('Error loading user image: $exception');
                                   },
@@ -205,7 +198,7 @@ class _AddFriendScreenState extends State<AddFriendScreen> {
                                 ),
                                 ElevatedButton(
                                   onPressed: () {
-                                    // TODO: Implement logic to send friend request
+                                    //  Implement logic to send friend request
                                     ScaffoldMessenger.of(context).showSnackBar(
                                       SnackBar(content: Text('Friend request sent to ${user['name']}!')),
                                     );

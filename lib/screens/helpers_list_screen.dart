@@ -1,4 +1,3 @@
-// lib/screens/helpers_list_screen.dart
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:kuveni_app/screens/profile_screen.dart';
@@ -35,21 +34,17 @@ class _HelpersListScreenState extends State<HelpersListScreen> {
       final response = await _supabase
           .from('helpers')
           .select('*')
-          .order('rating', ascending: false)
-          .execute();
-      
-      if (response.error == null) {
-        setState(() {
-          _allHelpers = (response.data as List).cast<Map<String, dynamic>>();
-          _filteredHelpers = _allHelpers;
-        });
-      } else {
-        debugPrint('Error fetching helpers: ${response.error!.message}');
-        // Handle error
-      }
+          .order('rating', ascending: false);
+
+      // The response is of type PostgrestList, which is non-nullable.
+      // A null check is not needed. The list might be empty, but not null.
+      setState(() {
+        _allHelpers = (response as List).cast<Map<String, dynamic>>();
+        _filteredHelpers = _allHelpers;
+      });
     } catch (e) {
       debugPrint('An unexpected error occurred: $e');
-      // Handle error
+      // You can add a Snackbar or other UI feedback here.
     } finally {
       setState(() {
         _isLoading = false;
@@ -64,17 +59,17 @@ class _HelpersListScreenState extends State<HelpersListScreen> {
       });
       return;
     }
-    
+
     final searchQueryLower = query.toLowerCase();
     setState(() {
       _filteredHelpers = _allHelpers.where((helper) {
         final nameLower = (helper['name'] as String).toLowerCase();
         final specialtyLower = (helper['specialty'] as String).toLowerCase();
         final locationLower = (helper['location'] as String).toLowerCase();
-        
+
         return nameLower.contains(searchQueryLower) ||
-               specialtyLower.contains(searchQueryLower) ||
-               locationLower.contains(searchQueryLower);
+            specialtyLower.contains(searchQueryLower) ||
+            locationLower.contains(searchQueryLower);
       }).toList();
     });
   }

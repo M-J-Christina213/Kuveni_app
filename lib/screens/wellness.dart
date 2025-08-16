@@ -7,7 +7,8 @@ class WellnessScreen extends StatefulWidget {
   const WellnessScreen({super.key});
 
   @override
-  _WellnessScreenState createState() => _WellnessScreenState();
+  // Corrected createState method to avoid linting warning
+  State<WellnessScreen> createState() => _WellnessScreenState();
 }
 
 class _WellnessScreenState extends State<WellnessScreen> {
@@ -26,24 +27,19 @@ class _WellnessScreenState extends State<WellnessScreen> {
       final response = await _supabase
           .from('wellness_tips')
           .select('*')
-          .order('created_at', ascending: false)
-          .execute();
-      
-      if (response.error == null) {
-        setState(() {
-          _wellnessTips = (response.data as List).cast<Map<String, dynamic>>();
-        });
-      } else {
-        debugPrint('Error fetching wellness tips: ${response.error!.message}');
-        // Handle error
-      }
+          .order('created_at', ascending: false);
+
+      setState(() {
+        _wellnessTips = (response as List).cast<Map<String, dynamic>>();
+      });
     } catch (e) {
       debugPrint('An unexpected error occurred: $e');
-      // Handle error
     } finally {
-      setState(() {
-        _isLoading = false;
-      });
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+      }
     }
   }
 
@@ -93,7 +89,6 @@ class _WellnessScreenState extends State<WellnessScreen> {
                               tip['content'] ?? 'No content provided.',
                               style: TextStyle(fontSize: 14, color: Colors.grey[700]),
                             ),
-                            // You can add more widgets here like an image or a link
                           ],
                         ),
                       ),
