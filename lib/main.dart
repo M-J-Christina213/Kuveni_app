@@ -7,6 +7,7 @@ import 'package:kuveni_app/screens/jobs_main_dashboard.dart';
 import 'package:kuveni_app/screens/logout_screen.dart';
 import 'package:kuveni_app/screens/splash_screen.dart';
 import 'package:kuveni_app/screens/walkthrough_screen.dart';
+import 'package:supabase_flutter/supabase_flutter.dart' as supa;
 
 // Core Screens
 import 'package:kuveni_app/screens/home_screen.dart';
@@ -30,7 +31,7 @@ void main() async {
 
   // Supabase initialization with URL and anon key from .env.
   // This is the correct place to initialize the Supabase client.
-  await Supabase.initialize(
+  await supa.Supabase.initialize(
     url: dotenv.env['SUPABASE_URL']!,
     anonKey: dotenv.env['SUPABASE_ANON_KEY']!,
   );
@@ -68,7 +69,7 @@ class MyApp extends StatelessWidget {
         '/viewJobs': (context) => const JobsMainDashboard(),
         '/postJob': (context) => const PostJobScreen(),
         // This is the updated route to the Supabase-enabled EventSquadScreen
-        '/eventSquadForm': (context) => const EventSquadScreen(),
+        '/eventSquadForm': (context) => const JobsMainDashboard(),
       },
     );
   }

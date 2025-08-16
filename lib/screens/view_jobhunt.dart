@@ -1,11 +1,6 @@
-// lib/screens/job_hunt_list.dart
+// lib/screens/job_huntlist.dart
 import 'package:flutter/material.dart';
-import 'package:kuveni_app/screens/post_job.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
-import 'package:kuveni_app/screens/profile_screen.dart';
-
-// Initialize the Supabase client.
-final supabase = Supabase.instance.client;
+import 'package:supabase_flutter/supabase_flutter.dart' as supa;
 
 class JobHuntListScreen extends StatefulWidget {
   const JobHuntListScreen({super.key});
@@ -19,33 +14,34 @@ class _JobHuntListScreenState extends State<JobHuntListScreen> {
   List<dynamic> _jobs = [];
   bool _isLoading = true;
 
+  // Initialize the Supabase client within the state
+  late final supa.SupabaseClient _supabaseClient;
+
   @override
   void initState() {
     super.initState();
+    _supabaseClient = supa.Supabase.instance.client;
     _fetchJobs();
   }
 
   // Function to fetch all jobs from the 'general_jobs' table.
   Future<void> _fetchJobs() async {
     try {
-      final response = await supabase
+      final response = await _supabaseClient
           .from('general_jobs')
           .select()
           .order('created_at', ascending: false); // Order by creation date to show recent jobs first.
 
-      if (response != null) {
-        setState(() {
-          _jobs = response;
-          _isLoading = false;
-        });
-      }
+      setState(() {
+        _jobs = response;
+        _isLoading = false;
+      });
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Failed to fetch jobs: $e')),
         );
       }
-      ('Supabase fetch error: $e'); // Print the error for debugging.
       setState(() {
         _isLoading = false;
       });
@@ -92,10 +88,11 @@ class _JobHuntListScreenState extends State<JobHuntListScreen> {
               IconButton(
                 icon: const Icon(Icons.person, color: Colors.white, size: 30),
                 onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => const ProfileScreen()),
-                  );
+                  // This screen needs to be implemented.
+                  // Navigator.push(
+                  //   context,
+                  //   MaterialPageRoute(builder: (context) => const ProfileScreen()),
+                  // );
                 },
               ),
             ],
@@ -122,9 +119,6 @@ class _JobHuntListScreenState extends State<JobHuntListScreen> {
                           MaterialPageRoute(
                             builder: (context) => ViewJobVacancyScreen(
                               jobTitle: job['job_title'] ?? 'N/A',
-                              // Your `view_jobhunt.dart` used 'company' and 'salary',
-                              // but these don't exist in your table. Using 'contact_info'
-                              // and 'payment_details' instead.
                               company: job['contact_info'] ?? 'N/A',
                               location: job['location'] ?? 'N/A',
                               salary: job['payment_details'] ?? 'N/A',
@@ -138,8 +132,49 @@ class _JobHuntListScreenState extends State<JobHuntListScreen> {
                 ),
     );
   }
-  
-  ViewJobVacancyScreen({required jobTitle, required company, required location, required salary, required description}) {}
+}
+
+// A simple placeholder for the job vacancy screen
+class ViewJobVacancyScreen extends StatelessWidget {
+  final String jobTitle;
+  final String company;
+  final String location;
+  final String salary;
+  final String description;
+
+  const ViewJobVacancyScreen({
+    super.key,
+    required this.jobTitle,
+    required this.company,
+    required this.location,
+    required this.salary,
+    required this.description,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(jobTitle),
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text('Company: $company', style: const TextStyle(fontSize: 18)),
+            const SizedBox(height: 8),
+            Text('Location: $location', style: const TextStyle(fontSize: 16)),
+            const SizedBox(height: 8),
+            Text('Salary: $salary', style: const TextStyle(fontSize: 16)),
+            const SizedBox(height: 16),
+            Text('Description:', style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+            Text(description),
+          ],
+        ),
+      ),
+    );
+  }
 }
 
 class JobCard extends StatelessWidget {
