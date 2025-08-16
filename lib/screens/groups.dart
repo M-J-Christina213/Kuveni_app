@@ -30,10 +30,9 @@ class _GroupsScreenState extends State<GroupsScreen> {
           .select()
           .order('name', ascending: true);
 
-      _groups =
-          (data as List<dynamic>)
-              .map((item) => item as Map<String, dynamic>)
-              .toList();
+      _groups = (data as List<dynamic>)
+          .map((item) => item as Map<String, dynamic>)
+          .toList();
     } catch (e) {
       debugPrint('An unexpected error occurred: $e');
     } finally {
@@ -51,34 +50,33 @@ class _GroupsScreenState extends State<GroupsScreen> {
         centerTitle: true,
         backgroundColor: Colors.purple[300],
       ),
-      body:
-          _isLoading
-              ? const Center(child: CircularProgressIndicator())
-              : _groups.isEmpty
+      body: _isLoading
+          ? const Center(child: CircularProgressIndicator())
+          : _groups.isEmpty
               ? const Center(child: Text('No groups available.'))
               : Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: ListView.separated(
-                  itemCount: _groups.length,
-                  separatorBuilder: (_, __) => const SizedBox(height: 12),
-                  itemBuilder: (context, index) {
-                    final group = _groups[index];
-                    return GroupCard(
-                      name: group['name'] ?? 'Unknown Group',
-                      description:
-                          group['description'] ?? 'No description provided.',
-                      members: group['member_count'] ?? 0,
-                      onJoin: () async {
-                        // implement join group logic
-                        // e.g. insert into `group_members` table
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(content: Text('Joined "${group['name']}"')),
-                        );
-                      },
-                    );
-                  },
+                  padding: const EdgeInsets.all(16.0),
+                  child: ListView.separated(
+                    itemCount: _groups.length,
+                    separatorBuilder: (_, __) => const SizedBox(height: 12),
+                    itemBuilder: (context, index) {
+                      final group = _groups[index];
+                      return GroupCard(
+                        name: group['name'] ?? 'Unknown Group',
+                        description: group['description'] ?? 'No description provided.',
+                        members: group['member_count'] ?? 0,
+                        onJoin: () {
+                          // Implement join group logic (e.g., adding a user to a join table)
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                                content:
+                                    Text('Joined "${group['name']}"')),
+                          );
+                        },
+                      );
+                    },
+                  ),
                 ),
-              ),
     );
   }
 }
@@ -107,38 +105,28 @@ class GroupCard extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              name,
-              style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-            ),
+            Text(name,
+                style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
             const SizedBox(height: 8),
-            Text(
-              description,
-              style: TextStyle(color: Colors.grey[700], fontSize: 14),
-            ),
+            Text(description,
+                style: TextStyle(color: Colors.grey[700], fontSize: 14)),
             const SizedBox(height: 12),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(
-                  '$members Members',
-                  style: const TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
+                Text('$members Members',
+                    style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w500)),
                 ElevatedButton(
                   onPressed: onJoin,
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.purple[300],
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
+                        borderRadius: BorderRadius.circular(12)),
                   ),
                   child: const Text("Join"),
                 ),
               ],
-            ),
+            )
           ],
         ),
       ),

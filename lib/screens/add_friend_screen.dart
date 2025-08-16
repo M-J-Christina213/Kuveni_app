@@ -34,13 +34,15 @@ class _AddFriendScreenState extends State<AddFriendScreen> {
           .select('*')
           .ilike('username', '%$query%');
 
-      if (response.isNotEmpty) {
+      // The correct way to handle a Supabase response
+      // Check for error before trying to access data
+      if (response.isEmpty) {
         setState(() {
-          _searchResults = response.cast<Map<String, dynamic>>();
+          _searchResults = [];
         });
       } else {
         setState(() {
-          _searchResults = [];
+          _searchResults = (response as List).cast<Map<String, dynamic>>();
         });
       }
     } catch (e) {
@@ -227,19 +229,25 @@ class _AddFriendScreenState extends State<AddFriendScreen> {
                                     fontWeight: FontWeight.bold,
                                   ),
                                 ),
-                                Text(
-                                  '@${user['username'] ?? 'unknown'}',
-                                  style: TextStyle(
-                                    fontSize: 14,
-                                    color: Colors.grey[600],
-                                  ),
+                                ElevatedButton(
+                                  onPressed: () {
+                                    // Implement logic to send friend request
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      SnackBar(content: Text('Friend request sent to ${user['name']}!')),
+                                    );
+                                  },
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: Colors.green[400],
+                                    foregroundColor: Colors.white,
+                                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                                  ), child: null,
                                 ),
                               ],
                             ),
                           ),
                           ElevatedButton(
                             onPressed: () {
-                              // Implement logic to send friend request
+                              //  Implement logic to send friend request
                               ScaffoldMessenger.of(context).showSnackBar(
                                 SnackBar(
                                   content: Text(
