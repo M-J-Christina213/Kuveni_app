@@ -70,4 +70,4 @@ flutter:
   assets:
     - assets/images/
     # This line is added to include the .env file as an asset
-    - .env
+
