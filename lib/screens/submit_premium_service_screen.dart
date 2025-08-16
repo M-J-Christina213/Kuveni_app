@@ -1,32 +1,27 @@
 import 'package:flutter/material.dart';
-import 'package:supabase_flutter/supabase_flutter.dart' as supa;
+import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+
+final supabase = Supabase.instance.client;
 
 class SubmitPremiumServiceScreen extends StatefulWidget {
   const SubmitPremiumServiceScreen({super.key});
 
   @override
-  State<SubmitPremiumServiceScreen> createState() => _SubmitPremiumServiceScreenState();
+  SubmitPremiumServiceScreenState createState() => SubmitPremiumServiceScreenState();
 }
 
-class _SubmitPremiumServiceScreenState extends State<SubmitPremiumServiceScreen> {
+class SubmitPremiumServiceScreenState extends State<SubmitPremiumServiceScreen> {
   final _formKey = GlobalKey<FormState>();
-  final TextEditingController _serviceNameController = TextEditingController();
-  final TextEditingController _providerNameController = TextEditingController();
-  final TextEditingController _rateController = TextEditingController();
-  final TextEditingController _descriptionController = TextEditingController();
-  final TextEditingController _locationController = TextEditingController();
-  final TextEditingController _contactInfoController = TextEditingController();
-  final TextEditingController _imageUrlController = TextEditingController();
+
+  final _serviceNameController = TextEditingController();
+  final _providerNameController = TextEditingController();
+  final _rateController = TextEditingController();
+  final _descriptionController = TextEditingController();
+  final _locationController = TextEditingController();
+  final _contactController = TextEditingController();
+
   bool _isLoading = false;
-
-  // Initialize Supabase client
-  late final supa.SupabaseClient _supabaseClient;
-
-  @override
-  void initState() {
-    super.initState();
-    _supabaseClient = supa.Supabase.instance.client;
-  }
 
   @override
   void dispose() {
@@ -35,58 +30,66 @@ class _SubmitPremiumServiceScreenState extends State<SubmitPremiumServiceScreen>
     _rateController.dispose();
     _descriptionController.dispose();
     _locationController.dispose();
-    _contactInfoController.dispose();
-    _imageUrlController.dispose();
+    _contactController.dispose();
     super.dispose();
   }
 
   Future<void> _submitForm() async {
-    // Check if the form is valid before proceeding
-    if (_formKey.currentState!.validate()) {
-      setState(() {
-        _isLoading = true;
+    if (!_formKey.currentState!.validate()) {
+      return;
+    }
+
+    setState(() {
+      _isLoading = true;
+    });
+
+    try {
+      final userId = supabase.auth.currentUser!.id;
+
+      await supabase.from('premium_services').insert({
+        'user_id': userId,
+        'service_name': _serviceNameController.text,
+        'provider_name': _providerNameController.text,
+        'rate': _rateController.text,
+        'description': _descriptionController.text,
+        'location': _locationController.text,
+        'contact_info': _contactController.text,
       });
 
-      try {
-        final Map<String, dynamic> newService = {
-          'service_name': _serviceNameController.text,
-          'provider_name': _providerNameController.text,
-          'rate': _rateController.text,
-          'description': _descriptionController.text,
-          'location': _locationController.text,
-          'contact_info': _contactInfoController.text,
-          'image_url': _imageUrlController.text,
-          'rating': 0, // Default rating to 0
-        };
+      Fluttertoast.showToast(
+        msg: "Service submitted successfully!",
+        toastLength: Toast.LENGTH_LONG,
+        gravity: ToastGravity.BOTTOM,
+        backgroundColor: Colors.green,
+        textColor: Colors.white,
+      );
 
-        await _supabaseClient.from('premium_services').insert(newService);
-
-        if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Service submitted successfully!')),
-          );
-          // Navigate back to the previous screen
-          Navigator.pop(context);
-        }
-      } on supa.PostgrestException catch (e) {
-        if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Error: ${e.message}')),
-          );
-        }
-      } catch (e) {
-        if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('An unexpected error occurred: $e')),
-          );
-        }
-      } finally {
-        if (mounted) {
-          setState(() {
-            _isLoading = false;
-          });
-        }
-      }
+      _serviceNameController.clear();
+      _providerNameController.clear();
+      _rateController.clear();
+      _descriptionController.clear();
+      _locationController.clear();
+      _contactController.clear();
+    } on PostgrestException catch (e) {
+      Fluttertoast.showToast(
+        msg: "Error: ${e.message}",
+        toastLength: Toast.LENGTH_LONG,
+        gravity: ToastGravity.BOTTOM,
+        backgroundColor: Colors.red,
+        textColor: Colors.white,
+      );
+    } catch (e) {
+      Fluttertoast.showToast(
+        msg: "An unexpected error occurred: ${e.toString()}",
+        toastLength: Toast.LENGTH_LONG,
+        gravity: ToastGravity.BOTTOM,
+        backgroundColor: Colors.red,
+        textColor: Colors.white,
+      );
+    } finally {
+      setState(() {
+        _isLoading = false;
+      });
     }
   }
 
@@ -95,8 +98,20 @@ class _SubmitPremiumServiceScreenState extends State<SubmitPremiumServiceScreen>
     return Scaffold(
       appBar: AppBar(
         title: const Text('Submit Premium Service'),
-        backgroundColor: const Color(0xFF5902B1),
-        foregroundColor: Colors.white,
+        flexibleSpace: Container(
+          decoration: const BoxDecoration(
+            gradient: LinearGradient(
+              colors: [
+                Color(0xFF5902B1),
+                Color(0xFF700DB2),
+                Color(0xFFF54DB8),
+                Color(0xFFEBB41F),
+              ],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+            ),
+          ),
+        ),
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
@@ -107,41 +122,57 @@ class _SubmitPremiumServiceScreenState extends State<SubmitPremiumServiceScreen>
             children: [
               TextFormField(
                 controller: _serviceNameController,
-                decoration: const InputDecoration(labelText: 'Service Name'),
+                decoration: InputDecoration(
+                  labelText: 'Service Name',
+                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
+                  prefixIcon: const Icon(Icons.build_outlined),
+                ),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
-                    return 'Please enter a service name';
+                    return 'Please enter the service name';
                   }
                   return null;
                 },
               ),
-              const SizedBox(height: 16),
+              const SizedBox(height: 16.0),
               TextFormField(
                 controller: _providerNameController,
-                decoration: const InputDecoration(labelText: 'Provider Name'),
+                decoration: InputDecoration(
+                  labelText: 'Provider Name',
+                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
+                  prefixIcon: const Icon(Icons.person),
+                ),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
-                    return 'Please enter a provider name';
+                    return 'Please enter the provider\'s name';
                   }
                   return null;
                 },
               ),
-              const SizedBox(height: 16),
+              const SizedBox(height: 16.0),
               TextFormField(
                 controller: _rateController,
-                decoration: const InputDecoration(labelText: 'Rate'),
+                decoration: InputDecoration(
+                  labelText: 'Rate',
+                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
+                  prefixIcon: const Icon(Icons.attach_money),
+                ),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
-                    return 'Please enter a rate';
+                    return 'Please enter the rate';
                   }
                   return null;
                 },
               ),
-              const SizedBox(height: 16),
+              const SizedBox(height: 16.0),
               TextFormField(
                 controller: _descriptionController,
-                decoration: const InputDecoration(labelText: 'Description'),
                 maxLines: 4,
+                decoration: InputDecoration(
+                  labelText: 'Description',
+                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
+                  prefixIcon: const Icon(Icons.description),
+                ),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
                     return 'Please enter a description';
@@ -149,49 +180,48 @@ class _SubmitPremiumServiceScreenState extends State<SubmitPremiumServiceScreen>
                   return null;
                 },
               ),
-              const SizedBox(height: 16),
+              const SizedBox(height: 16.0),
               TextFormField(
                 controller: _locationController,
-                decoration: const InputDecoration(labelText: 'Location'),
+                decoration: InputDecoration(
+                  labelText: 'Location',
+                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
+                  prefixIcon: const Icon(Icons.location_on),
+                ),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
-                    return 'Please enter a location';
+                    return 'Please enter the location';
                   }
                   return null;
                 },
               ),
-              const SizedBox(height: 16),
+              const SizedBox(height: 16.0),
               TextFormField(
-                controller: _contactInfoController,
-                decoration: const InputDecoration(labelText: 'Contact Information'),
+                controller: _contactController,
+                decoration: InputDecoration(
+                  labelText: 'Contact Information',
+                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
+                  prefixIcon: const Icon(Icons.phone),
+                ),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
-                    return 'Please enter contact information';
+                    return 'Please enter your contact information';
                   }
                   return null;
                 },
               ),
-              const SizedBox(height: 16),
-              TextFormField(
-                controller: _imageUrlController,
-                decoration: const InputDecoration(labelText: 'Image URL'),
-                // Image URL is optional, so no validator needed.
+              const SizedBox(height: 24.0),
+              ElevatedButton(
+                onPressed: _isLoading ? null : _submitForm,
+                style: ElevatedButton.styleFrom(
+                  padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 15),
+                  textStyle: const TextStyle(fontSize: 18),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                ),
+                child: _isLoading
+                    ? const CircularProgressIndicator(color: Colors.white)
+                    : const Text('Submit Service'),
               ),
-              const SizedBox(height: 24),
-              _isLoading
-                  ? const Center(child: CircularProgressIndicator())
-                  : ElevatedButton(
-                      onPressed: _submitForm,
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFF5902B1),
-                        foregroundColor: Colors.white,
-                        padding: const EdgeInsets.symmetric(vertical: 16),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                      ),
-                      child: const Text('Submit Service'),
-                    ),
             ],
           ),
         ),

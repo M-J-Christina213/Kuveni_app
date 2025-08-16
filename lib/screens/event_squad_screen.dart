@@ -108,9 +108,9 @@ class _EventSquadFormState extends State<EventSquadForm> {
         'status': 'pending',
       });
 
-      // Show success toast.
+      // Show success toast with the custom message.
       Fluttertoast.showToast(
-        msg: "Event request submitted successfully!",
+        msg: "Your request has been sent to admin",
         toastLength: Toast.LENGTH_LONG,
         gravity: ToastGravity.BOTTOM,
         backgroundColor: Colors.green,
