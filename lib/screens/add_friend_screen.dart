@@ -40,13 +40,13 @@ class _AddFriendScreenState extends State<AddFriendScreen> {
           _searchResults = (response.data as List).cast<Map<String, dynamic>>();
         });
       } else {
-        print('Error searching users: ${response.error!.message}');
+        ('Error searching users: ${response.error!.message}');
         setState(() {
           _searchResults = [];
         });
       }
     } catch (e) {
-      print('An unexpected error occurred: $e');
+      ('An unexpected error occurred: $e');
       setState(() {
         _searchResults = [];
       });
