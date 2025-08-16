@@ -5,11 +5,46 @@ import 'package:percent_indicator/percent_indicator.dart';
 import 'setgoal.dart';
 import './bottom_nav_bar.dart';
 
+// ----------------- Backend helpers -----------------
+List<Map<String, dynamic>> incomes = [
+  {"date": DateTime(2024, 6, 12), "amount": 50000},
+  {"date": DateTime(2024, 6, 10), "amount": 25000},
+  {"date": DateTime(2024, 6, 8), "amount": 36000},
+  {"date": DateTime(2024, 6, 5), "amount": 180000},
+];
+
+List<Map<String, dynamic>> expenses = [
+  {"date": DateTime(2024, 6, 1), "amount": 20000},
+  {"date": DateTime(2024, 6, 5), "amount": 15000},
+  {"date": DateTime(2024, 6, 8), "amount": 10000},
+];
+
+int totalIncome() {
+  return incomes.fold(0, (sum, item) => sum + (item['amount'] as int));
+}
+
+int totalExpense() {
+  return expenses.fold(0, (sum, item) => sum + (item['amount'] as int));
+}
+
+int availableSavings() {
+  return totalIncome() - totalExpense();
+}
+
+// ----------------- GoalsPage widget -----------------
 class GoalsPage extends StatelessWidget {
   const GoalsPage({super.key});
 
   @override
   Widget build(BuildContext context) {
+    // Example goals
+    final goals = [
+      {"title": "New Car", "total": 2500000, "image": "assets/images/car.png"},
+      {"title": "Student Loan", "total": 2000000, "image": "assets/images/loan.png"},
+    ];
+
+    final savings = availableSavings(); // total available savings
+
     return Scaffold(
       appBar: AppBar(title: const Text("Goals")),
       bottomNavigationBar: BottomNavBar(
@@ -22,7 +57,7 @@ class GoalsPage extends StatelessWidget {
           } else if (index == 2) {
             Navigator.pushReplacementNamed(context, '/safety');
           } else if (index == 3) {
-            // Already in Finance
+            // Already in Goals
           } else if (index == 4) {
             Navigator.pushReplacementNamed(context, '/community');
           }
@@ -46,22 +81,24 @@ class GoalsPage extends StatelessWidget {
               style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 24),
-            _GoalCard(
-              context,
-              "New Car",
-              2500000,
-              2000000,
-              0.50,
-              "assets/images/car.png",
-            ),
-            _GoalCard(
-              context,
-              "Student Loan",
-              2000000,
-              680000,
-              0.96,
-              "assets/images/loan.png",
-            ),
+            ...goals.map((goal) {
+              // Split savings proportionally to goal amount
+              int savedAmount = (savings *
+                      (goal['total'] as int) /
+                      goals.fold<int>(0, (sum, g) => sum + (g['total'] as int)))
+                  .toInt();
+              double percent = savedAmount / (goal['total'] as int);
+
+              return _GoalCard(
+                context,
+                goal['title'] as String,
+                goal['total'] as int,
+                savedAmount,
+                percent,
+                goal['image'] as String,
+              );
+            // ignore: unnecessary_to_list_in_spreads
+            }).toList(),
           ],
         ),
       ),

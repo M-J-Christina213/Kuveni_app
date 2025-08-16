@@ -67,6 +67,10 @@ class _GroupsScreenState extends State<GroupsScreen> {
                             group['description'] ?? 'No description provided.',
                         members: group['member_count'] ?? 0,
                         onJoin: () {
+<<<<<<< HEAD
+=======
+                          // Implement join group logic (e.g., adding a user to a join table)
+>>>>>>> af0b5b88880d9ae73d896007f2514caaf73c8b03
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(content: Text('Joined "${group['name']}"')),
                           );
