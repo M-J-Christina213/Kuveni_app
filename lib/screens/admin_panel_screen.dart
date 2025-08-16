@@ -1,11 +1,7 @@
 // lib/screens/admin_panel_screen.dart
 import 'package:flutter/material.dart';
-import 'package:kuveni_app/screens/post_job.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:supabase_flutter/supabase_flutter.dart' as supa;
 import 'package:intl/intl.dart';
-
-// Initialize Supabase client
-final supabase = Supabase.instance.client;
 
 class AdminPanelScreen extends StatefulWidget {
   const AdminPanelScreen({super.key});
@@ -15,6 +11,10 @@ class AdminPanelScreen extends StatefulWidget {
 }
 
 class _AdminPanelScreenState extends State<AdminPanelScreen> {
+  // Declare the Supabase client as a late final variable here.
+  // This ensures it will be initialized before its first use.
+  late final supa.SupabaseClient supabase;
+
   // Lists to hold requests based on their status
   List<dynamic> _pendingRequests = [];
   List<dynamic> _approvedRequests = [];
@@ -26,6 +26,9 @@ class _AdminPanelScreenState extends State<AdminPanelScreen> {
   @override
   void initState() {
     super.initState();
+    // Initialize the Supabase client within initState.
+    // This is the correct way to ensure the client is ready.
+    supabase = supa.Supabase.instance.client;
     _fetchAndSortAllRequests();
   }
 
@@ -73,16 +76,18 @@ class _AdminPanelScreenState extends State<AdminPanelScreen> {
           .update({'status': 'approved'})
           .eq('id', requestId);
 
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Request approved!')),
-      );
-
-      // Refresh the list to remove the approved request and move it to the approved list.
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Request approved!')),
+        );
+      }
       _fetchAndSortAllRequests();
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Failed to approve request: $e')),
-      );
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Failed to approve request: $e')),
+        );
+      }
     }
   }
 
@@ -94,16 +99,18 @@ class _AdminPanelScreenState extends State<AdminPanelScreen> {
           .update({'status': 'denied'})
           .eq('id', requestId);
 
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Request denied!')),
-      );
-
-      // Refresh the list to remove the denied request and move it to the denied list.
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Request denied!')),
+        );
+      }
       _fetchAndSortAllRequests();
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Failed to deny request: $e')),
-      );
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Failed to deny request: $e')),
+        );
+      }
     }
   }
 

@@ -1,12 +1,8 @@
 // lib/screens/job_huntlist.dart
 import 'package:flutter/material.dart';
 import 'package:kuveni_app/screens/post_job.dart';
-// ignore: unused_import
-import 'package:supabase_flutter/supabase_flutter.dart' as supa;
+import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:intl/intl.dart';
-
-// Initialize Supabase client
-final supabase = Supabase.instance.client;
 
 class JobHuntListScreen extends StatefulWidget {
   const JobHuntListScreen({super.key});
@@ -16,6 +12,9 @@ class JobHuntListScreen extends StatefulWidget {
 }
 
 class _JobHuntListScreenState extends State<JobHuntListScreen> {
+  // Initialize Supabase client inside initState
+  late final SupabaseClient supabase;
+
   // List to store all combined jobs and requests.
   List<dynamic>? _allJobs;
   bool _isLoading = true;
@@ -26,6 +25,8 @@ class _JobHuntListScreenState extends State<JobHuntListScreen> {
   @override
   void initState() {
     super.initState();
+    // Assign the Supabase client after the app is initialized.
+    supabase = supa.Supabase.instance.client;
     // Fetch data for both general jobs and approved event squad requests.
     _fetchCombinedJobs();
     // Add a listener to the search controller to trigger filtering on text changes.

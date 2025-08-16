@@ -2,7 +2,6 @@
 import 'package:flutter/material.dart';
 import 'package:kuveni_app/screens/event_squad_screen.dart';
 import 'package:kuveni_app/screens/post_job.dart';
-import 'package:kuveni_app/screens/event_squad_screen.dart';
 import 'package:kuveni_app/screens/job_huntlist.dart';
 import 'package:kuveni_app/screens/premium_service_list_screen.dart';
 import 'package:kuveni_app/screens/checkout.dart';
@@ -10,9 +9,7 @@ import 'package:kuveni_app/screens/profile_screen.dart';
 import 'package:kuveni_app/screens/dashboard_card.dart';
 import 'package:kuveni_app/screens/admin_panel_screen.dart';
 import 'package:kuveni_app/screens/submit_premium_service_screen.dart'; // New import for submitting a service
-import 'package:supabase_flutter/supabase_flutter.dart';
-
-final supabase = Supabase.instance.client;
+import 'package:supabase_flutter/supabase_flutter.dart' as supa;
 
 class JobsMainDashboard extends StatefulWidget {
   const JobsMainDashboard({super.key});
@@ -22,11 +19,35 @@ class JobsMainDashboard extends StatefulWidget {
 }
 
 class _JobsMainDashboardState extends State<JobsMainDashboard> {
+  // Declare the supabase client here as a late final variable.
+  // This tells Dart that it will be initialized later,
+  // before it's first used.
+  late final supa.SupabaseClient supabase;
   final TextEditingController _searchController = TextEditingController();
 
-  bool get _isAdmin {
-    final currentUserUid = supabase.auth.currentUser?.id;
-    return currentUserUid == 'YOUR_ADMIN_USER_ID';
+  // A boolean to track if the user is an admin.
+  bool _isAdmin = false;
+
+  @override
+  void initState() {
+    super.initState();
+    // Initialize the supabase client instance here, within initState().
+    // This ensures it is ready for use when the widget is built.
+    supabase = supa.Supabase.instance.client;
+    
+    // Set up a listener for auth state changes to determine if the user is an admin.
+    // This is more reliable than a simple getter that runs on every build.
+    supabase.auth.onAuthStateChange.listen((data) {
+      final supa.Session? session = data.session;
+      if (session != null) {
+        // Check if the current user ID matches the admin ID.
+        if (session.user.id == 'YOUR_ADMIN_USER_ID') {
+          setState(() {
+            _isAdmin = true;
+          });
+        }
+      }
+    });
   }
 
   @override
@@ -163,6 +184,7 @@ class _JobsMainDashboardState extends State<JobsMainDashboard> {
               iconColor: Colors.pink[400]!,
               destinationScreen: const CheckoutScreen(),
             ),
+            // Conditionally show Admin Panel
             if (_isAdmin)
               DashboardCard(
                 title: 'Admin Panel',
