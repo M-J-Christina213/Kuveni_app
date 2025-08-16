@@ -1,7 +1,8 @@
 // lib/screens/job_huntlist.dart
 import 'package:flutter/material.dart';
 import 'package:kuveni_app/screens/post_job.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
+// ignore: unused_import
+import 'package:supabase_flutter/supabase_flutter.dart' as supa;
 import 'package:intl/intl.dart';
 
 // Initialize Supabase client

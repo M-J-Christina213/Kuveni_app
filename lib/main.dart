@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
+// ignore: unused_import
+import 'package:supabase_flutter/supabase_flutter.dart' as supa;
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:kuveni_app/screens/bottom_nav_bar.dart';
+// ignore: unused_import
 import 'package:kuveni_app/screens/event_squad_screen.dart';
 import 'package:kuveni_app/screens/jobs_main_dashboard.dart';
 import 'package:kuveni_app/screens/logout_screen.dart';
@@ -68,7 +70,7 @@ class MyApp extends StatelessWidget {
         '/viewJobs': (context) => const JobsMainDashboard(),
         '/postJob': (context) => const PostJobScreen(),
         // This is the updated route to the Supabase-enabled EventSquadScreen
-        '/eventSquadForm': (context) => const EventSquadScreen(),
+        //'/eventSquadForm': (context) => const EventSquadScreen(),
       },
     );
   }
