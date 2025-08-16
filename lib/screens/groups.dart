@@ -1,3 +1,5 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -10,35 +12,60 @@ class GroupsScreen extends StatefulWidget {
 
 class _GroupsScreenState extends State<GroupsScreen> {
   final _supabase = Supabase.instance.client;
-  List<Map<String, dynamic>> _groups = [];
-  bool _isLoading = true;
+  List<Map<String, dynamic>> groups = [];
+  bool isLoading = true;
 
   @override
   void initState() {
     super.initState();
-    _fetchGroups();
+    fetchGroups();
   }
 
-  Future<void> _fetchGroups() async {
-    setState(() {
-      _isLoading = true;
-    });
+  Future<void> fetchGroups() async {
+    try {
+      final response = await _supabase.from('community_groups').select();
+      setState(() {
+        groups = List<Map<String, dynamic>>.from(response);
+        isLoading = false;
+      });
+    } catch (e) {
+      ("Error fetching groups: $e");
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Failed to load groups')),
+      );
+    }
+  }
+
+  Future<void> joinGroup(int groupId, String groupName) async {
+    final user = _supabase.auth.currentUser;
+    if (user == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Please log in to join a group')),
+      );
+      return;
+    }
 
     try {
-      final data = await _supabase
-          .from('groups')
-          .select()
-          .order('name', ascending: true);
-
-      _groups = (data as List<dynamic>)
-          .map((item) => item as Map<String, dynamic>)
-          .toList();
-    } catch (e) {
-      debugPrint('An unexpected error occurred: $e');
-    } finally {
-      setState(() {
-        _isLoading = false;
+      // 1. Add record to group_memberships
+      await _supabase.from('group_memberships').insert({
+        'user_id': user.id,
+        'group_id': groupId,
       });
+
+      // 2. (Optional) increment members in community_groups table
+      await _supabase.rpc('increment_group_members', params: {'gid': groupId});
+
+      // 3. Refresh group list
+      await fetchGroups();
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('You joined "$groupName"!')),
+      );
+    } catch (e) {
+      ("Join error: $e");
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Could not join the group')),
+      );
     }
   }
 
@@ -46,37 +73,29 @@ class _GroupsScreenState extends State<GroupsScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Community Groups'),
+        title: const Text('Groups'),
         centerTitle: true,
         backgroundColor: Colors.purple[300],
       ),
-      body: _isLoading
+      body: isLoading
           ? const Center(child: CircularProgressIndicator())
-          : _groups.isEmpty
-              ? const Center(child: Text('No groups available.'))
-              : Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: ListView.separated(
-                    itemCount: _groups.length,
-                    separatorBuilder: (_, __) => const SizedBox(height: 12),
-                    itemBuilder: (context, index) {
-                      final group = _groups[index];
-                      return GroupCard(
-                        name: group['name'] ?? 'Unknown Group',
-                        description: group['description'] ?? 'No description provided.',
-                        members: group['member_count'] ?? 0,
-                        onJoin: () {
-                          // Implement join group logic (e.g., adding a user to a join table)
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                                content:
-                                    Text('Joined "${group['name']}"')),
-                          );
-                        },
-                      );
-                    },
-                  ),
-                ),
+          : Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: ListView.separated(
+                itemCount: groups.length,
+                separatorBuilder: (_, __) => const SizedBox(height: 12),
+                itemBuilder: (context, index) {
+                  final group = groups[index];
+                  return GroupCard(
+                    name: group['name'],
+                    description: group['description'],
+                    members: group['members'],
+                    onJoin: () =>
+                        joinGroup(group['id'] as int, group['name'] as String),
+                  );
+                },
+              ),
+            ),
     );
   }
 }
@@ -106,7 +125,8 @@ class GroupCard extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(name,
-                style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+                style: const TextStyle(
+                    fontSize: 20, fontWeight: FontWeight.bold)),
             const SizedBox(height: 8),
             Text(description,
                 style: TextStyle(color: Colors.grey[700], fontSize: 14)),
@@ -115,7 +135,8 @@ class GroupCard extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text('$members Members',
-                    style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w500)),
+                    style: const TextStyle(
+                        fontSize: 14, fontWeight: FontWeight.w500)),
                 ElevatedButton(
                   onPressed: onJoin,
                   style: ElevatedButton.styleFrom(
