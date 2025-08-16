@@ -146,7 +146,6 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
               IconButton(
                 icon: const Icon(Icons.person, color: Colors.white, size: 30),
                 onPressed: () {
-                  // TODO: Implement navigation to ProfileScreen
                 },
               ),
             ],
