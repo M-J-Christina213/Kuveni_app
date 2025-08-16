@@ -7,6 +7,7 @@ class AdminPanelScreen extends StatefulWidget {
   const AdminPanelScreen({super.key});
 
   @override
+  // ignore: library_private_types_in_public_api
   _AdminPanelScreenState createState() => _AdminPanelScreenState();
 }
 
@@ -16,9 +17,9 @@ class _AdminPanelScreenState extends State<AdminPanelScreen> {
   late final supa.SupabaseClient supabase;
 
   // Lists to hold requests based on their status
-  List<dynamic> _pendingRequests = [];
-  List<dynamic> _approvedRequests = [];
-  List<dynamic> _deniedRequests = [];
+  final List<dynamic> _pendingRequests = [];
+  final List<dynamic> _approvedRequests = [];
+  final List<dynamic> _deniedRequests = [];
 
   bool _isLoading = true;
   String? _errorMessage;
@@ -64,7 +65,7 @@ class _AdminPanelScreenState extends State<AdminPanelScreen> {
         _isLoading = false;
         _errorMessage = 'Failed to load requests: $e';
       });
-      print('Supabase fetch error: $e');
+      ('Supabase fetch error: $e');
     }
   }
 

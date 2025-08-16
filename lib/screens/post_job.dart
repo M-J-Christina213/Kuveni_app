@@ -6,6 +6,7 @@ import 'package:kuveni_app/screens/profile_screen.dart';
 final supabase = Supabase.instance.client;
 
 class Supabase {
+  // ignore: prefer_typing_uninitialized_variables
   static var instance;
 }
 
@@ -69,7 +70,7 @@ class _PostJobScreenState extends State<PostJobScreen> {
             SnackBar(content: Text('Failed to post job: $e')),
           );
         }
-        print('Supabase insertion error: $e'); // Print the error for debugging.
+        ('Supabase insertion error: $e'); // Print the error for debugging.
       } finally {
         if (mounted) {
           setState(() {
