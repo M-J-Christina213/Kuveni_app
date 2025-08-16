@@ -1,6 +1,6 @@
-
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 
 // Initialize the Supabase client instance.
 final supabase = Supabase.instance.client;
@@ -67,55 +67,84 @@ class _EventSquadFormState extends State<EventSquadForm> {
 
   // Function to handle form submission and data insertion into Supabase.
   Future<void> _submitForm() async {
-    if (_formKey.currentState!.validate() && _selectedDate != null && _selectedTime != null) {
-      setState(() {
-        _isLoading = true;
+    // Validate both the form fields and the selected date/time.
+    if (!_formKey.currentState!.validate() || _selectedDate == null || _selectedTime == null) {
+      Fluttertoast.showToast(
+        msg: "Please fill out all fields and select a date/time.",
+        toastLength: Toast.LENGTH_SHORT,
+        gravity: ToastGravity.BOTTOM,
+        backgroundColor: Colors.red,
+        textColor: Colors.white,
+      );
+      return;
+    }
+
+    setState(() {
+      _isLoading = true;
+    });
+
+    try {
+      // Combine date and time into a single DateTime object.
+      final eventDateTime = DateTime(
+        _selectedDate!.year,
+        _selectedDate!.month,
+        _selectedDate!.day,
+        _selectedTime!.hour,
+        _selectedTime!.minute,
+      );
+
+      // Insert the data into the 'event_squad_requests' table.
+      // Use .select() to get the inserted row back, which is good practice.
+      await supabase.from('event_squad_requests').insert({
+        'event_name': _eventNameController.text,
+        'event_date': eventDateTime.toIso8601String(), // Correct format for Supabase timestamp
+        'location': _locationController.text,
+        'helpers_required': int.tryParse(_helpersRequiredController.text),
+        'type_of_help': _typeOfHelpController.text,
+        'contact': _contactController.text,
       });
 
-      try {
-        // Combine date and time into a single DateTime object.
-        final eventDateTime = DateTime(
-          _selectedDate!.year,
-          _selectedDate!.month,
-          _selectedDate!.day,
-          _selectedTime!.hour,
-          _selectedTime!.minute,
-        );
-
-        // Insert the data into the 'event_squad_requests' table.
-        // Supabase will automatically generate the 'id' and 'created_at'.
-        final response = await supabase.from('event_squad_requests').insert({
-          'event_name': _eventNameController.text,
-          'event_date': eventDateTime.toIso8601String(), // Correct format for Supabase timestamp
-          'location': _locationController.text,
-          'helpers_required': int.tryParse(_helpersRequiredController.text),
-          'type_of_help': _typeOfHelpController.text,
-          'contact': _contactController.text,
-        });
-
-        // The insert method doesn't return data, so we check for errors.
-        if (response != null && response.error == null) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Event request submitted successfully!')),
-          );
-        } else if (response.error != null) {
-          throw response.error!;
-        }
-      } catch (e) {
-        // Show an error message if the submission fails.
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Submission failed: ${e.toString()}')),
-        );
-      } finally {
-        setState(() {
-          _isLoading = false;
-        });
-      }
-    } else {
-      // Show an error message for incomplete forms.
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please fill out all fields and select a date/time')),
+      // Show success toast.
+      Fluttertoast.showToast(
+        msg: "Event request submitted successfully!",
+        toastLength: Toast.LENGTH_LONG,
+        gravity: ToastGravity.BOTTOM,
+        backgroundColor: Colors.green,
+        textColor: Colors.white,
       );
+
+      // Clear the form fields after successful submission.
+      _eventNameController.clear();
+      _locationController.clear();
+      _helpersRequiredController.clear();
+      _typeOfHelpController.clear();
+      _contactController.clear();
+      setState(() {
+        _selectedDate = null;
+        _selectedTime = null;
+      });
+    } on PostgrestException catch (e) {
+      // Handle Supabase-specific errors.
+      Fluttertoast.showToast(
+        msg: "Error: ${e.message}",
+        toastLength: Toast.LENGTH_LONG,
+        gravity: ToastGravity.BOTTOM,
+        backgroundColor: Colors.red,
+        textColor: Colors.white,
+      );
+    } catch (e) {
+      // Handle other unexpected errors.
+      Fluttertoast.showToast(
+        msg: "An unexpected error occurred: ${e.toString()}",
+        toastLength: Toast.LENGTH_LONG,
+        gravity: ToastGravity.BOTTOM,
+        backgroundColor: Colors.red,
+        textColor: Colors.white,
+      );
+    } finally {
+      setState(() {
+        _isLoading = false;
+      });
     }
   }
 
@@ -124,31 +153,23 @@ class _EventSquadFormState extends State<EventSquadForm> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Event Squad Form'),
-        flexibleSpace: Container(
-          decoration: const BoxDecoration(
-            gradient: LinearGradient(
-              colors: [
-                Color(0xFF5902B1),
-                Color(0xFF700DB2),
-                Color(0xFFF54DB8),
-                Color(0xFFEBB41F),
-              ],
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-            ),
-          ),
-        ),
+        backgroundColor: Theme.of(context).primaryColor,
+        elevation: 0,
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
         child: Form(
           key: _formKey,
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               TextFormField(
                 controller: _eventNameController,
-                decoration: const InputDecoration(labelText: 'Event Name'),
+                decoration: InputDecoration(
+                  labelText: 'Event Name',
+                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
+                  prefixIcon: const Icon(Icons.event),
+                ),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
                     return 'Please enter the event name';
@@ -161,20 +182,15 @@ class _EventSquadFormState extends State<EventSquadForm> {
               InkWell(
                 onTap: () => _selectDate(context),
                 child: InputDecorator(
-                  decoration: const InputDecoration(
+                  decoration: InputDecoration(
                     labelText: 'Event Date',
-                    border: OutlineInputBorder(),
+                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
+                    prefixIcon: const Icon(Icons.calendar_today),
                   ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: <Widget>[
-                      Text(
-                        _selectedDate == null
-                            ? 'Select Date'
-                            : '${_selectedDate!.toLocal()}'.split(' ')[0],
-                      ),
-                      const Icon(Icons.calendar_today),
-                    ],
+                  child: Text(
+                    _selectedDate == null
+                        ? 'Select Date'
+                        : '${_selectedDate!.toLocal()}'.split(' ')[0],
                   ),
                 ),
               ),
@@ -183,27 +199,26 @@ class _EventSquadFormState extends State<EventSquadForm> {
               InkWell(
                 onTap: () => _selectTime(context),
                 child: InputDecorator(
-                  decoration: const InputDecoration(
+                  decoration: InputDecoration(
                     labelText: 'Event Time',
-                    border: OutlineInputBorder(),
+                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
+                    prefixIcon: const Icon(Icons.access_time),
                   ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: <Widget>[
-                      Text(
-                        _selectedTime == null
-                            ? 'Select Time'
-                            : _selectedTime!.format(context),
-                      ),
-                      const Icon(Icons.access_time),
-                    ],
+                  child: Text(
+                    _selectedTime == null
+                        ? 'Select Time'
+                        : _selectedTime!.format(context),
                   ),
                 ),
               ),
               const SizedBox(height: 16.0),
               TextFormField(
                 controller: _locationController,
-                decoration: const InputDecoration(labelText: 'Location'),
+                decoration: InputDecoration(
+                  labelText: 'Location',
+                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
+                  prefixIcon: const Icon(Icons.location_on),
+                ),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
                     return 'Please enter the location';
@@ -214,7 +229,11 @@ class _EventSquadFormState extends State<EventSquadForm> {
               const SizedBox(height: 16.0),
               TextFormField(
                 controller: _helpersRequiredController,
-                decoration: const InputDecoration(labelText: 'Helpers Required'),
+                decoration: InputDecoration(
+                  labelText: 'Helpers Required',
+                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
+                  prefixIcon: const Icon(Icons.group),
+                ),
                 keyboardType: TextInputType.number,
                 validator: (value) {
                   if (value == null || value.isEmpty || int.tryParse(value) == null) {
@@ -226,7 +245,12 @@ class _EventSquadFormState extends State<EventSquadForm> {
               const SizedBox(height: 16.0),
               TextFormField(
                 controller: _typeOfHelpController,
-                decoration: const InputDecoration(labelText: 'Type of Help'),
+                maxLines: 4,
+                decoration: InputDecoration(
+                  labelText: 'Type of Help',
+                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
+                  prefixIcon: const Icon(Icons.help_outline),
+                ),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
                     return 'Please enter the type of help needed';
@@ -237,7 +261,11 @@ class _EventSquadFormState extends State<EventSquadForm> {
               const SizedBox(height: 16.0),
               TextFormField(
                 controller: _contactController,
-                decoration: const InputDecoration(labelText: 'Contact Information'),
+                decoration: InputDecoration(
+                  labelText: 'Contact Information',
+                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
+                  prefixIcon: const Icon(Icons.phone),
+                ),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
                     return 'Please enter your contact information';
@@ -246,17 +274,16 @@ class _EventSquadFormState extends State<EventSquadForm> {
                 },
               ),
               const SizedBox(height: 24.0),
-              Center(
-                child: ElevatedButton(
-                  onPressed: _isLoading ? null : _submitForm,
-                  style: ElevatedButton.styleFrom(
-                    padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 15),
-                    textStyle: const TextStyle(fontSize: 18),
-                  ),
-                  child: _isLoading
-                      ? const CircularProgressIndicator(color: Colors.white)
-                      : const Text('Submit Request'),
+              ElevatedButton(
+                onPressed: _isLoading ? null : _submitForm,
+                style: ElevatedButton.styleFrom(
+                  padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 15),
+                  textStyle: const TextStyle(fontSize: 18),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
                 ),
+                child: _isLoading
+                    ? const CircularProgressIndicator(color: Colors.white)
+                    : const Text('Submit Request'),
               ),
             ],
           ),

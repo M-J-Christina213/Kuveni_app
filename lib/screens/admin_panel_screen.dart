@@ -14,34 +14,51 @@ class AdminPanelScreen extends StatefulWidget {
 }
 
 class _AdminPanelScreenState extends State<AdminPanelScreen> {
-  List<dynamic>? _pendingRequests;
+  // Lists to hold requests based on their status
+  List<dynamic> _pendingRequests = [];
+  List<dynamic> _approvedRequests = [];
+  List<dynamic> _deniedRequests = [];
+
   bool _isLoading = true;
   String? _errorMessage;
 
   @override
   void initState() {
     super.initState();
-    _fetchPendingRequests();
+    _fetchAndSortAllRequests();
   }
 
-  // Fetch only pending requests from the database.
-  Future<void> _fetchPendingRequests() async {
+  // Fetch all requests and sort them into their respective lists.
+  Future<void> _fetchAndSortAllRequests() async {
     try {
       final List<dynamic> response = await supabase
           .from('event_squad_requests')
           .select()
-          .eq('status', 'pending')
           .order('created_at', ascending: false);
       
+      // Clear previous lists before sorting
+      _pendingRequests.clear();
+      _approvedRequests.clear();
+      _deniedRequests.clear();
+
+      for (var request in response) {
+        if (request['status'] == 'pending') {
+          _pendingRequests.add(request);
+        } else if (request['status'] == 'approved') {
+          _approvedRequests.add(request);
+        } else if (request['status'] == 'denied') {
+          _deniedRequests.add(request);
+        }
+      }
+
       setState(() {
-        _pendingRequests = response;
         _isLoading = false;
         _errorMessage = null;
       });
     } catch (e) {
       setState(() {
         _isLoading = false;
-        _errorMessage = 'Failed to load pending requests: $e';
+        _errorMessage = 'Failed to load requests: $e';
       });
       print('Supabase fetch error: $e');
     }
@@ -59,13 +76,71 @@ class _AdminPanelScreenState extends State<AdminPanelScreen> {
         const SnackBar(content: Text('Request approved!')),
       );
 
-      // Refresh the list to remove the approved request.
-      _fetchPendingRequests();
+      // Refresh the list to remove the approved request and move it to the approved list.
+      _fetchAndSortAllRequests();
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Failed to approve request: $e')),
       );
     }
+  }
+
+  // New function to deny a request.
+  Future<void> _denyRequest(String requestId) async {
+    try {
+      await supabase
+          .from('event_squad_requests')
+          .update({'status': 'denied'})
+          .eq('id', requestId);
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Request denied!')),
+      );
+
+      // Refresh the list to remove the denied request and move it to the denied list.
+      _fetchAndSortAllRequests();
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Failed to deny request: $e')),
+      );
+    }
+  }
+
+  // Function to show a confirmation dialog.
+  Future<void> _showConfirmationDialog(String requestId, bool isApprove) async {
+    return showDialog<void>(
+      context: context,
+      barrierDismissible: false, // User must tap a button to dismiss
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text(isApprove ? 'Approve Request?' : 'Deny Request?'),
+          content: Text(
+              'Are you sure you want to ${isApprove ? 'approve' : 'deny'} this request?'),
+          actions: <Widget>[
+            TextButton(
+              child: const Text('Cancel'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+            TextButton(
+              style: TextButton.styleFrom(
+                foregroundColor: isApprove ? Colors.green : Colors.red,
+              ),
+              child: Text(isApprove ? 'Approve' : 'Deny'),
+              onPressed: () {
+                Navigator.of(context).pop();
+                if (isApprove) {
+                  _approveRequest(requestId);
+                } else {
+                  _denyRequest(requestId);
+                }
+              },
+            ),
+          ],
+        );
+      },
+    );
   }
 
   // Helper function to format the timestamp.
@@ -80,63 +155,111 @@ class _AdminPanelScreenState extends State<AdminPanelScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Admin Panel'),
-        flexibleSpace: Container(
-          decoration: const BoxDecoration(
-            gradient: LinearGradient(
-              colors: [
-                Color(0xFF5902B1),
-                Color(0xFF700DB2),
-                Color(0xFFF54DB8),
-                Color(0xFFEBB41F),
-              ],
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
+    return DefaultTabController(
+      length: 3,
+      child: Scaffold(
+        appBar: AppBar(
+          title: const Text('Admin Panel'),
+          flexibleSpace: Container(
+            decoration: const BoxDecoration(
+              gradient: LinearGradient(
+                colors: [
+                  Color(0xFF5902B1),
+                  Color(0xFF700DB2),
+                  Color(0xFFF54DB8),
+                  Color(0xFFEBB41F),
+                ],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ),
             ),
           ),
+          bottom: const TabBar(
+            tabs: [
+              Tab(text: 'Pending'),
+              Tab(text: 'Approved'),
+              Tab(text: 'Denied'),
+            ],
+          ),
         ),
+        body: _isLoading
+            ? const Center(child: CircularProgressIndicator())
+            : _errorMessage != null
+                ? Center(child: Text(_errorMessage!))
+                : TabBarView(
+                    children: [
+                      _buildRequestsList(_pendingRequests, isPending: true),
+                      _buildRequestsList(_approvedRequests, isPending: false),
+                      _buildRequestsList(_deniedRequests, isPending: false),
+                    ],
+                  ),
       ),
-      body: _isLoading
-          ? const Center(child: CircularProgressIndicator())
-          : _errorMessage != null
-              ? Center(child: Text(_errorMessage!))
-              : _pendingRequests!.isEmpty
-                  ? const Center(child: Text('No pending requests to approve.'))
-                  : ListView.builder(
-                      itemCount: _pendingRequests!.length,
-                      itemBuilder: (context, index) {
-                        final request = _pendingRequests![index];
-                        return Card(
-                          margin: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-                          elevation: 3,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          child: ListTile(
-                            contentPadding: const EdgeInsets.all(16.0),
-                            title: Text(
-                              request['event_name'],
-                              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
-                            ),
-                            subtitle: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                const SizedBox(height: 8),
-                                Text('Location: ${request['location']}'),
-                                Text('Helpers Required: ${request['helpers_required']}'),
-                                Text('Posted On: ${_formatDate(request['created_at'])}'),
-                              ],
-                            ),
-                            trailing: ElevatedButton(
-                              onPressed: () => _approveRequest(request['id']),
-                              child: const Text('Approve'),
-                            ),
-                          ),
-                        );
-                      },
-                    ),
+    );
+  }
+
+  // Helper method to build the list view for each tab
+  Widget _buildRequestsList(List<dynamic> requests, {required bool isPending}) {
+    if (requests.isEmpty) {
+      return Center(
+        child: Text(
+          isPending
+              ? 'No pending requests to approve.'
+              : 'No requests in this category.',
+        ),
+      );
+    }
+    return ListView.builder(
+      itemCount: requests.length,
+      itemBuilder: (context, index) {
+        final request = requests[index];
+        return Card(
+          margin: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+          elevation: 3,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10),
+          ),
+          child: ListTile(
+            contentPadding: const EdgeInsets.all(16.0),
+            title: Text(
+              request['event_name'],
+              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+            ),
+            subtitle: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const SizedBox(height: 8),
+                Text('Location: ${request['location']}'),
+                Text('Helpers Required: ${request['helpers_required']}'),
+                Text('Posted On: ${_formatDate(request['created_at'])}'),
+              ],
+            ),
+            trailing: isPending
+                ? Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      ElevatedButton(
+                        onPressed: () => _showConfirmationDialog(request['id'], true),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.green, // Approve button color
+                          foregroundColor: Colors.white,
+                        ),
+                        child: const Text('Approve'),
+                      ),
+                      const SizedBox(width: 8),
+                      ElevatedButton(
+                        onPressed: () => _showConfirmationDialog(request['id'], false),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.red, // Deny button color
+                          foregroundColor: Colors.white,
+                        ),
+                        child: const Text('Deny'),
+                      ),
+                    ],
+                  )
+                : null,
+          ),
+        );
+      },
     );
   }
 }
