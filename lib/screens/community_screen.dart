@@ -1,8 +1,8 @@
+// lib/screens/community_screen.dart
 import 'package:flutter/material.dart';
-import 'package:kuveni_app/screens/friendlist_screen.dart';
 import 'package:kuveni_app/screens/groups.dart';
+import 'package:kuveni_app/screens/wellness.dart';
 import 'package:kuveni_app/screens/helper_list_screen.dart';
-import 'package:kuveni_app/screens/wellness.dart'; // Make sure this path is correct
 
 class CommunityScreen extends StatelessWidget {
   const CommunityScreen({super.key});
@@ -11,126 +11,83 @@ class CommunityScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text(
-          'Community',
-          style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
-        ),
-        backgroundColor: Colors.deepPurple,
+        title: const Text('Community'),
         centerTitle: true,
+        backgroundColor: Colors.purple[300],
       ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16.0),
+      body: Center(
         child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Text(
-              'Join the Kuveni Community',
-              style: TextStyle(fontSize: 20, fontWeight: FontWeight.w600),
+            CommunityButton(
+              title: 'Groups',
+              icon: Icons.group,
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const GroupsScreen()),
+                );
+              },
             ),
-            const SizedBox(height: 10),
-            const Text(
-              'Connect with others, share your journey, and grow together.',
-              style: TextStyle(fontSize: 16, color: Colors.grey),
-              textAlign: TextAlign.center,
+            const SizedBox(height: 20),
+            CommunityButton(
+              title: 'Wellness',
+              icon: Icons.favorite,
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const WellnessScreen()),
+                );
+              },
             ),
-            const SizedBox(height: 30),
-
-            // Cards Grid
-            GridView.count(
-              crossAxisCount: 2,
-              crossAxisSpacing: 16,
-              mainAxisSpacing: 16,
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              children: [
-                _buildCommunityCard(
+            const SizedBox(height: 20),
+            CommunityButton(
+              title: 'Helpers',
+              icon: Icons.people_alt,
+              onTap: () {
+                Navigator.push(
                   context,
-                  icon: Icons.group,
-                  title: 'Groups',
-                  color: Colors.teal.shade100,
-                  onTap: () {
-                   Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => const GroupDetailScreen()),
-                    );
-
-                  },
-                ),
-                _buildCommunityCard(
-                  context,
-                  icon: Icons.volunteer_activism,
-                  title: 'Helpers',
-                  color: Colors.amber.shade100,
-                  onTap: (
-
-                  ) {
-                    Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => const HelpersListScreen()),
-                  );
-                  },
-                ),
-                _buildCommunityCard(
-                  context,
-                  icon: Icons.people,
-                  title: 'Friends',
-                  color: Colors.green.shade100,
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => const FriendsListScreen()),
-                    );
-                  },
-                ),
-                _buildCommunityCard(
-                  context,
-                  icon: Icons.favorite,
-                  title: 'Wellness',
-                  color: Colors.purple.shade100,
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => const WellnessScreen()),
-                    );
-                  },
-                ),
-              ],
+                  MaterialPageRoute(builder: (context) => const HelpersListScreen()),
+                );
+              },
             ),
           ],
         ),
       ),
     );
   }
+}
 
-  // Helper widget for community cards
-  Widget _buildCommunityCard(
-    BuildContext context, {
-    required IconData icon,
-    required String title,
-    required Color color,
-    required VoidCallback onTap,
-  }) {
-    return Card(
-      elevation: 3,
-      color: color,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(12),
-        child: Padding(
-          padding: const EdgeInsets.all(12.0),
+class CommunityButton extends StatelessWidget {
+  final String title;
+  final IconData icon;
+  final VoidCallback onTap;
+
+  const CommunityButton({
+    super.key,
+    required this.title,
+    required this.icon,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      onTap: onTap,
+      child: Card(
+        elevation: 5,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+        child: SizedBox(
+          width: 200,
+          height: 150,
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Icon(icon, size: 40, color: Colors.deepPurple),
+              Icon(icon, size: 50, color: Colors.purple[300]),
               const SizedBox(height: 10),
               Text(
                 title,
-                textAlign: TextAlign.center,
-                style: const TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.deepPurple,
-                ),
+                style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
               ),
             ],
           ),
