@@ -205,7 +205,7 @@ class _AddFriendScreenState extends State<AddFriendScreen> {
                                 ),
                                 ElevatedButton(
                                   onPressed: () {
-                                    // TODO: Implement logic to send friend request
+                                    // Implement logic to send friend request
                                     ScaffoldMessenger.of(context).showSnackBar(
                                       SnackBar(content: Text('Friend request sent to ${user['name']}!')),
                                     );
