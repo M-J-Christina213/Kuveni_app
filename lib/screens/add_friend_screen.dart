@@ -34,24 +34,17 @@ class _AddFriendScreenState extends State<AddFriendScreen> {
           .select('*')
           .ilike('username', '%$query%');
 
-      // The correct way to handle a Supabase response
-      // Check for error before trying to access data
-      if (response.isEmpty) {
+      if (response.isNotEmpty) {
         setState(() {
-          _searchResults = [];
+          _searchResults = response.cast<Map<String, dynamic>>();
         });
       } else {
         setState(() {
-          _searchResults = (response as List).cast<Map<String, dynamic>>();
+          _searchResults = [];
         });
       }
     } catch (e) {
-<<<<<<< HEAD
       debugPrint('An unexpected error occurred: $e');
-=======
-      // Log the error for debugging
-      debugPrint('Error during search: $e');
->>>>>>> 416c58173803b59c4e75c01cef458d3cf2a4361b
       setState(() {
         _searchResults = [];
       });
@@ -234,25 +227,11 @@ class _AddFriendScreenState extends State<AddFriendScreen> {
                                     fontWeight: FontWeight.bold,
                                   ),
                                 ),
-<<<<<<< HEAD
                                 Text(
                                   '@${user['username'] ?? 'unknown'}',
                                   style: TextStyle(
                                     fontSize: 14,
                                     color: Colors.grey[600],
-=======
-                                ElevatedButton(
-                                  onPressed: () {
-                                    // Implement logic to send friend request
-                                    ScaffoldMessenger.of(context).showSnackBar(
-                                      SnackBar(content: Text('Friend request sent to ${user['name']}!')),
-                                    );
-                                  },
-                                  style: ElevatedButton.styleFrom(
-                                    backgroundColor: Colors.green[400],
-                                    foregroundColor: Colors.white,
-                                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
->>>>>>> 416c58173803b59c4e75c01cef458d3cf2a4361b
                                   ),
                                 ),
                               ],
@@ -260,7 +239,7 @@ class _AddFriendScreenState extends State<AddFriendScreen> {
                           ),
                           ElevatedButton(
                             onPressed: () {
-                              //  Implement logic to send friend request
+                              // Implement logic to send friend request
                               ScaffoldMessenger.of(context).showSnackBar(
                                 SnackBar(
                                   content: Text(

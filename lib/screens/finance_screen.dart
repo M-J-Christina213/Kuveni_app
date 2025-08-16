@@ -1,7 +1,7 @@
 // ignore_for_file: non_constant_identifier_names
 
 import 'package:flutter/material.dart';
-import 'goals.dart';
+import 'package:kuveni_app/screens/goals.dart';
 import 'income.dart';
 import 'expenses.dart';
 
