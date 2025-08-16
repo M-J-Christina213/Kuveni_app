@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:kuveni_app/screens/post_job.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 
@@ -292,3 +293,5 @@ class _EventSquadFormState extends State<EventSquadForm> {
     );
   }
 }
+
+

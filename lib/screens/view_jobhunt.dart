@@ -1,7 +1,7 @@
 // lib/screens/job_hunt_list.dart
 import 'package:flutter/material.dart';
+import 'package:kuveni_app/screens/post_job.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import 'view_jobhunt.dart';
 import 'package:kuveni_app/screens/profile_screen.dart';
 
 // Initialize the Supabase client.
@@ -45,7 +45,7 @@ class _JobHuntListScreenState extends State<JobHuntListScreen> {
           SnackBar(content: Text('Failed to fetch jobs: $e')),
         );
       }
-      print('Supabase fetch error: $e'); // Print the error for debugging.
+      ('Supabase fetch error: $e'); // Print the error for debugging.
       setState(() {
         _isLoading = false;
       });
@@ -138,6 +138,8 @@ class _JobHuntListScreenState extends State<JobHuntListScreen> {
                 ),
     );
   }
+  
+  ViewJobVacancyScreen({required jobTitle, required company, required location, required salary, required description}) {}
 }
 
 class JobCard extends StatelessWidget {

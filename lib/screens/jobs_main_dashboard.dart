@@ -1,7 +1,8 @@
 // lib/screens/jobs_main_dashboard.dart
 import 'package:flutter/material.dart';
+import 'package:kuveni_app/screens/event_squad_screen.dart';
 import 'package:kuveni_app/screens/post_job.dart';
-import 'package:kuveni_app/screens/event_squad.dart';
+import 'package:kuveni_app/screens/event_squad_screen.dart';
 import 'package:kuveni_app/screens/job_huntlist.dart';
 import 'package:kuveni_app/screens/premium_service_list_screen.dart';
 import 'package:kuveni_app/screens/checkout.dart';

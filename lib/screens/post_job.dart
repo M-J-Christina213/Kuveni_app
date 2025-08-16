@@ -6,6 +6,10 @@ import 'package:kuveni_app/screens/profile_screen.dart';
 // Initialize the Supabase client.
 final supabase = Supabase.instance.client;
 
+class Supabase {
+  static var instance;
+}
+
 class PostJobScreen extends StatefulWidget {
   const PostJobScreen({super.key});
 
