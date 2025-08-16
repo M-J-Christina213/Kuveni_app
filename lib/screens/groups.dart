@@ -63,14 +63,10 @@ class _GroupsScreenState extends State<GroupsScreen> {
                       final group = _groups[index];
                       return GroupCard(
                         name: group['name'] ?? 'Unknown Group',
-                        description:
-                            group['description'] ?? 'No description provided.',
+                        description: group['description'] ?? 'No description provided.',
                         members: group['member_count'] ?? 0,
                         onJoin: () {
-<<<<<<< HEAD
-=======
                           // Implement join group logic (e.g., adding a user to a join table)
->>>>>>> af0b5b88880d9ae73d896007f2514caaf73c8b03
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(content: Text('Joined "${group['name']}"')),
                           );
@@ -108,8 +104,7 @@ class GroupCard extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(name,
-                style:
-                    const TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+                style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
             const SizedBox(height: 8),
             Text(description,
                 style: TextStyle(color: Colors.grey[700], fontSize: 14)),
@@ -118,8 +113,7 @@ class GroupCard extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text('$members Members',
-                    style: const TextStyle(
-                        fontSize: 14, fontWeight: FontWeight.w500)),
+                    style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w500)),
                 ElevatedButton(
                   onPressed: onJoin,
                   style: ElevatedButton.styleFrom(

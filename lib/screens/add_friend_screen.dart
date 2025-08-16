@@ -33,26 +33,20 @@ class _AddFriendScreenState extends State<AddFriendScreen> {
           .select('*')
           .filter('username', 'ilike', '%$query%');
 
-<<<<<<< HEAD
-      setState(() {
-        _searchResults = (response as List).cast<Map<String, dynamic>>();
-      });
-    } catch (e) {
-      ('Error during search: $e');
-=======
-      if (response.error == null) {
-        setState(() {
-          _searchResults = (response.data as List).cast<Map<String, dynamic>>();
-        });
-      } else {
-        ('Error searching users: ${response.error!.message}');
+      // The correct way to handle a Supabase response
+      // Check for error before trying to access data
+      if (response.isEmpty) {
         setState(() {
           _searchResults = [];
         });
+      } else {
+        setState(() {
+          _searchResults = (response as List).cast<Map<String, dynamic>>();
+        });
       }
     } catch (e) {
-      ('An unexpected error occurred: $e');
->>>>>>> af0b5b88880d9ae73d896007f2514caaf73c8b03
+      // Log the error for debugging
+      debugPrint('Error during search: $e');
       setState(() {
         _searchResults = [];
       });
@@ -213,11 +207,7 @@ class _AddFriendScreenState extends State<AddFriendScreen> {
                                 ),
                                 ElevatedButton(
                                   onPressed: () {
-<<<<<<< HEAD
-                                    //  Implement logic to send friend request
-=======
                                     // Implement logic to send friend request
->>>>>>> af0b5b88880d9ae73d896007f2514caaf73c8b03
                                     ScaffoldMessenger.of(context).showSnackBar(
                                       SnackBar(content: Text('Friend request sent to ${user['name']}!')),
                                     );
