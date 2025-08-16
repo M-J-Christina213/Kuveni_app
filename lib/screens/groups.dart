@@ -63,12 +63,16 @@ class _GroupsScreenState extends State<GroupsScreen> {
                       final group = _groups[index];
                       return GroupCard(
                         name: group['name'] ?? 'Unknown Group',
-                        description:
-                            group['description'] ?? 'No description provided.',
+                        description: group['description'] ?? 'No description provided.',
                         members: group['member_count'] ?? 0,
+<<<<<<< HEAD
                         onJoin: () async {
                           //  implement join group logic 
                           // e.g. insert into `group_members` table
+=======
+                        onJoin: () {
+                          // Implement join group logic (e.g., adding a user to a join table)
+>>>>>>> 416c58173803b59c4e75c01cef458d3cf2a4361b
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(
                                 content:
@@ -108,8 +112,12 @@ class GroupCard extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(name,
+<<<<<<< HEAD
                 style: const TextStyle(
                     fontSize: 20, fontWeight: FontWeight.bold)),
+=======
+                style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+>>>>>>> 416c58173803b59c4e75c01cef458d3cf2a4361b
             const SizedBox(height: 8),
             Text(description,
                 style: TextStyle(color: Colors.grey[700], fontSize: 14)),
@@ -118,8 +126,7 @@ class GroupCard extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text('$members Members',
-                    style: const TextStyle(
-                        fontSize: 14, fontWeight: FontWeight.w500)),
+                    style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w500)),
                 ElevatedButton(
                   onPressed: onJoin,
                   style: ElevatedButton.styleFrom(
