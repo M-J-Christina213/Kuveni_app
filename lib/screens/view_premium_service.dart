@@ -1,11 +1,9 @@
 // lib/screens/view_premium_service.dart
 import 'package:flutter/material.dart';
 import 'package:kuveni_app/screens/checkout.dart';
-
 import 'package:kuveni_app/screens/image_view_screen.dart';
-
-
 import 'package:kuveni_app/screens/profile_screen.dart';
+import 'package:url_launcher/url_launcher.dart'; // New import for launching URLs
 
 class ViewPremiumServiceScreen extends StatelessWidget {
   final String serviceName;
@@ -16,7 +14,7 @@ class ViewPremiumServiceScreen extends StatelessWidget {
   final String contactInfo;
   final String fullDetails;
   final String location;
-  final String image; // Ensure 'image' is passed to the constructor
+  final String image;
 
   const ViewPremiumServiceScreen({
     super.key,
@@ -27,12 +25,34 @@ class ViewPremiumServiceScreen extends StatelessWidget {
     required this.rating,
     required this.contactInfo,
     required this.fullDetails,
-    required this.location, // Added to constructor
-    required this.image, // Added to constructor
+    required this.location,
+    required this.image,
   });
+
+  // Function to handle the contact action
+  void _launchContactUrl(BuildContext context) async {
+    final Uri emailLaunchUri = Uri(
+      scheme: 'mailto',
+      path: contactInfo,
+      queryParameters: {
+        'subject': 'Inquiry about your Premium Service: $serviceName',
+        'body': 'Hello $providerName, I am contacting you regarding your premium service on Kuveni. I am interested in your service. Could you please provide more details?',
+      },
+    );
+    if (await canLaunchUrl(emailLaunchUri)) {
+      await launchUrl(emailLaunchUri);
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Could not launch email app.')),
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
+    // Correctly parse the rating to a double to display it cleanly
+    final double parsedRating = double.tryParse(rating) ?? 0.0;
+    
     return Scaffold(
       appBar: PreferredSize(
         preferredSize: const Size.fromHeight(80.0),
@@ -87,7 +107,7 @@ class ViewPremiumServiceScreen extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Center(
-              child: GestureDetector( // Added GestureDetector for image click
+              child: GestureDetector(
                 onTap: () {
                   if (image.isNotEmpty) {
                     Navigator.push(
@@ -95,7 +115,7 @@ class ViewPremiumServiceScreen extends StatelessWidget {
                       MaterialPageRoute(
                         builder: (context) => ImageViewerScreen(
                           imageUrl: image,
-                          title: providerName, // Use provider's name as image viewer title
+                          title: providerName,
                         ),
                       ),
                     );
@@ -105,15 +125,14 @@ class ViewPremiumServiceScreen extends StatelessWidget {
                     );
                   }
                 },
-                child: Hero( // Added Hero for smooth transition
-                  tag: image, // Use image URL as unique tag
+                child: Hero(
+                  tag: image,
                   child: CircleAvatar(
                     radius: 60,
                     backgroundImage: image.isNotEmpty ? NetworkImage(image) : null,
                     onBackgroundImageError: (exception, stackTrace) {
-
-                      ('Error loading image for $providerName: $exception'); // Corrected print statement
-
+                      // Corrected syntax for error handling
+                      debugPrint('Error loading image for $providerName: $exception'); 
                     },
                     child: image.isEmpty
                         ? const Icon(Icons.person, size: 60, color: Colors.white)
@@ -143,7 +162,8 @@ class ViewPremiumServiceScreen extends StatelessWidget {
                 const Icon(Icons.star, color: Colors.amber, size: 20),
                 const SizedBox(width: 4),
                 Text(
-                  '$rating out of 5',
+                  // Display rating with one decimal place
+                  '${parsedRating.toStringAsFixed(1)} out of 5',
                   style: TextStyle(fontSize: 16, color: Colors.grey[700]),
                 ),
                 const SizedBox(width: 16),
@@ -178,9 +198,31 @@ class ViewPremiumServiceScreen extends StatelessWidget {
               style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 8),
-            Text(
-              contactInfo,
-              style: const TextStyle(fontSize: 16, color: Colors.blue, decoration: TextDecoration.underline),
+            // Use an ElevatedButton for a better, more tappable contact button
+            Center(
+              child: ElevatedButton(
+                onPressed: () => _launchContactUrl(context),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.blueAccent,
+                  foregroundColor: Colors.white,
+                  padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  textStyle: const TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const Icon(Icons.email),
+                    const SizedBox(width: 8),
+                    Text('Contact $providerName'),
+                  ],
+                ),
+              ),
             ),
             const SizedBox(height: 30),
             Center(

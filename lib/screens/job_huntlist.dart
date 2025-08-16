@@ -1,59 +1,118 @@
 // lib/screens/job_huntlist.dart
 import 'package:flutter/material.dart';
-import 'package:kuveni_app/screens/view_jobhunt.dart';
-import 'package:kuveni_app/screens/profile_screen.dart'; // IMPORTANT: Import ProfileScreen
+import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:intl/intl.dart';
+
+// Initialize Supabase client
+final supabase = Supabase.instance.client;
 
 class JobHuntListScreen extends StatefulWidget {
   const JobHuntListScreen({super.key});
 
   @override
-  State<JobHuntListScreen> createState() => _JobHuntListScreenState();
+  _JobHuntListScreenState createState() => _JobHuntListScreenState();
 }
 
 class _JobHuntListScreenState extends State<JobHuntListScreen> {
-  final List<Map<String, String>> _jobListings = [
-    {
-      'jobTitle': 'Event Coordinator Assistant',
-      'company': 'Dream Events Ltd.',
-      'location': 'Colombo',
-      'salary': 'LKR 4500/day',
-      'description': 'Assist in planning and executing various events. Good communication skills required.',
-    },
-    {
-      'jobTitle': 'Part-time Tutor (Math)',
-      'company': 'Private Client',
-      'location': 'Kandy',
-      'salary': 'LKR 2500/hour',
-      'description': 'Looking for a qualified tutor for O/L students. Flexible hours.',
-    },
-    {
-      'jobTitle': 'Data Entry Clerk',
-      'company': 'ABC Solutions',
-      'location': 'Online',
-      'salary': 'LKR 20000/month',
-      'description': 'Remote position for accurate data entry. Basic computer skills essential.',
-    },
-    {
-      'jobTitle': 'House Sitter',
-      'company': 'Individual Client',
-      'location': 'Galle',
-      'salary': 'LKR 3000/day',
-      'description': 'Responsible individual needed to look after house and pets while owner is away.',
-    },
-    {
-      'jobTitle': 'Graphic Designer (Freelance)',
-      'company': 'Creative Hub',
-      'location': 'Remote',
-      'salary': 'Negotiable per project',
-      'description': 'Seeking creative graphic designers for various projects. Portfolio required.',
-    },
-  ];
+  // List to store all combined jobs and requests.
+  List<dynamic>? _allJobs;
+  bool _isLoading = true;
+  String? _errorMessage;
+  final TextEditingController _searchController = TextEditingController();
+  String _searchQuery = '';
+
+  @override
+  void initState() {
+    super.initState();
+    // Fetch data for both general jobs and approved event squad requests.
+    _fetchCombinedJobs();
+    // Add a listener to the search controller to trigger filtering on text changes.
+    _searchController.addListener(_onSearchChanged);
+  }
+
+  void _onSearchChanged() {
+    // This triggers a rebuild of the widget with the new search query.
+    setState(() {
+      _searchQuery = _searchController.text.toLowerCase();
+    });
+  }
+
+  @override
+  void dispose() {
+    _searchController.removeListener(_onSearchChanged);
+    _searchController.dispose();
+    super.dispose();
+  }
+
+  // Function to fetch and combine data from both tables.
+  Future<void> _fetchCombinedJobs() async {
+    try {
+      // 1. Fetch data from 'general_jobs' table.
+      final List<dynamic> generalJobsResponse = await supabase
+          .from('general_jobs')
+          .select()
+          .order('created_at', ascending: false);
+
+      // 2. Fetch data from 'event_squad_requests' table, but filter by status.
+      final List<dynamic> eventSquadResponse = await supabase
+          .from('event_squad_requests')
+          .select()
+          .eq('status', 'approved') // Only fetch requests with 'approved' status
+          .order('created_at', ascending: false);
+
+      // 3. Combine both lists.
+      List<dynamic> combinedList = [...generalJobsResponse, ...eventSquadResponse];
+
+      // 4. Sort the combined list by their creation date.
+      combinedList.sort((a, b) {
+        final aDate = a['created_at'] != null ? DateTime.parse(a['created_at']) : DateTime.now();
+        final bDate = b['created_at'] != null ? DateTime.parse(b['created_at']) : DateTime.now();
+        return bDate.compareTo(aDate); // Sort descending (newest first).
+      });
+
+      setState(() {
+        _allJobs = combinedList;
+        _isLoading = false;
+        _errorMessage = null;
+      });
+    } catch (e) {
+      setState(() {
+        _isLoading = false;
+        _errorMessage = 'Failed to load jobs: $e';
+        _allJobs = null;
+      });
+      print('Supabase fetch error: $e');
+    }
+  }
+
+  // Helper function to format the timestamp.
+  String _formatDate(String dateString) {
+    try {
+      final DateTime dateTime = DateTime.parse(dateString);
+      return DateFormat('MMM d, yyyy').format(dateTime);
+    } catch (e) {
+      return 'Invalid Date';
+    }
+  }
+
+  // A simple filter function to match jobs based on the search query
+  List<dynamic> _filterJobs(List<dynamic> jobs) {
+    if (_searchQuery.isEmpty) {
+      return jobs;
+    }
+    return jobs.where((job) {
+      final isEventSquad = job.containsKey('event_name');
+      final title = isEventSquad ? job['event_name']?.toLowerCase() ?? '' : job['job_title']?.toLowerCase() ?? '';
+      final location = job['location']?.toLowerCase() ?? '';
+      return title.contains(_searchQuery) || location.contains(_searchQuery);
+    }).toList();
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: PreferredSize(
-        preferredSize: const Size.fromHeight(80.0),
+        preferredSize: const Size.fromHeight(120.0),
         child: Container(
           decoration: const BoxDecoration(
             gradient: LinearGradient(
@@ -67,159 +126,105 @@ class _JobHuntListScreenState extends State<JobHuntListScreen> {
               end: Alignment.bottomRight,
             ),
           ),
-          child: AppBar(
-            backgroundColor: Colors.transparent,
-            elevation: 0,
-            leading: IconButton(
-              icon: const Icon(Icons.arrow_back, color: Colors.white, size: 30),
-              onPressed: () {
-                Navigator.pop(context);
-              },
-            ),
-            title: const Text(
-              'Job Hunt',
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            centerTitle: true,
-            actions: [
-              // Profile Icon - Now functional
-              IconButton(
-                icon: const Icon(Icons.person, color: Colors.white, size: 30),
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => const ProfileScreen()),
-                  );
-                },
-              ),
-            ],
-          ),
-        ),
-      ),
-      body: _jobListings.isEmpty
-          ? const Center(
-              child: Text(
-                'No job listings available yet.',
-                style: TextStyle(fontSize: 18, color: Colors.grey),
-              ),
-            )
-          : ListView.builder(
-              padding: const EdgeInsets.all(16.0),
-              itemCount: _jobListings.length,
-              itemBuilder: (context, index) {
-                final job = _jobListings[index];
-                return _buildJobCard(
-                  context,
-                  jobTitle: job['jobTitle']!,
-                  company: job['company']!,
-                  location: job['location']!,
-                  salary: job['salary']!,
-                  description: job['description']!,
-                );
-              },
-            ),
-    );
-  }
-
-  Widget _buildJobCard(
-    BuildContext context, {
-    required String jobTitle,
-    required String company,
-    required String location,
-    required String salary,
-    required String description,
-  }) {
-    return Card(
-      elevation: 2,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-      margin: const EdgeInsets.only(bottom: 15),
-      child: InkWell(
-        onTap: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => ViewJobVacancyScreen(
-                jobTitle: jobTitle,
-                company: company,
-                location: location,
-                salary: salary,
-                description: description,
-              ),
-            ),
-          );
-        },
-        borderRadius: BorderRadius.circular(10),
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                jobTitle,
-                style: const TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.deepPurple,
-                ),
-              ),
-              const SizedBox(height: 5),
-              Text(
-                '$company - $location',
-                style: TextStyle(fontSize: 14, color: Colors.grey[700]),
-              ),
-              const SizedBox(height: 5),
-              Text(
-                salary,
-                style: const TextStyle(
-                  fontSize: 15,
-                  fontWeight: FontWeight.w600,
-                  color: Colors.green,
-                ),
-              ),
-              const SizedBox(height: 10),
-              Text(
-                description,
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
-                style: TextStyle(fontSize: 14, color: Colors.grey[800]),
-              ),
-              const SizedBox(height: 10),
-              Align(
-                alignment: Alignment.bottomRight,
-                child: TextButton(
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => ViewJobVacancyScreen(
-                          jobTitle: jobTitle,
-                          company: company,
-                          location: location,
-                          salary: salary,
-                          description: description,
-                        ),
+          child: Padding(
+            padding: const EdgeInsets.only(top: 40.0, left: 16.0, right: 16.0, bottom: 10.0),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                const Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      'Job Hunt',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 24,
+                        fontWeight: FontWeight.bold,
                       ),
-                    );
-                  },
-                  style: TextButton.styleFrom(
-                    foregroundColor: Colors.deepPurple,
-                    padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 8),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8),
-                      side: const BorderSide(color: Colors.deepPurple),
+                    ),
+                    // You can add an IconButton here if needed, for example, for a profile.
+                  ],
+                ),
+                const SizedBox(height: 10),
+                // Search bar
+                Container(
+                  height: 45,
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(10.0),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.1),
+                        spreadRadius: 1,
+                        blurRadius: 3,
+                        offset: const Offset(0, 2),
+                      ),
+                    ],
+                  ),
+                  child: TextField(
+                    controller: _searchController,
+                    decoration: InputDecoration(
+                      hintText: 'Search for jobs...',
+                      hintStyle: TextStyle(color: Colors.grey[600]),
+                      prefixIcon: Icon(Icons.search, color: Colors.grey[600]),
+                      border: InputBorder.none,
+                      contentPadding: const EdgeInsets.symmetric(vertical: 12.0),
                     ),
                   ),
-                  child: const Text('View Details'),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),
+      body: _isLoading
+          ? const Center(child: CircularProgressIndicator())
+          : _errorMessage != null
+              ? Center(child: Text(_errorMessage!))
+              : _allJobs!.isEmpty
+                  ? const Center(child: Text('No job requests found.'))
+                  : ListView.builder(
+                      itemCount: _filterJobs(_allJobs!).length,
+                      itemBuilder: (context, index) {
+                        final filteredJobs = _filterJobs(_allJobs!);
+                        final job = filteredJobs[index];
+                        final isEventSquad = job.containsKey('event_name');
+                        
+                        return Card(
+                          margin: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+                          elevation: 3,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          child: ListTile(
+                            contentPadding: const EdgeInsets.all(16.0),
+                            title: Text(
+                              isEventSquad ? job['event_name'] : job['job_title'],
+                              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+                            ),
+                            subtitle: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                const SizedBox(height: 8),
+                                // Display job type
+                                Text(
+                                  'Type: ${isEventSquad ? 'Event Squad Request' : 'General Job'}',
+                                  style: const TextStyle(fontWeight: FontWeight.w500, color: Colors.blueAccent),
+                                ),
+                                const SizedBox(height: 4),
+                                Text('Location: ${job['location']}'),
+                                Text('Posted On: ${_formatDate(job['created_at'])}'),
+                                // Conditionally display the payment/helpers field
+                                if (isEventSquad)
+                                  Text('Helpers Required: ${job['helpers_required']}')
+                                else
+                                  Text('Payment: ${job['payment_details']}'),
+                              ],
+                            ),
+                          ),
+                        );
+                      },
+                    ),
     );
   }
 }

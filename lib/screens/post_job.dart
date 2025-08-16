@@ -1,10 +1,10 @@
 // lib/screens/post_job.dart
-// ignore_for_file: use_build_context_synchronously
-
 import 'package:flutter/material.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:kuveni_app/models/jobs.dart';
-import 'package:kuveni_app/screens/profile_screen.dart'; // IMPORTANT: Import ProfileScreen
+import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:kuveni_app/screens/profile_screen.dart';
+
+// Initialize the Supabase client.
+final supabase = Supabase.instance.client;
 
 class PostJobScreen extends StatefulWidget {
   const PostJobScreen({super.key});
@@ -14,19 +14,21 @@ class PostJobScreen extends StatefulWidget {
 }
 
 class _PostJobScreenState extends State<PostJobScreen> {
-  final TextEditingController _jobTitleController = TextEditingController();
-  final TextEditingController _jobDescriptionController = TextEditingController();
+  // Controllers for text fields.
+  final TextEditingController _titleController = TextEditingController();
+  final TextEditingController _descriptionController = TextEditingController();
   final TextEditingController _requirementsController = TextEditingController();
   final TextEditingController _locationController = TextEditingController();
   final TextEditingController _paymentDetailsController = TextEditingController();
   final TextEditingController _contactInfoController = TextEditingController();
 
   final _formKey = GlobalKey<FormState>();
+  bool _isLoading = false;
 
   @override
   void dispose() {
-    _jobTitleController.dispose();
-    _jobDescriptionController.dispose();
+    _titleController.dispose();
+    _descriptionController.dispose();
     _requirementsController.dispose();
     _locationController.dispose();
     _paymentDetailsController.dispose();
@@ -34,32 +36,43 @@ class _PostJobScreenState extends State<PostJobScreen> {
     super.dispose();
   }
 
+  // Function to handle form submission and data insertion into Supabase.
   void _postJob() async {
     if (_formKey.currentState!.validate()) {
-      final newJob = Job(
-        id: '',
-        jobTitle: _jobTitleController.text,
-        jobDescription: _jobDescriptionController.text,
-        requirements: _requirementsController.text,
-        location: _locationController.text,
-        paymentDetails: _paymentDetailsController.text,
-        contactInfo: _contactInfoController.text,
-        postedDate: DateTime.now(),
-      );
+      setState(() {
+        _isLoading = true;
+      });
 
       try {
-        CollectionReference jobs = FirebaseFirestore.instance.collection('jobs');
-        await jobs.add(newJob.toFirestore());
+        // Use the 'general_jobs' table as specified in your query.
+        await supabase.from('general_jobs').insert({
+          'job_title': _titleController.text, // Mapped to 'job_title'
+          'job_description': _descriptionController.text, // Mapped to 'job_description'
+          'requirements': _requirementsController.text,
+          'location': _locationController.text,
+          'payment_details': _paymentDetailsController.text,
+          'contact_info': _contactInfoController.text,
+        });
 
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Job Posted Successfully!')),
-        );
-        Navigator.pop(context);
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Job Posted Successfully!')),
+          );
+          Navigator.pop(context); // Go back to the previous screen.
+        }
       } catch (e) {
-        "Error posting job: $e";
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed to post job: $e')),
-        );
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Failed to post job: $e')),
+          );
+        }
+        print('Supabase insertion error: $e'); // Print the error for debugging.
+      } finally {
+        if (mounted) {
+          setState(() {
+            _isLoading = false;
+          });
+        }
       }
     }
   }
@@ -92,7 +105,7 @@ class _PostJobScreenState extends State<PostJobScreen> {
               },
             ),
             title: const Text(
-              'Post a Job',
+              'Post a General Job',
               style: TextStyle(
                 color: Colors.white,
                 fontSize: 24,
@@ -123,7 +136,7 @@ class _PostJobScreenState extends State<PostJobScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               _buildInputField(
-                controller: _jobTitleController,
+                controller: _titleController,
                 labelText: 'Job Title',
                 hintText: 'e.g., Event Helper, Home Cleaner',
                 validator: (value) {
@@ -134,13 +147,13 @@ class _PostJobScreenState extends State<PostJobScreen> {
                 },
               ),
               _buildInputField(
-                controller: _jobDescriptionController,
+                controller: _descriptionController,
                 labelText: 'Job Description',
                 hintText: 'Provide a detailed description of the job...',
                 maxLines: 5,
                 validator: (value) {
                   if (value == null || value.isEmpty) {
-                    return 'Please enter a job description';
+                    return 'Please enter a description';
                   }
                   return null;
                 },
@@ -182,22 +195,24 @@ class _PostJobScreenState extends State<PostJobScreen> {
               ),
               const SizedBox(height: 30),
               Center(
-                child: ElevatedButton(
-                  onPressed: _postJob,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFF5902B1),
-                    foregroundColor: Colors.white,
-                    padding: const EdgeInsets.symmetric(horizontal: 50, vertical: 15),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    textStyle: const TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  child: const Text('Post Job'),
-                ),
+                child: _isLoading
+                    ? const CircularProgressIndicator()
+                    : ElevatedButton(
+                        onPressed: _postJob,
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: const Color(0xFF5902B1),
+                          foregroundColor: Colors.white,
+                          padding: const EdgeInsets.symmetric(horizontal: 50, vertical: 15),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          textStyle: const TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        child: const Text('Post Job'),
+                      ),
               ),
             ],
           ),

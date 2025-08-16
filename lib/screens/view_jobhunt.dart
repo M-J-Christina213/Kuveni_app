@@ -1,23 +1,56 @@
-// lib/screens/view_jobhunt.dart
+// lib/screens/job_hunt_list.dart
 import 'package:flutter/material.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
+import 'view_jobhunt.dart';
+import 'package:kuveni_app/screens/profile_screen.dart';
 
-class ViewJobVacancyScreen extends StatelessWidget {
-  // These are the parameters that will be passed from JobHuntListScreen
-  final String jobTitle;
-  final String company;
-  final String location;
-  final String salary;
-  final String description;
-  // You can add more fields here if your job model expands (e.g., requirements, postedDate)
+// Initialize the Supabase client.
+final supabase = Supabase.instance.client;
 
-  const ViewJobVacancyScreen({
-    super.key,
-    required this.jobTitle,
-    required this.company,
-    required this.location,
-    required this.salary,
-    required this.description,
-  });
+class JobHuntListScreen extends StatefulWidget {
+  const JobHuntListScreen({super.key});
+
+  @override
+  State<JobHuntListScreen> createState() => _JobHuntListScreenState();
+}
+
+class _JobHuntListScreenState extends State<JobHuntListScreen> {
+  // State variables to hold the fetched data and manage the loading state.
+  List<dynamic> _jobs = [];
+  bool _isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchJobs();
+  }
+
+  // Function to fetch all jobs from the 'general_jobs' table.
+  Future<void> _fetchJobs() async {
+    try {
+      final response = await supabase
+          .from('general_jobs')
+          .select()
+          .order('created_at', ascending: false); // Order by creation date to show recent jobs first.
+
+      if (response != null) {
+        setState(() {
+          _jobs = response;
+          _isLoading = false;
+        });
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Failed to fetch jobs: $e')),
+        );
+      }
+      print('Supabase fetch error: $e'); // Print the error for debugging.
+      setState(() {
+        _isLoading = false;
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -43,12 +76,12 @@ class ViewJobVacancyScreen extends StatelessWidget {
             leading: IconButton(
               icon: const Icon(Icons.arrow_back, color: Colors.white, size: 30),
               onPressed: () {
-                Navigator.pop(context); // Navigate back to JobHuntListScreen
+                Navigator.pop(context);
               },
             ),
-            title: Text(
-              jobTitle, // Display the job title in the app bar
-              style: const TextStyle(
+            title: const Text(
+              'Available Jobs',
+              style: TextStyle(
                 color: Colors.white,
                 fontSize: 24,
                 fontWeight: FontWeight.bold,
@@ -59,80 +92,110 @@ class ViewJobVacancyScreen extends StatelessWidget {
               IconButton(
                 icon: const Icon(Icons.person, color: Colors.white, size: 30),
                 onPressed: () {
-                 
-                  'Profile icon tapped from View Job Vacancy';
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => const ProfileScreen()),
+                  );
                 },
               ),
             ],
           ),
         ),
       ),
-      body: SingleChildScrollView( // Added SingleChildScrollView for longer content
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              jobTitle,
-              style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: Colors.deepPurple),
-            ),
-            const SizedBox(height: 8),
-            Text(
-              '$company - $location',
-              style: TextStyle(fontSize: 16, color: Colors.grey[700]),
-            ),
-            const SizedBox(height: 8),
-            Text(
-              salary,
-              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w600, color: Colors.green),
-            ),
-            const SizedBox(height: 16),
-            const Text(
-              'Job Description:',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 8),
-            Text(
-              description,
-              style: const TextStyle(fontSize: 16, height: 1.5),
-            ),
-            // For example:
-            // const SizedBox(height: 16),
-            // const Text(
-            //   'Responsibilities:',
-            //   style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-            // ),
-            // const SizedBox(height: 8),
-            // Text(
-            //   '• Manage daily tasks\n• Communicate with clients', // Example hardcoded
-            //   style: const TextStyle(fontSize: 16, height: 1.5),
-            // ),
-            const SizedBox(height: 30),
-            Center(
-              child: ElevatedButton(
-                onPressed: () {
-                 
-                  'Apply button tapped for: $jobTitle';
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Apply functionality coming soon!')),
-                  );
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFF5902B1),
-                  foregroundColor: Colors.white,
-                  padding: const EdgeInsets.symmetric(horizontal: 50, vertical: 15),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  textStyle: const TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                  ),
+      body: _isLoading
+          ? const Center(child: CircularProgressIndicator())
+          : _jobs.isEmpty
+              ? const Center(
+                  child: Text('No jobs available yet.', style: TextStyle(fontSize: 16)),
+                )
+              : ListView.builder(
+                  padding: const EdgeInsets.all(16.0),
+                  itemCount: _jobs.length,
+                  itemBuilder: (context, index) {
+                    final job = _jobs[index];
+                    return JobCard(
+                      job: job,
+                      onTap: () {
+                        // Navigate to the detail screen and pass the job data.
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => ViewJobVacancyScreen(
+                              jobTitle: job['job_title'] ?? 'N/A',
+                              // Your `view_jobhunt.dart` used 'company' and 'salary',
+                              // but these don't exist in your table. Using 'contact_info'
+                              // and 'payment_details' instead.
+                              company: job['contact_info'] ?? 'N/A',
+                              location: job['location'] ?? 'N/A',
+                              salary: job['payment_details'] ?? 'N/A',
+                              description: job['job_description'] ?? 'N/A',
+                            ),
+                          ),
+                        );
+                      },
+                    );
+                  },
                 ),
-                child: const Text('Apply Now'),
+    );
+  }
+}
+
+class JobCard extends StatelessWidget {
+  final Map<String, dynamic> job;
+  final VoidCallback onTap;
+
+  const JobCard({
+    super.key,
+    required this.job,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      elevation: 4,
+      margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 4),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(12),
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                job['job_title'] ?? 'N/A',
+                style: const TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: Color(0xFF5902B1),
+                ),
               ),
-            ),
-          ],
+              const SizedBox(height: 8),
+              Row(
+                children: [
+                  const Icon(Icons.location_on, size: 16, color: Colors.grey),
+                  const SizedBox(width: 4),
+                  Text(
+                    job['location'] ?? 'N/A',
+                    style: const TextStyle(fontSize: 14, color: Colors.grey),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 4),
+              Row(
+                children: [
+                  const Icon(Icons.monetization_on, size: 16, color: Colors.grey),
+                  const SizedBox(width: 4),
+                  Text(
+                    job['payment_details'] ?? 'N/A',
+                    style: const TextStyle(fontSize: 14, color: Colors.green),
+                  ),
+                ],
+              ),
+            ],
+          ),
         ),
       ),
     );

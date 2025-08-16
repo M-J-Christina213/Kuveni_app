@@ -1,11 +1,17 @@
+// lib/screens/jobs_main_dashboard.dart
 import 'package:flutter/material.dart';
 import 'package:kuveni_app/screens/post_job.dart';
 import 'package:kuveni_app/screens/event_squad.dart';
 import 'package:kuveni_app/screens/job_huntlist.dart';
-import 'package:kuveni_app/screens/premium_servicelist.dart';
+import 'package:kuveni_app/screens/premium_service_list_screen.dart';
 import 'package:kuveni_app/screens/checkout.dart';
 import 'package:kuveni_app/screens/profile_screen.dart';
-import 'package:kuveni_app/screens/dashboard_card.dart'; // Import the new reusable card widget
+import 'package:kuveni_app/screens/dashboard_card.dart';
+import 'package:kuveni_app/screens/admin_panel_screen.dart';
+import 'package:kuveni_app/screens/submit_premium_service_screen.dart'; // New import for submitting a service
+import 'package:supabase_flutter/supabase_flutter.dart';
+
+final supabase = Supabase.instance.client;
 
 class JobsMainDashboard extends StatefulWidget {
   const JobsMainDashboard({super.key});
@@ -16,6 +22,11 @@ class JobsMainDashboard extends StatefulWidget {
 
 class _JobsMainDashboardState extends State<JobsMainDashboard> {
   final TextEditingController _searchController = TextEditingController();
+
+  bool get _isAdmin {
+    final currentUserUid = supabase.auth.currentUser?.id;
+    return currentUserUid == 'YOUR_ADMIN_USER_ID';
+  }
 
   @override
   void dispose() {
@@ -107,7 +118,6 @@ class _JobsMainDashboardState extends State<JobsMainDashboard> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Use the new DashboardCard widget
             DashboardCard(
               title: 'Post a Job',
               subtitle: 'Reach out to thousands of helpers!',
@@ -129,12 +139,21 @@ class _JobsMainDashboardState extends State<JobsMainDashboard> {
               iconColor: Colors.blue[400]!,
               destinationScreen: const JobHuntListScreen(),
             ),
+            // Corrected: Card to view the list of premium services
             DashboardCard(
               title: 'Premium Services',
               subtitle: 'Discover exclusive helper services!',
               icon: Icons.workspace_premium,
               iconColor: Colors.amber[700]!,
               destinationScreen: const PremiumServiceListScreen(),
+            ),
+            // New card to submit a premium service
+            DashboardCard(
+              title: 'Submit a Premium Service',
+              subtitle: 'Offer your unique skills and get hired!',
+              icon: Icons.add_circle_outline,
+              iconColor: Colors.amber[700]!,
+              destinationScreen: const SubmitPremiumServiceScreen(),
             ),
             DashboardCard(
               title: 'Buy Premium Now',
@@ -143,6 +162,14 @@ class _JobsMainDashboardState extends State<JobsMainDashboard> {
               iconColor: Colors.pink[400]!,
               destinationScreen: const CheckoutScreen(),
             ),
+            if (_isAdmin)
+              DashboardCard(
+                title: 'Admin Panel',
+                subtitle: 'Manage pending event requests.',
+                icon: Icons.admin_panel_settings,
+                iconColor: Colors.red[400]!,
+                destinationScreen: const AdminPanelScreen(),
+              ),
           ],
         ),
       ),

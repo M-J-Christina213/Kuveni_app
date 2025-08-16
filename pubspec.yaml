@@ -29,10 +29,13 @@ environment:
 # versions available, run `flutter pub outdated`.
 dependencies:
   flutter:
-    sdk: flutter
+    sdk:
+    url_launcher: ^6.2.5
+    supabase_flutter: ^2.5.1
   firebase_core: ^2.31.0
   firebase_auth: ^4.17.8
   cloud_firestore: ^4.15.8
+
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
