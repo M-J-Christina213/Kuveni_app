@@ -11,6 +11,7 @@ class EventSquadForm extends StatefulWidget {
   const EventSquadForm({super.key});
 
   @override
+  // ignore: library_private_types_in_public_api
   _EventSquadFormState createState() => _EventSquadFormState();
 }
 

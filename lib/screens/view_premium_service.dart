@@ -42,6 +42,7 @@ class ViewPremiumServiceScreen extends StatelessWidget {
     if (await canLaunchUrl(emailLaunchUri)) {
       await launchUrl(emailLaunchUri);
     } else {
+      // ignore: use_build_context_synchronously
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Could not launch email app.')),
       );

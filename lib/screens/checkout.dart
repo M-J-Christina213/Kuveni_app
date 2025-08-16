@@ -1,5 +1,6 @@
 // lib/screens/checkout.dart
 import 'package:flutter/material.dart';
+import 'package:supabase_flutter/supabase_flutter.dart' as supa;
 
 class CheckoutScreen extends StatefulWidget {
   const CheckoutScreen({super.key});
@@ -21,6 +22,19 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
   // Form key for validation
   final _formKey = GlobalKey<FormState>();
 
+  // State to manage the loading indicator
+  bool _isLoading = false;
+
+  // Initialize Supabase client
+  late final supa.SupabaseClient _supabaseClient;
+
+  @override
+  void initState() {
+    super.initState();
+    // Get the Supabase client instance
+    _supabaseClient = supa.Supabase.instance.client;
+  }
+
   @override
   void dispose() {
     _cardNameController.dispose();
@@ -33,24 +47,61 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
     super.dispose();
   }
 
-  void _processPayment() {
+  Future<void> _processPayment() async {
+    // Check if the form is valid before processing
     if (_formKey.currentState!.validate()) {
-      // If the form is valid, process payment (placeholder logic)
-      'Processing Payment:';
-      'Card Name: ${_cardNameController.text}';
-      'Card Number: ${_cardNumberController.text}';
-      'Expiry Date: ${_expiryDateController.text}';
-      'CVV: ${_cvvController.text}';
-      'Billing Address: ${_billingAddressController.text}';
-      'City: ${_cityController.text}';
-      'Zip Code: ${_zipCodeController.text}';
+      setState(() {
+        _isLoading = true;
+      });
 
-      // For now, just show a success message
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Payment Processed Successfully!')),
-      );
-      // Optionally navigate back or to a confirmation screen
-      Navigator.pop(context);
+      // NOTE: In a real-world application, you should NEVER send raw credit card data
+      // directly to your backend. You would use a secure payment gateway's SDK (like Stripe)
+      // to tokenize the card information first, then send the secure token to your backend
+      // for processing. This example is for demonstration purposes only.
+
+      try {
+        final Map<String, dynamic> checkoutData = {
+          'card_name': _cardNameController.text,
+          'card_number': _cardNumberController.text,
+          'expiry_date': _expiryDateController.text,
+          'cvv': _cvvController.text,
+          'billing_address': _billingAddressController.text,
+          'city': _cityController.text,
+          'zip_code': _zipCodeController.text,
+          'status': 'pending', // Set an initial status
+        };
+
+        // Insert the data into the 'checkout_transactions' table
+        await _supabaseClient.from('checkout_transactions').insert(checkoutData);
+
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Payment information submitted successfully!')),
+          );
+          // Navigate back or to a confirmation screen after successful submission
+          Navigator.pop(context);
+        }
+      } on supa.PostgrestException catch (e) {
+        // Handle specific Supabase errors
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Error submitting data: ${e.message}')),
+          );
+        }
+      } catch (e) {
+        // Handle any other unexpected errors
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('An unexpected error occurred: $e')),
+          );
+        }
+      } finally {
+        if (mounted) {
+          setState(() {
+            _isLoading = false;
+          });
+        }
+      }
     }
   }
 
@@ -95,139 +146,139 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
               IconButton(
                 icon: const Icon(Icons.person, color: Colors.white, size: 30),
                 onPressed: () {
-                 
-                  'Profile icon tapped from Checkout';
                 },
               ),
             ],
           ),
         ),
       ),
-      body: Form(
-        key: _formKey,
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const Text(
-                'Payment Information',
-                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.deepPurple),
-              ),
-              const SizedBox(height: 15),
-              _buildInputField(
-                controller: _cardNameController,
-                labelText: 'Name on Card',
-                hintText: 'e.g., John Doe',
-                validator: (value) {
-                  if (value == null || value.isEmpty) return 'Please enter name on card';
-                  return null;
-                },
-              ),
-              _buildInputField(
-                controller: _cardNumberController,
-                labelText: 'Card Number',
-                hintText: 'XXXX XXXX XXXX XXXX',
-                keyboardType: TextInputType.number,
-                maxLength: 16,
-                validator: (value) {
-                  if (value == null || value.isEmpty || value.length != 16) return 'Please enter a valid 16-digit card number';
-                  return null;
-                },
-              ),
-              Row(
-                children: [
-                  Expanded(
-                    child: _buildInputField(
-                      controller: _expiryDateController,
-                      labelText: 'Expiry Date',
-                      hintText: 'MM/YY',
-                      keyboardType: TextInputType.datetime,
-                      maxLength: 5,
+      body: _isLoading
+          ? const Center(child: CircularProgressIndicator())
+          : Form(
+              key: _formKey,
+              child: SingleChildScrollView(
+                padding: const EdgeInsets.all(16.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text(
+                      'Payment Information',
+                      style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.deepPurple),
+                    ),
+                    const SizedBox(height: 15),
+                    _buildInputField(
+                      controller: _cardNameController,
+                      labelText: 'Name on Card',
+                      hintText: 'e.g., John Doe',
                       validator: (value) {
-                        if (value == null || value.isEmpty || !RegExp(r'^\d{2}\/\d{2}$').hasMatch(value)) return 'Format MM/YY';
+                        if (value == null || value.isEmpty) return 'Please enter name on card';
                         return null;
                       },
                     ),
-                  ),
-                  const SizedBox(width: 16),
-                  Expanded(
-                    child: _buildInputField(
-                      controller: _cvvController,
-                      labelText: 'CVV',
-                      hintText: 'XXX',
+                    _buildInputField(
+                      controller: _cardNumberController,
+                      labelText: 'Card Number',
+                      hintText: 'XXXX XXXX XXXX XXXX',
                       keyboardType: TextInputType.number,
-                      maxLength: 3,
+                      maxLength: 16,
                       validator: (value) {
-                        if (value == null || value.isEmpty || value.length != 3) return 'Enter 3-digit CVV';
+                        if (value == null || value.isEmpty || value.length != 16) return 'Please enter a valid 16-digit card number';
                         return null;
                       },
                     ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 30),
-              const Text(
-                'Billing Address',
-                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.deepPurple),
-              ),
-              const SizedBox(height: 15),
-              _buildInputField(
-                controller: _billingAddressController,
-                labelText: 'Address Line 1',
-                hintText: 'e.g., 123 Main St',
-                validator: (value) {
-                  if (value == null || value.isEmpty) return 'Please enter billing address';
-                  return null;
-                },
-              ),
-              Row(
-                children: [
-                  Expanded(
-                    child: _buildInputField(
-                      controller: _cityController,
-                      labelText: 'City',
-                      hintText: 'e.g., Colombo',
+                    Row(
+                      children: [
+                        Expanded(
+                          child: _buildInputField(
+                            controller: _expiryDateController,
+                            labelText: 'Expiry Date',
+                            hintText: 'MM/YY',
+                            keyboardType: TextInputType.datetime,
+                            maxLength: 5,
+                            validator: (value) {
+                              if (value == null || value.isEmpty || !RegExp(r'^\d{2}\/\d{2}$').hasMatch(value)) return 'Format MM/YY';
+                              return null;
+                            },
+                          ),
+                        ),
+                        const SizedBox(width: 16),
+                        Expanded(
+                          child: _buildInputField(
+                            controller: _cvvController,
+                            labelText: 'CVV',
+                            hintText: 'XXX',
+                            keyboardType: TextInputType.number,
+                            maxLength: 3,
+                            validator: (value) {
+                              if (value == null || value.isEmpty || value.length != 3) return 'Enter 3-digit CVV';
+                              return null;
+                            },
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 30),
+                    const Text(
+                      'Billing Address',
+                      style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.deepPurple),
+                    ),
+                    const SizedBox(height: 15),
+                    _buildInputField(
+                      controller: _billingAddressController,
+                      labelText: 'Address Line 1',
+                      hintText: 'e.g., 123 Main St',
                       validator: (value) {
-                        if (value == null || value.isEmpty) return 'Please enter city';
+                        if (value == null || value.isEmpty) return 'Please enter billing address';
                         return null;
                       },
                     ),
-                  ),
-                  const SizedBox(width: 16),
-                  Expanded(
-                    child: _buildInputField(
-                      controller: _zipCodeController,
-                      labelText: 'Zip Code',
-                      hintText: 'e.g., 00100',
-                      keyboardType: TextInputType.number,
+                    Row(
+                      children: [
+                        Expanded(
+                          child: _buildInputField(
+                            controller: _cityController,
+                            labelText: 'City',
+                            hintText: 'e.g., Colombo',
+                            validator: (value) {
+                              if (value == null || value.isEmpty) return 'Please enter city';
+                              return null;
+                            },
+                          ),
+                        ),
+                        const SizedBox(width: 16),
+                        Expanded(
+                          child: _buildInputField(
+                            controller: _zipCodeController,
+                            labelText: 'Zip Code',
+                            hintText: 'e.g., 00100',
+                            keyboardType: TextInputType.number,
+                          ),
+                        ),
+                      ],
                     ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 30),
-              Center(
-                child: ElevatedButton(
-                  onPressed: _processPayment,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFFEBB41F), // Orange/Yellow from your gradient
-                    foregroundColor: Colors.white,
-                    padding: const EdgeInsets.symmetric(horizontal: 50, vertical: 15),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10),
+                    const SizedBox(height: 30),
+                    Center(
+                      child: ElevatedButton(
+                        onPressed: _processPayment,
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: const Color(0xFFEBB41F), // Orange/Yellow from your gradient
+                          foregroundColor: Colors.white,
+                          padding: const EdgeInsets.symmetric(horizontal: 50, vertical: 15),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          textStyle: const TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        child: const Text('Confirm Payment'),
+                      ),
                     ),
-                    textStyle: const TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  child: const Text('Confirm Payment'),
+                  ],
                 ),
               ),
-            ],
-          ),
-        ),
-      ),
+            ),
     );
   }
 

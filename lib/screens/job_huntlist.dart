@@ -1,20 +1,22 @@
 // lib/screens/job_huntlist.dart
 import 'package:flutter/material.dart';
+// ignore: unused_import
 import 'package:kuveni_app/screens/post_job.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:supabase_flutter/supabase_flutter.dart' as supa;
 import 'package:intl/intl.dart';
-
-// Initialize Supabase client
-final supabase = Supabase.instance.client;
 
 class JobHuntListScreen extends StatefulWidget {
   const JobHuntListScreen({super.key});
 
   @override
+  // ignore: library_private_types_in_public_api
   _JobHuntListScreenState createState() => _JobHuntListScreenState();
 }
 
 class _JobHuntListScreenState extends State<JobHuntListScreen> {
+  // Initialize Supabase client inside initState
+  late final supa.SupabaseClient supabase;
+
   // List to store all combined jobs and requests.
   List<dynamic>? _allJobs;
   bool _isLoading = true;
@@ -25,6 +27,8 @@ class _JobHuntListScreenState extends State<JobHuntListScreen> {
   @override
   void initState() {
     super.initState();
+    // Assign the Supabase client after the app is initialized.
+    supabase = supa.Supabase.instance.client;
     // Fetch data for both general jobs and approved event squad requests.
     _fetchCombinedJobs();
     // Add a listener to the search controller to trigger filtering on text changes.
@@ -82,7 +86,7 @@ class _JobHuntListScreenState extends State<JobHuntListScreen> {
         _errorMessage = 'Failed to load jobs: $e';
         _allJobs = null;
       });
-      print('Supabase fetch error: $e');
+      ('Supabase fetch error: $e');
     }
   }
 
@@ -155,6 +159,7 @@ class _JobHuntListScreenState extends State<JobHuntListScreen> {
                     borderRadius: BorderRadius.circular(10.0),
                     boxShadow: [
                       BoxShadow(
+                        // ignore: deprecated_member_use
                         color: Colors.black.withOpacity(0.1),
                         spreadRadius: 1,
                         blurRadius: 3,

@@ -1,8 +1,8 @@
+// lib/screens/premium_service_list_screen.dart
 import 'package:flutter/material.dart';
-import 'package:kuveni_app/screens/post_job.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:kuveni_app/screens/submit_premium_service_screen.dart';
 import 'package:kuveni_app/screens/view_premium_service.dart';
+import 'package:supabase_flutter/supabase_flutter.dart' as supa;
 
 class PremiumServiceListScreen extends StatefulWidget {
   const PremiumServiceListScreen({super.key});
@@ -20,7 +20,7 @@ class _PremiumServiceListScreenState extends State<PremiumServiceListScreen> {
   void initState() {
     super.initState();
     // Initialize the stream with a base query
-    _servicesStream = Supabase.instance.client
+    _servicesStream = supa.Supabase.instance.client
         .from('premium_services')
         .stream(primaryKey: ['id'])
         .order('created_at', ascending: false);
@@ -53,8 +53,8 @@ class _PremiumServiceListScreenState extends State<PremiumServiceListScreen> {
       final providerName = service['provider_name']?.toLowerCase() ?? '';
       final location = service['location']?.toLowerCase() ?? '';
       return serviceName.contains(_searchQuery) ||
-             providerName.contains(_searchQuery) ||
-             location.contains(_searchQuery);
+          providerName.contains(_searchQuery) ||
+          location.contains(_searchQuery);
     }).toList();
   }
 
@@ -109,6 +109,7 @@ class _PremiumServiceListScreenState extends State<PremiumServiceListScreen> {
                     borderRadius: BorderRadius.circular(10.0),
                     boxShadow: [
                       BoxShadow(
+                        // ignore: deprecated_member_use
                         color: Colors.black.withOpacity(0.1),
                         spreadRadius: 1,
                         blurRadius: 3,
