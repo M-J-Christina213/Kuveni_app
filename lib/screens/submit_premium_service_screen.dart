@@ -8,10 +8,11 @@ class SubmitPremiumServiceScreen extends StatefulWidget {
   const SubmitPremiumServiceScreen({super.key});
 
   @override
-  SubmitPremiumServiceScreenState createState() => SubmitPremiumServiceScreenState();
+  // ignore: library_private_types_in_public_api
+  _SubmitPremiumServiceScreenState createState() => _SubmitPremiumServiceScreenState();
 }
 
-class SubmitPremiumServiceScreenState extends State<SubmitPremiumServiceScreen> {
+class _SubmitPremiumServiceScreenState extends State<SubmitPremiumServiceScreen> {
   final _formKey = GlobalKey<FormState>();
 
   final _serviceNameController = TextEditingController();
@@ -44,10 +45,9 @@ class SubmitPremiumServiceScreenState extends State<SubmitPremiumServiceScreen> 
     });
 
     try {
-      final userId = supabase.auth.currentUser!.id;
-
+      // The user_id field is not included in the insert,
+      // as we are removing the dependency on an authenticated user.
       await supabase.from('premium_services').insert({
-        'user_id': userId,
         'service_name': _serviceNameController.text,
         'provider_name': _providerNameController.text,
         'rate': _rateController.text,

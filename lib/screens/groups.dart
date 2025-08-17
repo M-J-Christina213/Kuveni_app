@@ -1,3 +1,5 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -5,141 +7,125 @@ class GroupsScreen extends StatefulWidget {
   const GroupsScreen({super.key});
 
   @override
-  State<GroupsScreen> createState() => _GroupsScreenState();
+  GroupsScreenState createState() => GroupsScreenState();
 }
 
-class _GroupsScreenState extends State<GroupsScreen> {
+class GroupsScreenState extends State<GroupsScreen> {
   final _supabase = Supabase.instance.client;
-  List<Map<String, dynamic>> _groups = [];
+  List<dynamic> _groups = [];
   bool _isLoading = true;
 
   @override
   void initState() {
     super.initState();
-    _fetchGroups();
+    _loadGroups();
   }
 
-  Future<void> _fetchGroups() async {
-    setState(() {
-      _isLoading = true;
-    });
-
+  Future<void> _loadGroups() async {
     try {
-      final data = await _supabase
-          .from('groups')
-          .select()
-          .order('name', ascending: true);
-
-      _groups = (data as List<dynamic>)
-          .map((item) => item as Map<String, dynamic>)
-          .toList();
-    } catch (e) {
-      debugPrint('An unexpected error occurred: $e');
-    } finally {
+      final response = await _supabase.from('groups').select();
       setState(() {
+        _groups = response;
         _isLoading = false;
       });
+    } catch (e) {
+      setState(() => _isLoading = false);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error loading groups: $e')),
+      );
     }
   }
 
-  void _handleJoin(int index) {
-    final group = _groups[index];
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('You joined "${group['name']}"')),
-    );
+  Future<void> _joinGroup(dynamic groupId) async {
+    final userId = _supabase.auth.currentUser?.id;
 
-    // Optional: Update local state to simulate join (e.g., increment members)
-    setState(() {
-      _groups[index]['member_count'] = (_groups[index]['member_count'] ?? 0) + 1;
-    });
+    if (userId == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('You must be logged in to join a group')),
+      );
+      return;
+    }
 
-    // Implement actual backend join logic (e.g., insert into group_members)
+    try {
+      await _supabase.from('group_members').insert({
+        'group_id': groupId,
+        'user_id': userId,
+      });
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('🎉 You have joined the group!'),
+          behavior: SnackBarBehavior.floating,
+          backgroundColor: Colors.green,
+        ),
+      );
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Error joining group: $e'),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Community Groups'),
+        title: const Text('Available Groups'),
         centerTitle: true,
-        backgroundColor: Colors.purple[300],
+        backgroundColor: Colors.teal,
       ),
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())
           : _groups.isEmpty
-              ? const Center(child: Text('No groups available.'))
-              : Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: ListView.separated(
-                    itemCount: _groups.length,
-                    separatorBuilder: (_, __) => const SizedBox(height: 12),
-                    itemBuilder: (context, index) {
-                      final group = _groups[index];
-                      return GroupCard(
-                        name: group['name'] ?? 'Unknown Group',
-                        description:
-                            group['description'] ?? 'No description provided.',
-                        members: group['member_count'] ?? 0,
-                        onJoin: () => _handleJoin(index),
-                      );
-                    },
-                  ),
+              ? const Center(child: Text("No groups available."))
+              : ListView.builder(
+                  itemCount: _groups.length,
+                  itemBuilder: (context, index) {
+                    final group = _groups[index];
+
+                    return Card(
+                      elevation: 5,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      margin: const EdgeInsets.symmetric(
+                          horizontal: 16, vertical: 10),
+                      child: Padding(
+                        padding: const EdgeInsets.all(12.0),
+                        child: ListTile(
+                          contentPadding: const EdgeInsets.symmetric(horizontal: 10),
+                          title: Text(
+                            group['name'] ?? 'Unnamed Group',
+                            style: const TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 18,
+                            ),
+                          ),
+                          subtitle: Padding(
+                            padding: const EdgeInsets.only(top: 8.0),
+                            child: Text(
+                              group['description'] ?? 'No description available.',
+                              style: const TextStyle(fontSize: 14),
+                            ),
+                          ),
+                          trailing: ElevatedButton(
+                            onPressed: () => _joinGroup(group['id']),
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.teal,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                            ),
+                            child: const Text('Join'),
+                          ),
+                        ),
+                      ),
+                    );
+                  },
                 ),
-    );
-  }
-}
-
-class GroupCard extends StatelessWidget {
-  final String name;
-  final String description;
-  final int members;
-  final VoidCallback onJoin;
-
-  const GroupCard({
-    super.key,
-    required this.name,
-    required this.description,
-    required this.members,
-    required this.onJoin,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Card(
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-      elevation: 3,
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(name,
-                style:
-                    const TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
-            const SizedBox(height: 8),
-            Text(description,
-                style: TextStyle(color: Colors.grey[700], fontSize: 14)),
-            const SizedBox(height: 12),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text('$members Members',
-                    style: const TextStyle(
-                        fontSize: 14, fontWeight: FontWeight.w500)),
-                ElevatedButton(
-                  onPressed: onJoin,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.purple[300],
-                    shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12)),
-                  ),
-                  child: const Text("Join"),
-                ),
-              ],
-            )
-          ],
-        ),
-      ),
     );
   }
 }

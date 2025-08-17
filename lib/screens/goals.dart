@@ -23,40 +23,42 @@ class _GoalsPageState extends State<GoalsPage> {
   @override
   void initState() {
     super.initState();
-    _calculateSavings();
-    _fetchGoals();
+    _fetchData();
   }
 
-  void _calculateSavings() {
-    // Example incomes/expenses
-    final incomes = [
-      {"date": DateTime(2024, 6, 12), "amount": 50000},
-      {"date": DateTime(2024, 6, 10), "amount": 25000},
-      {"date": DateTime(2024, 6, 8), "amount": 36000},
-      {"date": DateTime(2024, 6, 5), "amount": 180000},
-    ];
+  /// Fetch incomes, expenses, and goals
+  Future<void> _fetchData() async {
+    await _calculateSavings();
+    await _fetchGoals();
+  }
 
-    final expenses = [
-      {"date": DateTime(2024, 6, 1), "amount": 20000},
-      {"date": DateTime(2024, 6, 5), "amount": 15000},
-      {"date": DateTime(2024, 6, 8), "amount": 10000},
-    ];
+  /// Fetch total income and expenses dynamically from database
+  Future<void> _calculateSavings() async {
+    try {
+      final incomesResponse = await supabase.from('Income Table').select('id, title, amount, date');
+      final expensesResponse = await supabase.from('Expenses Table').select('id, title, amount, date');
 
-    totalIncome = incomes.fold(0, (sum, item) => sum + (item['amount'] as int));
-    totalExpense = expenses.fold(0, (sum, item) => sum + (item['amount'] as int));
+      totalIncome = (incomesResponse as List<dynamic>)
+          .fold(0, (sum, item) => sum + (item['amount'] as int));
+      totalExpense = (expensesResponse as List<dynamic>)
+          .fold(0, (sum, item) => sum + (item['amount'] as int));
+
+      setState(() {});
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Failed to calculate savings: $e")),
+      );
+    }
   }
 
   int get availableSavings => totalIncome - totalExpense;
 
+  /// Fetch all goals from Supabase
   Future<void> _fetchGoals() async {
-    final userId = supabase.auth.currentUser?.id;
-    if (userId == null) return;
-
     try {
       final response = await supabase
           .from('Goals Table')
           .select()
-          .eq('user_id', userId)
           .order('created_at', ascending: false);
 
       setState(() {
@@ -71,7 +73,6 @@ class _GoalsPageState extends State<GoalsPage> {
 
   @override
   Widget build(BuildContext context) {
-
     return Scaffold(
       appBar: AppBar(title: const Text("Goals")),
       bottomNavigationBar: BottomNavBar(
@@ -90,12 +91,10 @@ class _GoalsPageState extends State<GoalsPage> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          {
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (_) => SetGoalScreen()),
-            ).then((_) => _fetchGoals()); // Refresh after adding a goal
-          }
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (_) => const SetGoalScreen()),
+          ).then((_) => _fetchData()); // Refresh after adding a goal
         },
         child: const Icon(Icons.add),
       ),
@@ -110,12 +109,21 @@ class _GoalsPageState extends State<GoalsPage> {
             const SizedBox(height: 24),
             ...goals.map((goal) {
               final goalAmount = goal['target_amount'] as double? ?? 0.0;
-              final savedAmount = goal['saved_amount'] as double? ?? 0.0;
-              final percent = (savedAmount / goalAmount).clamp(0.0, 1.0);
+              double savedAmount;
+
+              // Use available savings to calculate goal progress
+              if (availableSavings >= goalAmount) {
+                savedAmount = goalAmount;
+              } else {
+                savedAmount = availableSavings.toDouble();
+              }
+
+              final percent =
+                  goalAmount == 0 ? 0.0 : (savedAmount / goalAmount).clamp(0.0, 1.0);
 
               return _GoalCard(
                 context,
-                goal['goal'] ?? "Unnamed Goal",
+                goal['title'] ?? "Unnamed Goal",
                 goalAmount.toInt(),
                 savedAmount.toInt(),
                 percent,
