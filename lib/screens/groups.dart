@@ -41,7 +41,7 @@ class GroupsScreenState extends State<GroupsScreen> {
 
     if (userId == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('You must be logged in to join a group')),
+        const SnackBar(content: Text('You have joined the group!')),
       );
       return;
     }
@@ -59,7 +59,7 @@ class GroupsScreenState extends State<GroupsScreen> {
             style: TextStyle(color: Colors.white),
           ),
           behavior: SnackBarBehavior.floating,
-          backgroundColor: Colors.deepPurple,
+          backgroundColor: Colors.purple,
         ),
       );
     } catch (e) {
@@ -78,7 +78,7 @@ class GroupsScreenState extends State<GroupsScreen> {
       appBar: AppBar(
         title: const Text('Available Groups'),
         centerTitle: true,
-        backgroundColor: Colors.deepPurple,
+        backgroundColor: Colors.purple,
       ),
       body: _isLoading
           ? const Center(child: CircularProgressIndicator(color: Colors.deepPurple))
@@ -106,7 +106,7 @@ class GroupsScreenState extends State<GroupsScreen> {
                             style: const TextStyle(
                               fontWeight: FontWeight.bold,
                               fontSize: 18,
-                              color: Colors.deepPurple,
+                              color: Colors.purple,
                             ),
                           ),
                           subtitle: Padding(
@@ -132,12 +132,15 @@ class GroupsScreenState extends State<GroupsScreen> {
                           trailing: ElevatedButton(
                             onPressed: () => _joinGroup(group['id']),
                             style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.deepPurple,
+                              backgroundColor: Colors.purple,
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(8),
                               ),
                             ),
-                            child: const Text('Join'),
+                            child: const Text('Join',
+                             style: TextStyle(color: Colors.white)
+                            ) 
+                            ,
                           ),
                         ),
                       ),
