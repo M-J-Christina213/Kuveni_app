@@ -39,10 +39,10 @@ android {
 
    signingConfigs {
         create("release") {
-            keyAlias = keystoreProperties["keyAlias"]?.toString() ?: ""
-            keyPassword = keystoreProperties["keyPassword"]?.toString() ?: ""
-            storeFile = keystoreProperties["storeFile"]?.let { file(it.toString()) }
-            storePassword = keystoreProperties["storePassword"]?.toString() ?: ""
+            keyAlias = keystoreProperties["keyAlias"]?.toString() ?: throw GradleException("keyAlias missing in key.properties")
+            keyPassword = keystoreProperties["keyPassword"]?.toString() ?: throw GradleException("keyPassword missing in key.properties")
+            storeFile = keystoreProperties["storeFile"]?.let { file(it.toString()) } ?: throw GradleException("storeFile missing in key.properties")
+            storePassword = keystoreProperties["storePassword"]?.toString() ?: throw GradleException("storePassword missing in key.properties")
         }
     }
 
@@ -53,6 +53,7 @@ android {
             isShrinkResources = false
         }
     }
+
 }
 
 flutter {
