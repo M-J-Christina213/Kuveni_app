@@ -7,8 +7,8 @@ import 'package:kuveni_app/screens/premium_service_list_screen.dart';
 import 'package:kuveni_app/screens/checkout.dart';
 import 'package:kuveni_app/screens/profile_screen.dart';
 import 'package:kuveni_app/screens/dashboard_card.dart';
-import 'package:kuveni_app/screens/admin_panel_screen.dart';
-import 'package:kuveni_app/screens/submit_premium_service_screen.dart'; // New import for submitting a service
+import 'package:kuveni_app/screens/submit_premium_service_screen.dart'; // Existing import for submitting a service
+import 'package:kuveni_app/screens/view_event_squad_form_screen.dart';
 import 'package:supabase_flutter/supabase_flutter.dart' as supa;
 
 class JobsMainDashboard extends StatefulWidget {
@@ -25,29 +25,12 @@ class _JobsMainDashboardState extends State<JobsMainDashboard> {
   late final supa.SupabaseClient supabase;
   final TextEditingController _searchController = TextEditingController();
 
-  // A boolean to track if the user is an admin.
-  bool _isAdmin = false;
-
   @override
   void initState() {
     super.initState();
     // Initialize the supabase client instance here, within initState().
     // This ensures it is ready for use when the widget is built.
     supabase = supa.Supabase.instance.client;
-    
-    // Set up a listener for auth state changes to determine if the user is an admin.
-    // This is more reliable than a simple getter that runs on every build.
-    supabase.auth.onAuthStateChange.listen((data) {
-      final supa.Session? session = data.session;
-      if (session != null) {
-        // Check if the current user ID matches the admin ID.
-        if (session.user.id == 'YOUR_ADMIN_USER_ID') {
-          setState(() {
-            _isAdmin = true;
-          });
-        }
-      }
-    });
   }
 
   @override
@@ -154,6 +137,14 @@ class _JobsMainDashboardState extends State<JobsMainDashboard> {
               iconColor: Colors.orange[400]!,
               destinationScreen: const EventSquadForm(),
             ),
+            // NEW CARD: For viewing event squad forms
+            DashboardCard(
+              title: 'View Event Squad Forms',
+              subtitle: 'Review submitted event requests.',
+              icon: Icons.view_list,
+              iconColor: Colors.green[400]!,
+              destinationScreen: const ViewEventSquadFormsScreen(),
+            ),
             DashboardCard(
               title: 'Job Hunt',
               subtitle: 'Explore available job vacancies!',
@@ -184,15 +175,6 @@ class _JobsMainDashboardState extends State<JobsMainDashboard> {
               iconColor: Colors.pink[400]!,
               destinationScreen: const CheckoutScreen(),
             ),
-            // Conditionally show Admin Panel
-            if (_isAdmin)
-              DashboardCard(
-                title: 'Admin Panel',
-                subtitle: 'Manage pending event requests.',
-                icon: Icons.admin_panel_settings,
-                iconColor: Colors.red[400]!,
-                destinationScreen: const AdminPanelScreen(),
-              ),
           ],
         ),
       ),

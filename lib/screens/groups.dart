@@ -53,10 +53,13 @@ class GroupsScreenState extends State<GroupsScreen> {
       });
 
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('🎉 You have joined the group!'),
+        SnackBar(
+          content: const Text(
+            'You have joined the group!',
+            style: TextStyle(color: Colors.white),
+          ),
           behavior: SnackBarBehavior.floating,
-          backgroundColor: Colors.green,
+          backgroundColor: Colors.deepPurple,
         ),
       );
     } catch (e) {
@@ -75,10 +78,10 @@ class GroupsScreenState extends State<GroupsScreen> {
       appBar: AppBar(
         title: const Text('Available Groups'),
         centerTitle: true,
-        backgroundColor: Colors.teal,
+        backgroundColor: Colors.deepPurple,
       ),
       body: _isLoading
-          ? const Center(child: CircularProgressIndicator())
+          ? const Center(child: CircularProgressIndicator(color: Colors.deepPurple))
           : _groups.isEmpty
               ? const Center(child: Text("No groups available."))
               : ListView.builder(
@@ -88,6 +91,7 @@ class GroupsScreenState extends State<GroupsScreen> {
 
                     return Card(
                       elevation: 5,
+                      color: Colors.deepPurple[50],
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(12),
                       ),
@@ -102,19 +106,33 @@ class GroupsScreenState extends State<GroupsScreen> {
                             style: const TextStyle(
                               fontWeight: FontWeight.bold,
                               fontSize: 18,
+                              color: Colors.deepPurple,
                             ),
                           ),
                           subtitle: Padding(
                             padding: const EdgeInsets.only(top: 8.0),
-                            child: Text(
-                              group['description'] ?? 'No description available.',
-                              style: const TextStyle(fontSize: 14),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  group['description'] ?? 'No description available.',
+                                  style: const TextStyle(fontSize: 14),
+                                ),
+                                const SizedBox(height: 4),
+                                Text(
+                                  'Members: ${group['members']}',
+                                  style: const TextStyle(
+                                    fontSize: 12,
+                                    fontStyle: FontStyle.italic,
+                                  ),
+                                ),
+                              ],
                             ),
                           ),
                           trailing: ElevatedButton(
                             onPressed: () => _joinGroup(group['id']),
                             style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.teal,
+                              backgroundColor: Colors.deepPurple,
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(8),
                               ),
